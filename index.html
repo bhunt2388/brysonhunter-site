@@ -603,7 +603,79 @@
     margin-top:8px;
   }
 
-  /* ===== CONTACT FOOTER ===== */
+  /* ===== DISCLOSURES ===== */
+  .disclosures-section{
+    background:var(--bg);
+    padding:120px 48px 80px;
+    border-top:1px solid var(--line-soft);
+  }
+  .disclosures-section .container{max-width:1100px;}
+  .disclosures-section .section-eyebrow{margin-bottom:24px;}
+  .disclosures-section .section-title{
+    font-size:clamp(32px, 4.5vw, 56px);
+    margin-bottom:24px;
+  }
+  .disclosures-intro{
+    color:var(--ink-dim);
+    font-size:15px;
+    line-height:1.8;
+    max-width:780px;
+    margin-bottom:64px;
+    padding-bottom:48px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .disclosure-block{
+    margin-bottom:48px;
+    padding-bottom:8px;
+  }
+  .disclosure-block:last-child{margin-bottom:0;}
+  .disclosure-block .num{
+    font-family:var(--serif);
+    font-size:13px; font-style:italic;
+    color:var(--gold);
+    letter-spacing:.12em;
+    margin-bottom:12px;
+    display:block;
+  }
+  .disclosure-block h4{
+    font-family:var(--serif);
+    font-size:24px;
+    font-weight:400;
+    color:var(--ink);
+    margin-bottom:18px;
+    line-height:1.25;
+  }
+  .disclosure-block p{
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.85;
+    margin-bottom:14px;
+  }
+  .disclosure-block p:last-child{margin-bottom:0;}
+  .disclosure-block strong{color:var(--ink); font-weight:500;}
+  .disclosures-final{
+    margin-top:64px;
+    padding-top:48px;
+    border-top:1px solid var(--line-soft);
+    font-size:12px;
+    line-height:1.8;
+    color:var(--ink-muted);
+    letter-spacing:.04em;
+  }
+  .disclosures-final .effective{
+    color:var(--gold);
+    font-size:10px;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+    display:block;
+  }
+  @media (max-width: 980px){
+    .disclosures-section{padding:80px 24px 60px;}
+    .disclosure-block h4{font-size:20px;}
+  }
+
+
   .footer{
     background:var(--bg);
     padding:120px 48px 48px;
@@ -1091,6 +1163,405 @@
   </div>
 </section>
 
+<!-- ===== DISCLOSURES ===== -->
+<section class="disclosures-section" id="disclosures">
+  <div class="container">
+    <div class="section-eyebrow">Legal</div>
+    <h2 class="section-title">Disclosures & <em>Disclaimers.</em></h2>
+
+    <p class="disclosures-intro">
+      The information contained on this website is provided by <strong>Bryson Hunter Enterprises</strong>
+      (together with its affiliated entities, "BHE," "we," "our," or "us") for general informational
+      purposes only. By accessing or using this website, you acknowledge and agree to the terms,
+      limitations, and disclaimers set forth below. If you do not agree, please discontinue use of
+      this website.
+    </p>
+
+    <div class="disclosure-block">
+      <span class="num">i.</span>
+      <h4>General Information; No Registered Status</h4>
+      <p>
+        Bryson Hunter Enterprises operates as a privately held investment platform overseeing
+        capital deployed by Bryson Hunter and affiliated principals across a curated portfolio of
+        operating companies, real estate projects, private credit positions, and related holdings.
+        BHE and its affiliated entities (including but not limited to <strong>Bryson Hunter Real
+        Estate LLC, Black River Investments LLC, Sunpeak Investments, Freehold Holdings, 7071
+        Holdings LLC, and Axis Chems LLC</strong>) are private companies.
+      </p>
+      <p>
+        Neither BHE nor any of its affiliates is registered as a broker-dealer, investment adviser,
+        commodity pool operator, commodity trading advisor, or in any similar capacity with the
+        United States Securities and Exchange Commission (SEC), the Financial Industry Regulatory
+        Authority (FINRA), the Commodity Futures Trading Commission (CFTC), or any state or
+        foreign securities, banking, or financial regulatory authority. Nothing on this website
+        should be construed as an offer to provide such services.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">ii.</span>
+      <h4>No Offer of Securities; Private Placements Only</h4>
+      <p>
+        Nothing contained on this website constitutes an offer to sell, or a solicitation of an
+        offer to buy, any security, partnership interest, membership interest, debt instrument,
+        or other investment product. <strong>All investment opportunities referenced on this
+        website are private and offered exclusively pursuant to applicable exemptions from
+        registration under the Securities Act of 1933, as amended (the "Securities Act"), and
+        applicable state securities laws</strong>, including without limitation Rule 506 of
+        Regulation D and, where applicable, Regulation S.
+      </p>
+      <p>
+        Any actual offer or sale of securities will be made only by means of a definitive private
+        placement memorandum, subscription agreement, operating agreement, loan agreement,
+        promissory note, and/or such other transaction documents as BHE or the applicable issuer
+        may deliver to a prospective investor. Prospective investors should rely solely on the
+        information contained in those definitive offering documents — not on the contents of
+        this website — when making any investment decision.
+      </p>
+      <p>
+        No federal or state securities regulator has approved or disapproved any offering, passed
+        upon the merits of any investment, or confirmed the accuracy or adequacy of any disclosure.
+        Any representation to the contrary is a criminal offense.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">iii.</span>
+      <h4>Accredited Investors Only; Verification Required</h4>
+      <p>
+        Participation in any investment opportunity offered or referenced by BHE is limited to
+        persons who qualify as <strong>"accredited investors"</strong> as defined under Rule 501
+        of Regulation D promulgated under the Securities Act, and, where applicable, "qualified
+        purchasers" as defined under Section 2(a)(51) of the Investment Company Act of 1940.
+      </p>
+      <p>
+        Where any offering relies on Rule 506(c) of Regulation D, BHE or its agents will take
+        reasonable steps to verify each prospective investor's accredited investor status prior
+        to accepting any subscription. Verification may require third-party confirmation by a
+        licensed attorney, certified public accountant, registered broker-dealer, or registered
+        investment adviser, or such other documentation as BHE deems sufficient in its sole
+        discretion.
+      </p>
+      <p>
+        Prospective investors who are not accredited should not submit inquiries, capital
+        commitments, or subscription requests through this website.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">iv.</span>
+      <h4>Forward-Looking Statements; Targeted Returns</h4>
+      <p>
+        This website contains <strong>forward-looking statements</strong>, including but not
+        limited to statements regarding investment strategy, target returns (such as the minimum
+        50% annualized return threshold referenced for the private credit platform), expected
+        deal structures, sector outlook, and future portfolio composition. Forward-looking
+        statements are based on current assumptions, expectations, and information and are subject
+        to numerous risks, uncertainties, and changes in circumstances.
+      </p>
+      <p>
+        <strong>Targeted, projected, or anticipated returns are aspirational and are not
+        guaranteed.</strong> Actual results may differ materially — and may be negative —
+        from those expressed or implied. No representation or warranty is made that any
+        targeted return will be achieved, that the strategies described will be successful,
+        or that any investor will receive a return of capital. BHE undertakes no obligation to
+        update any forward-looking statement to reflect events or circumstances occurring after
+        the date such statement was made.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">v.</span>
+      <h4>Past Performance; Assets Under Management</h4>
+      <p>
+        References to the platform's assets under management ("AUM"), portfolio composition,
+        number of active holdings, transaction history, or prior investment outcomes are
+        provided for informational purposes only and represent a point-in-time snapshot.
+        AUM figures may include committed but undeployed capital, real estate at estimated
+        market value, equity stakes at internal valuation, and debt instruments at principal
+        outstanding, and are subject to change without notice.
+      </p>
+      <p>
+        <strong>Past performance is not indicative of, and does not guarantee, future results.</strong>
+        Prior investments referenced on this website were made under specific market, regulatory,
+        and operational conditions that may no longer exist. No investor should infer that future
+        opportunities will perform similarly to prior opportunities.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">vi.</span>
+      <h4>Risks of Private Investment</h4>
+      <p>
+        Investments in private companies, real estate projects, private credit instruments, and
+        related opportunities are <strong>speculative, illiquid, and involve a high degree of
+        risk, including the risk of total loss of principal</strong>. Such investments are
+        suitable only for sophisticated, accredited investors who can afford to bear the
+        economic risk of an investment for an indefinite period of time and who have no need
+        for liquidity with respect to the capital committed. Material risks include, without
+        limitation:
+      </p>
+      <p>
+        <strong>Illiquidity</strong> — Interests are not publicly traded, there is no
+        secondary market, and transfer is typically restricted by contract and securities laws;
+        investors should expect to hold their position for the full investment horizon, which
+        may be five years, ten years, or longer.
+        <strong>Concentration</strong> — The platform may hold concentrated positions in a
+        limited number of holdings, sectors, or geographies, increasing exposure to
+        idiosyncratic risk.
+        <strong>Leverage</strong> — Certain holdings may employ debt financing, which amplifies
+        both potential returns and potential losses.
+        <strong>Valuation</strong> — Private holdings are valued internally and are not subject
+        to daily mark-to-market; reported valuations may not reflect realizable value.
+        <strong>Operational and execution risk</strong> — Outcomes depend significantly on the
+        performance of operating partners, sponsors, borrowers, and counterparties, any of whom
+        may underperform or default.
+        <strong>Regulatory risk</strong> — Changes in tax law, securities regulation, zoning,
+        licensing, or industry-specific rules may adversely affect any holding.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">vii.</span>
+      <h4>No Investment, Legal, Tax, or Other Professional Advice</h4>
+      <p>
+        Nothing contained on this website constitutes investment, legal, tax, accounting,
+        regulatory, or other professional advice. The information presented does not take into
+        account the particular investment objectives, financial situation, tax position, or
+        needs of any specific person. <strong>Each prospective investor should consult with
+        their own independent legal, tax, financial, and investment advisors</strong> before
+        making any investment decision.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">viii.</span>
+      <h4>Real Estate Holdings</h4>
+      <p>
+        The platform's real estate holdings, including without limitation positions associated
+        with <strong>Bryson Hunter Real Estate LLC, Midtown Development Group LLC, and related
+        development and value-add projects</strong>, are subject to material risks specific to
+        real property and real estate development, including but not limited to: market and
+        cyclical risks affecting property values, rents, and absorption; entitlement, zoning,
+        and permitting risk; construction cost overruns and schedule delays; environmental and
+        title risks; tenant credit and vacancy risk; financing and refinancing risk; interest
+        rate risk; natural disaster and casualty risk; and risks specific to joint venture
+        partners, sponsors, and counterparties.
+      </p>
+      <p>
+        Real estate co-investment, preferred equity, and secured debt positions held by the
+        platform are typically illiquid, subject to project-specific business plans, and
+        carry no guarantee of return or principal protection.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">ix.</span>
+      <h4>Private Credit & Structured Lending</h4>
+      <p>
+        Activities conducted through <strong>Black River Investments LLC</strong> and related
+        lending vehicles involve the origination of secured promissory notes, bridge facilities,
+        and asset-backed credit instruments. These instruments are subject to material risks
+        including, without limitation: borrower default; insufficiency of collateral; delay or
+        impairment of foreclosure, UCC enforcement, or other remedies; subordination to senior
+        creditors; bankruptcy-related stays and impairments; and concentration in specific
+        borrowers, sectors, or geographies.
+      </p>
+      <p>
+        Stated minimum return thresholds (including the minimum 50% annualized return threshold)
+        reflect underwriting targets — not guarantees of outcome. Loans may default, be
+        modified, be extended, or be settled at a loss.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">x.</span>
+      <h4>Land Transfer Fee Portfolio</h4>
+      <p>
+        Holdings associated with <strong>Freehold Holdings</strong> consist of contractual rights
+        attached to underlying land tracts. Such rights are subject to risks specific to private
+        transfer fee instruments, including without limitation: enforceability under applicable
+        state law (which varies significantly by jurisdiction and continues to evolve); the
+        creditworthiness and cooperation of underlying property owners, title insurers, and
+        closing agents; recording and chain-of-title risks; legal challenges to the instrument;
+        and changes in federal or state regulation affecting private transfer fee arrangements.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xi.</span>
+      <h4>Healthcare & Life Sciences Holdings</h4>
+      <p>
+        The platform's holdings in healthcare and life sciences companies — including but not
+        limited to its equity position in <strong>Nova Via Detox Center</strong> — are operating
+        company investments and are subject to material risks specific to the healthcare sector,
+        including: regulatory and licensing risk at the federal, state, and local levels;
+        accreditation risk; payor reimbursement and rate-setting risk; staffing and clinical
+        operations risk; malpractice and patient-safety liability; HIPAA and privacy compliance
+        risk; and significant exposure to evolving behavioral health and addiction treatment
+        regulation.
+      </p>
+      <p>
+        Nothing on this website constitutes medical advice, a recommendation of any treatment,
+        or any endorsement of any specific clinical service. Healthcare-related holdings are
+        passive equity investments by BHE and are operated independently by their respective
+        management teams.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xii.</span>
+      <h4>Research Compounds (Axis Chems LLC)</h4>
+      <p>
+        <strong>Axis Chems LLC is a research compound distribution platform that supplies
+        materials strictly for laboratory and in-vitro research use only.</strong> Products
+        distributed by Axis Chems are not approved by the United States Food and Drug
+        Administration (FDA) for diagnostic or therapeutic use in humans or animals, are not
+        dietary supplements, are not cosmetics, and are not intended for human or veterinary
+        consumption.
+      </p>
+      <p>
+        All Axis Chems customers are required to be qualified research professionals operating
+        in compliance with all applicable federal, state, and local laws and regulations.
+        Customers bear sole responsibility for the lawful use, handling, storage, and disposal
+        of any materials purchased. Nothing on this website constitutes a medical or therapeutic
+        claim, a recommendation for use, or an endorsement of any product for any purpose other
+        than bona fide laboratory research.
+      </p>
+      <p>
+        BHE holds Axis Chems as an equity investment. Inquiries regarding Axis Chems products,
+        catalog, or regulatory positioning should be directed to Axis Chems directly and are
+        not handled through this website.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xiii.</span>
+      <h4>Conflicts of Interest</h4>
+      <p>
+        Bryson Hunter and affiliated principals may serve in multiple capacities across the
+        platform — including, without limitation, as principal investor, lender, borrower,
+        guarantor, manager, board member, advisor, or operator — with respect to the same or
+        related holdings. <strong>Material conflicts of interest may arise</strong>, including
+        but not limited to: principals investing on terms different from those offered to
+        outside investors; allocation of investment opportunities among affiliated entities;
+        related-party transactions among portfolio companies; and concurrent service to
+        multiple holdings with competing interests.
+      </p>
+      <p>
+        BHE seeks to address such conflicts on a case-by-case basis in accordance with
+        applicable governing documents, fiduciary obligations (where applicable), and customary
+        commercial practice. Specific conflict disclosures are provided in the definitive
+        offering documents associated with each opportunity.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xiv.</span>
+      <h4>Confidentiality</h4>
+      <p>
+        Information shared by BHE in connection with any inquiry, application, due diligence
+        process, or offering — whether transmitted via this website, email, telephone, in
+        person, or otherwise — is <strong>confidential and proprietary</strong>. Recipients
+        may not reproduce, distribute, publish, or otherwise share such information without
+        the prior written consent of BHE. By submitting an inquiry or application through this
+        website, you agree to maintain the confidentiality of any non-public information
+        subsequently provided to you.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xv.</span>
+      <h4>Jurisdiction; U.S. Persons</h4>
+      <p>
+        This website and any opportunities referenced herein are <strong>directed solely to
+        U.S. persons (as defined under Regulation S of the Securities Act)</strong> located
+        within the United States. Nothing on this website constitutes an offer to sell or a
+        solicitation of an offer to buy any security or interest in any jurisdiction in which
+        such offer or solicitation would be unlawful. Persons accessing this website from
+        jurisdictions outside the United States are responsible for compliance with all
+        applicable local laws.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xvi.</span>
+      <h4>Right to Decline; Suitability</h4>
+      <p>
+        BHE <strong>reserves the absolute right, in its sole discretion, to decline any inquiry,
+        application, capital commitment, or subscription</strong> from any prospective investor,
+        operator, sponsor, or counterparty, for any reason or no reason. Acceptance into any
+        opportunity is subject to satisfactory completion of background, KYC (know-your-customer),
+        AML (anti-money-laundering), sanctions, accredited investor verification, suitability,
+        and such other diligence as BHE deems appropriate.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xvii.</span>
+      <h4>Privacy of Information Submitted</h4>
+      <p>
+        Information submitted through inquiry or application forms on this website (including
+        name, contact information, capital range, and accompanying narrative) is collected and
+        used solely for the purpose of evaluating the inquiry and contacting the submitter.
+        Such information is not sold to third parties. BHE may retain submitted information
+        in accordance with applicable record-keeping obligations. Submitters who wish to have
+        their information deleted may contact us at the email address below.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xviii.</span>
+      <h4>Third-Party References & Trademarks</h4>
+      <p>
+        References on this website to third-party operating companies, sponsors, projects, or
+        counterparties are made solely to describe the nature of BHE's portfolio activities and
+        do not constitute an endorsement, joint marketing arrangement, or representation that
+        any such third party endorses BHE. All third-party names, logos, and trademarks remain
+        the property of their respective owners.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xix.</span>
+      <h4>No Reliance; Information Subject to Change</h4>
+      <p>
+        Information on this website is provided <strong>"as is" and "as available," without
+        warranty of any kind</strong>, express or implied. While BHE endeavors to maintain
+        accurate and current information, no representation or warranty is made as to the
+        accuracy, completeness, or timeliness of any content. Information may be updated,
+        modified, or removed at any time without notice. <strong>Prospective investors should
+        not rely on any information contained on this website in making any investment
+        decision</strong> and should instead rely solely on the definitive offering documents
+        provided to them.
+      </p>
+    </div>
+
+    <div class="disclosure-block">
+      <span class="num">xx.</span>
+      <h4>Limitation of Liability</h4>
+      <p>
+        To the maximum extent permitted by applicable law, neither BHE nor any of its
+        affiliates, officers, employees, agents, or representatives shall be liable for any
+        direct, indirect, incidental, consequential, special, or punitive damages of any kind
+        arising out of or in connection with the use of, or inability to use, this website or
+        any information contained herein, including without limitation any decision made or
+        action taken in reliance on such information.
+      </p>
+    </div>
+
+    <div class="disclosures-final">
+      <span class="effective">Effective Date · Contact</span>
+      These disclosures are effective as of the date of publication and supersede any prior
+      version. BHE reserves the right to amend or update these disclosures at any time without
+      notice; the version posted on this website at the time of access governs. For questions
+      regarding these disclosures, please contact
+      <a href="mailto:bryson@brysonhunter.com" style="color:var(--gold); text-decoration:none;">bryson@brysonhunter.com</a>.
+      © Bryson Hunter Enterprises. All rights reserved.
+    </div>
+  </div>
+</section>
+
 <!-- ===== FOOTER ===== -->
 <footer class="footer">
   <div class="container">
@@ -1123,7 +1594,7 @@
       <div>© 2026 Bryson Hunter Enterprises</div>
       <div class="legal">
         <a href="#">Privacy</a>
-        <a href="#">Disclosures</a>
+        <a href="#disclosures">Disclosures</a>
         <a href="#">Terms</a>
       </div>
     </div>
