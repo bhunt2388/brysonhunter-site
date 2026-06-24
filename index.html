@@ -843,6 +843,20 @@
     .hero-cta{flex-direction:column; align-items:stretch;}
     .btn-primary, .btn-ghost{text-align:center;}
   }
+
+  .tax-section{background:var(--bg-3);}
+  .tax-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:80px;align-items:start;margin-top:64px;}
+  .tax-card{background:var(--bg-2);border:1px solid var(--line-soft);border-left:3px solid var(--gold);padding:28px 32px;margin-bottom:20px;}
+  .tax-val{font-family:var(--serif);font-size:42px;font-weight:300;color:var(--gold);line-height:1;}
+  .tax-lbl{font-size:13px;color:var(--ink-dim);margin-top:6px;line-height:1.5;}
+  .tax-cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:40px;}
+  .tax-col{background:var(--bg-2);border:1px solid var(--line-soft);padding:22px 20px;}
+  .tax-col.bad{border-top:2px solid rgba(180,40,40,.45);} .tax-col.good{border-top:2px solid var(--gold);}
+  .tax-col-h{font-size:10px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:14px;}
+  .tax-col-h.red{color:rgba(220,80,80,.8);} .tax-col-h.gld{color:var(--gold);}
+  .tax-row{font-size:13px;color:var(--ink-dim);padding:6px 0;border-bottom:1px solid var(--line-soft);display:flex;gap:8px;}
+  .tax-row:last-child{border-bottom:none;} .tcx{color:rgba(220,80,80,.7);flex-shrink:0;} .tck{color:var(--gold);flex-shrink:0;}
+  @media(max-width:980px){.tax-grid{grid-template-columns:1fr;gap:48px;}.tax-cmp{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -855,6 +869,7 @@
   <div class="nav-links">
     <a href="#about" class="nav-link">About</a>
     <a href="#portfolio" class="nav-link">Portfolio</a>
+    <a href="#tax-strategy" class="nav-link">Tax Strategy</a>
     <a href="#approach" class="nav-link">Approach</a>
     <a href="#partner" class="nav-link">Partner</a>
   </div>
@@ -924,7 +939,7 @@
         </p>
         <p>
           Today, he leads capital deployment, partnership formation, and strategic direction
-          across <strong>eight active holdings</strong> — building enduring value through
+          across <strong>ten active holdings</strong> — building enduring value through
           deliberate concentration, not diffusion.
         </p>
 
@@ -943,7 +958,7 @@
           </div>
           <div class="cred-item">
             <div class="label">Active Mandates</div>
-            <div class="value">8 Operating Holdings</div>
+            <div class="value">10 Operating Holdings</div>
           </div>
         </div>
       </div>
@@ -1018,6 +1033,7 @@
           Strategic capital position in a Las Vegas-based consumer and lifestyle venture
           targeting the high-traffic Nevada market.
         </p>
+        <div style="margin-top:18px;"><a href="https://brysonhunter.com/assets/zlife-investor-deck.pdf" target="_blank" rel="noopener" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-decoration:none;">&#8594; Investor Deck</a></div>
       </article>
 
       <article class="holding">
@@ -1048,6 +1064,7 @@
           A vertically integrated research compound distribution platform serving the U.S.
           research market, with proprietary protocol systems and a 60+ SKU active catalog.
         </p>
+        <div style="margin-top:18px;"><a href="https://axischems.com" target="_blank" rel="noopener" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-decoration:none;">&#8594; axischems.com</a></div>
       </article>
 
       <article class="holding">
@@ -1069,6 +1086,22 @@
           A capital vehicle deploying into operator-led growth opportunities, real assets,
           and select strategic positions sourced through the broader network.
         </p>
+      </article>
+
+      <article class="holding">
+        <div class="holding-num">09 &mdash; Tax Strategy</div>
+        <h3 class="holding-name">ROI CFO</h3>
+        <div class="holding-cat">Tax Optimization &middot; Advisor Network</div>
+        <p class="holding-desc">A federally compliant tax strategy platform delivering institutional-grade charitable deduction structures and &sect;45Q carbon credit transfers exclusively through CPAs, RIAs, and family offices. 5:1 deduction leverage. Advisor-distributed.</p>
+        <div style="margin-top:18px;"><a href="https://roicfo.com" target="_blank" rel="noopener" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-decoration:none;">&#8594; roicfo.com</a></div>
+      </article>
+
+      <article class="holding">
+        <div class="holding-num">10 &mdash; Carbon Agriculture</div>
+        <h3 class="holding-name">Carbon Legacy Trees</h3>
+        <div class="holding-cat">Carbon Credits &middot; Hardwood &middot; Graphene</div>
+        <p class="holding-desc">Exclusive commercial rights to the Phoenix Tree &mdash; an epigenetically enhanced species generating four revenue streams per acre: voluntary carbon credits, &sect;45Q tax credits, premium hardwood, and graphene byproduct. 10,000-tree Phase 1 underway.</p>
+        <div style="margin-top:18px;"><a href="https://carbonlegacytrees.com" target="_blank" rel="noopener" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);text-decoration:none;">&#8594; carbonlegacytrees.com</a></div>
       </article>
     </div>
   </div>
@@ -1117,16 +1150,59 @@
 </section>
 
 <!-- ===== PARTNER SECTION ===== -->
+<!-- ===== TAX OPTIMIZATION ===== -->
+<section class="tax-section" id="tax-strategy">
+  <div class="container">
+    <div class="section-eyebrow">Tax Strategy</div>
+    <h2 class="section-title">Your clients are <em>overpaying the IRS.</em></h2>
+    <p class="section-lead">Through ROI CFO, the platform provides CPAs, RIAs, and family offices access to two federally compliant tax reduction structures &mdash; a 5:1 leveraged charitable deduction and &sect;45Q carbon tax credit transfers. Both deployed at the advisor level.</p>
+    <div class="tax-grid">
+      <div>
+        <div class="tax-card"><div class="tax-val">5:1</div><div class="tax-lbl">Deduction leverage ratio &mdash; $1 invested creates a $5 charitable deduction against ordinary income via IRC &sect;170 qualified appraisal structure.</div></div>
+        <div class="tax-card"><div class="tax-val">$0.85</div><div class="tax-lbl">Per dollar of federal tax credit &mdash; &sect;45Q carbon credits transferred at $0.85 on the dollar. Pay $850K to eliminate $1M in federal tax liability.</div></div>
+        <div class="tax-card"><div class="tax-val">10&ndash;20%</div><div class="tax-lbl">Advisor referral fee on client investment &mdash; paid on confirmed wire to escrow. No securities license required for unlicensed introducers.</div></div>
+        <div style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="https://roicfo.com" target="_blank" rel="noopener" class="btn-primary">Visit ROI CFO &rarr;</a>
+          <a href="https://roicfo.com/leveraged-donation" target="_blank" rel="noopener" class="btn-ghost">Strategy Details &rarr;</a>
+        </div>
+      </div>
+      <div>
+        <div class="section-eyebrow" style="margin-bottom:20px;">How it compares</div>
+        <div class="tax-cmp">
+          <div class="tax-col bad">
+            <div class="tax-col-h red">&times; Conservation Easements</div>
+            <div class="tax-row"><span class="tcx">&times;</span> Listed transaction &mdash; IRS disclosure</div>
+            <div class="tax-row"><span class="tcx">&times;</span> Hypothetical no-development value</div>
+            <div class="tax-row"><span class="tcx">&times;</span> Active IRS audit campaigns</div>
+            <div class="tax-row"><span class="tcx">&times;</span> Substantial penalty exposure</div>
+          </div>
+          <div class="tax-col good">
+            <div class="tax-col-h gld">&check; ROI CFO Structure</div>
+            <div class="tax-row"><span class="tck">&check;</span> Not a listed transaction</div>
+            <div class="tax-row"><span class="tck">&check;</span> Tangible commodity, real FMV</div>
+            <div class="tax-row"><span class="tck">&check;</span> Full documentation delivered</div>
+            <div class="tax-row"><span class="tck">&check;</span> IRC tacking + qualified appraisal</div>
+          </div>
+        </div>
+        <div style="margin-top:28px;background:var(--bg-2);border:1px solid var(--line-soft);border-left:3px solid var(--gold);padding:24px 28px;">
+          <div class="section-eyebrow" style="margin-bottom:10px;">Who it&rsquo;s for</div>
+          <p style="font-size:14px;color:var(--ink-dim);line-height:1.75;">Clients with <strong style="color:var(--ink);">$500K+</strong> in annual ordinary income. $50K minimum for the leveraged donation. $3M+ federal tax liability for &sect;45Q credits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="partner-section" id="partner">
   <div class="container">
     <div class="section-eyebrow">Partner</div>
-    <h2 class="section-title">Two ways <em>to engage.</em></h2>
+    <h2 class="section-title">Three ways <em>to engage.</em></h2>
     <p class="section-lead">
       The platform partners with a small, selective group of capital allocators and operators.
       Inbound interest is reviewed personally.
     </p>
 
-    <div class="partner-grid">
+    <div class="partner-grid" style="grid-template-columns:repeat(3,1fr);">
       <div class="partner-card">
         <div class="card-eyebrow">Path I — Capital Partners</div>
         <h3>Invest <em>with us.</em></h3>
@@ -1158,6 +1234,19 @@
           <li>Operator-led co-investment partnerships</li>
         </ul>
         <button class="btn-primary card-cta" data-action="apply">Submit Capital Application</button>
+      </div>
+
+      <div class="partner-card">
+        <div class="card-eyebrow">Path III &mdash; Advisor Network</div>
+        <h3>Join the referral <em>network.</em></h3>
+        <p>CPAs, RIAs, family office staff, and financial advisors &mdash; refer high-income clients to ROI CFO&rsquo;s tax strategy programs and earn 10&ndash;20% referral compensation on every confirmed engagement. No securities license required.</p>
+        <ul>
+          <li>10&ndash;20% referral fee on client investment</li>
+          <li>Paid on confirmed wire to escrow</li>
+          <li>Simple referral agreement &mdash; template provided</li>
+          <li>Turnkey documentation package for every client</li>
+        </ul>
+        <button class="btn-primary card-cta" data-action="referral">Join the Referral Network</button>
       </div>
     </div>
   </div>
@@ -1588,6 +1677,7 @@
         <span class="text">By appointment only</span>
         <a href="#" data-action="invest">Investor inquiries</a>
         <a href="#" data-action="apply">Capital applications</a>
+        <a href="#" data-action="referral">Join referral network</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1608,6 +1698,8 @@
     <h3 id="modalTitle">Investor <em>Inquiry</em></h3>
     <p class="modal-sub" id="modalSub">All inquiries reviewed directly by principal. Response within 72 hours.</p>
     <form id="modalForm" onsubmit="return handleSubmit(event)">
+      <input type="hidden" name="_subject" value="Bryson Hunter - New Inquiry">
+      <input type="hidden" name="inquiry_type" id="inquiryTypeField" value="Investor Inquiry">
       <div class="form-row">
         <div class="field">
           <label>First Name</label>
@@ -1678,11 +1770,19 @@
   const closeBtn = document.getElementById('modalClose');
 
   function openModal(action) {
+    const itf=document.getElementById('inquiryTypeField');
+    if(itf) itf.value=action==='invest'?'Investor Inquiry':action==='referral'?'Referral Network Application':'Capital Application';
     if (action === 'invest') {
       modalTitle.innerHTML = 'Investor <em>Inquiry</em>';
       modalSub.textContent = 'For accredited capital partners. All inquiries reviewed directly by principal. Response within 72 hours.';
       messageLabel.textContent = 'Investment Interest';
       capitalField.querySelector('label').textContent = 'Capital Available';
+    } else if (action === 'referral') {
+      modalTitle.innerHTML = 'Referral Network <em>Application</em>';
+      modalSub.textContent = 'For CPAs, RIAs, and financial advisors. Earn 10-20% on every confirmed client engagement. No securities license required.';
+      messageLabel.textContent = 'Your Practice & Client Base';
+      capitalField.querySelector('label').textContent = 'Estimated Clients / Year';
+      capitalField.querySelector('select').innerHTML = '<option value="">Select range</option><option>1-5 per year</option><option>5-15 per year</option><option>15-30 per year</option><option>30+ per year</option>';
     } else {
       modalTitle.innerHTML = 'Capital <em>Application</em>';
       modalSub.textContent = 'For operators and deal sponsors. Submissions reviewed by principal. Response within 72 hours.';
@@ -1705,13 +1805,15 @@
   backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-  function handleSubmit(e){
+  async function handleSubmit(e){
     e.preventDefault();
-    const form = e.target;
-    // Hook this up to your backend / Formspree / Mailgun / etc.
-    alert('Submission received. Bryson will be in contact within 72 hours.');
-    form.reset();
-    closeModal();
+    const form = e.target, btn = form.querySelector('[type="submit"]'), orig = btn.textContent;
+    btn.textContent = 'Sending…'; btn.disabled = true;
+    try {
+      const r = await fetch('https://formspree.io/f/xdarooko', {method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+      if(r.ok){ form.innerHTML='<div style="padding:48px 0;text-align:center;"><div style="font-size:36px;color:var(--gold);margin-bottom:16px;">&#10022;</div><h3 style="font-family:var(--serif);font-size:28px;font-weight:300;margin-bottom:12px;">Received.</h3><p style="color:var(--ink-dim);">Bryson will be in contact within 72 hours.</p></div>'; }
+      else { btn.textContent=orig; btn.disabled=false; alert('Error. Email bryson@brysonhunter.com directly.'); }
+    } catch(err){ btn.textContent=orig; btn.disabled=false; alert('Network error. Email bryson@brysonhunter.com directly.'); }
     return false;
   }
 
