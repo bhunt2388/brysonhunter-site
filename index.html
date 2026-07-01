@@ -216,24 +216,31 @@
     padding:160px 48px 80px;
     position:relative;
     overflow:hidden;
+    background-image:url("https://v3b.fal.media/files/b/0aa0764d/An4XD72SxgCTwHkGVQOj7_0B04mkfm.png");
+    background-size:cover;
+    background-position:center 30%;
   }
   .hero::before{
     content:"";
     position:absolute;
-    top:-200px; right:-200px;
-    width:700px; height:700px;
-    background:radial-gradient(circle, rgba(201,169,97,0.08) 0%, transparent 70%);
-    border-radius:50%;
+    inset:0;
+    background:linear-gradient(
+      180deg,
+      rgba(10,10,11,0.42) 0%,
+      rgba(10,10,11,0.10) 38%,
+      rgba(10,10,11,0.52) 75%,
+      rgba(10,10,11,0.94) 100%
+    );
     pointer-events:none;
+    z-index:0;
   }
   .hero::after{
     content:"";
     position:absolute;
-    bottom:-300px; left:-200px;
-    width:800px; height:800px;
-    background:radial-gradient(circle, rgba(201,169,97,0.04) 0%, transparent 70%);
-    border-radius:50%;
+    inset:0;
+    background:radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,169,97,0.07) 0%, transparent 70%);
     pointer-events:none;
+    z-index:0;
   }
 
   .hero-inner{max-width:1400px; margin:0 auto; width:100%; position:relative; z-index:2;}
@@ -913,8 +920,9 @@
 </header>
 
 <!-- ===== ABOUT ===== -->
-<section class="about" id="about">
-  <div class="container">
+<section class="about" id="about" style="position:relative;background-image:url('https://v3b.fal.media/files/b/0aa0764d/sR9Ga2gvHap1yZMsyH2gk_6kwzrWiY.png');background-size:cover;background-position:center right;">
+  <div style="position:absolute;inset:0;background:linear-gradient(110deg,rgba(10,10,11,0.97) 0%,rgba(10,10,11,0.90) 50%,rgba(10,10,11,0.35) 100%);pointer-events:none;z-index:0;"></div>
+  <div class="container" style="position:relative;z-index:1;">
     <div class="section-eyebrow">About</div>
     <h2 class="section-title">The man behind <em>the platform.</em></h2>
 
@@ -967,8 +975,9 @@
 </section>
 
 <!-- ===== STATS ===== -->
-<section class="stats">
-  <div class="container">
+<section class="stats" style="position:relative;background-image:url('https://v3b.fal.media/files/b/0aa07650/AEm7y_whBRwbM7CWklPWf_23MKGFxH.png');background-size:cover;background-position:center;">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,11,0.88) 0%,rgba(10,10,11,0.78) 100%);pointer-events:none;z-index:0;"></div>
+  <div class="container" style="position:relative;z-index:1;">
     <div class="stats-grid">
       <div class="stat">
         <div class="num">$40<span class="sub">M+</span></div>
@@ -1193,7 +1202,8 @@
   </div>
 </section>
 
-<section class="partner-section" id="partner">
+<section class="partner-section" id="partner" style="position:relative;background-image:url('https://v3b.fal.media/files/b/0aa07651/Yv1p2oHFW8dmPdDD7gNa9_tUL36BBY.png');background-size:cover;background-position:center;">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,11,0.88) 0%,rgba(10,10,11,0.80) 100%);pointer-events:none;z-index:0;"></div>
   <div class="container">
     <div class="section-eyebrow">Partner</div>
     <h2 class="section-title">Three ways <em>to engage.</em></h2>
