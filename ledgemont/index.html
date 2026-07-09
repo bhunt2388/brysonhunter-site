@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>4688 S Ledgemont Dr — Private Investment Opportunity</title>
+<meta name="description" content="Private real estate investment opportunity — Salt Lake City, UT. 28% APR, $100K minimum. Renovation-secured note on a value-add single-family project." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy: #0a2540;
+    --navy-2: #0f3358;
+    --blue: #1E7FE8;
+    --cyan: #4FB3FF;
+    --gold: #c9a45c;
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --ink: #0a0e1a;
+    --ink-dim: #4a5568;
+    --ink-mute: #8a94a6;
+    --border: #dde3ec;
+    --green: #1b8b5f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;}
+  .wrap{max-width:1100px;margin:0 auto;}
+  .serif{font-family:'Cormorant Garamond',serif;}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(10,37,64,.95);backdrop-filter:blur(10px);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .nav .brand{color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;}
+  .nav .brand span{color:var(--cyan);}
+  .nav a.cta{background:var(--gold);color:var(--navy);padding:10px 22px;border-radius:4px;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+
+  /* HERO */
+  .hero{position:relative;min-height:78vh;display:flex;align-items:flex-end;background:var(--navy);overflow:hidden;}
+  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,37,64,.25) 0%,rgba(10,37,64,.55) 55%,rgba(10,37,64,.97) 100%);}
+  .hero-inner{position:relative;z-index:2;padding:0 40px 56px;width:100%;max-width:1100px;margin:0 auto;color:#fff;}
+  .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px;}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:52px;line-height:1.05;margin-bottom:14px;}
+  .hero .loc{font-size:16px;color:rgba(255,255,255,.78);margin-bottom:28px;}
+  .hero-stats{display:flex;gap:36px;flex-wrap:wrap;}
+  .hero-stat .n{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--gold);}
+  .hero-stat .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:2px;}
+
+  section{padding:64px 40px;border-bottom:1px solid var(--border);}
+  .section-inner{max-width:1100px;margin:0 auto;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--blue);margin-bottom:14px;}
+  h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:36px;color:var(--navy);margin-bottom:18px;}
+  p.lead{font-size:16px;color:var(--ink-dim);max-width:720px;margin-bottom:12px;}
+
+  /* OVERVIEW GRID */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:28px;border-radius:8px;overflow:hidden;}
+  .stat{background:var(--card);padding:24px 20px;}
+  .stat .label{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
+  .stat .val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--navy);}
+
+  /* BEFORE/AFTER */
+  .ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px;}
+  .ba-card{position:relative;border-radius:10px;overflow:hidden;}
+  .ba-card img{width:100%;display:block;height:280px;object-fit:cover;}
+  .ba-tag{position:absolute;top:14px;left:14px;padding:6px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;}
+  .ba-tag.before{background:rgba(0,0,0,.6);color:#fff;}
+  .ba-tag.after{background:var(--gold);color:var(--navy);}
+  .mock-note{font-size:12px;color:var(--ink-mute);margin-top:14px;font-style:italic;max-width:720px;}
+
+  /* INVESTMENT TERMS */
+  .terms-section{background:var(--navy);color:#fff;}
+  .terms-section .eyebrow{color:var(--cyan);}
+  .terms-section h2{color:#fff;}
+  .terms-section p.lead{color:rgba(255,255,255,.72);}
+  .term-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.12);margin-top:32px;border-radius:8px;overflow:hidden;}
+  .term-cell{background:rgba(255,255,255,.03);padding:32px 26px;text-align:center;}
+  .term-cell .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:10px;}
+  .term-cell .v{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:700;color:var(--gold);}
+
+  .repay-table{width:100%;border-collapse:collapse;margin-top:32px;}
+  .repay-table th{background:rgba(255,255,255,.06);padding:12px 16px;text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.14);}
+  .repay-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1);font-size:14px;}
+  .repay-table td.r{text-align:right;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;font-weight:600;color:var(--gold);}
+
+  .use-of-funds{margin-top:36px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:26px 28px;}
+  .use-of-funds h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;}
+  .use-of-funds p{color:rgba(255,255,255,.78);font-size:14px;line-height:1.75;}
+
+  /* COMPS */
+  table.comps{width:100%;border-collapse:collapse;margin-top:24px;font-size:13.5px;}
+  table.comps th{background:var(--bg);border-bottom:2px solid var(--border);padding:11px 12px;text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);}
+  table.comps td{padding:11px 12px;border-bottom:1px solid var(--border);}
+  table.comps td.r{text-align:right;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
+  table.comps tr.highlight td{background:#eef6ff;font-weight:600;}
+
+  .arv-callout{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px 32px;margin-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+  .arv-callout .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px;}
+  .arv-callout .v{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;color:var(--navy);}
+  .arv-callout .range{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--blue);margin-top:4px;}
+
+  /* CTA */
+  .cta-section{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;text-align:center;padding:80px 40px;}
+  .cta-section h2{color:#fff;}
+  .cta-section p.lead{color:rgba(255,255,255,.75);margin:0 auto 28px;}
+  .btn-primary{display:inline-block;background:var(--gold);color:var(--navy);padding:16px 42px;border-radius:6px;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase;}
+
+  /* FOOTER */
+  footer{background:var(--navy);color:rgba(255,255,255,.55);padding:36px 40px;font-size:11.5px;line-height:1.8;}
+  footer .foot-inner{max-width:1100px;margin:0 auto;}
+  footer strong{color:rgba(255,255,255,.75);}
+
+  @media(max-width:860px){
+    .hero h1{font-size:36px;}
+    .grid4{grid-template-columns:1fr 1fr;}
+    .ba-grid{grid-template-columns:1fr;}
+    .term-grid{grid-template-columns:1fr;}
+    .arv-callout{flex-direction:column;align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">LEDGEMONT <span>DR</span> · PRIVATE OFFERING</div>
+  <a href="#invest" class="cta">Investor Terms</a>
+</nav>
+
+<header class="hero">
+  <img src="https://v3b.fal.media/files/b/0aa19460/cEe64BSvLHb7MalkyGL9I_3Vv8OyOg.png" alt="4688 S Ledgemont Dr renovated exterior" />
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Private Real Estate Investment · Salt Lake City, UT</div>
+    <h1 class="serif">4688 S Ledgemont Dr</h1>
+    <div class="loc">Mount Olympus / East Millcreek Corridor · 84124</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="n">$1,150,000</div><div class="l">Total Project Capital</div></div>
+      <div class="hero-stat"><div class="n">$1.47M–$1.66M</div><div class="l">After-Repair Value</div></div>
+      <div class="hero-stat"><div class="n">28%</div><div class="l">Investor APR</div></div>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">The Opportunity</div>
+    <h2 class="serif">A full-scale renovation on a rare large-format lot.</h2>
+    <p class="lead">
+      4688 S Ledgemont Dr is a 5,200 square foot single-family home on 0.27 acres in one of Salt Lake City's most established east-side neighborhoods. Built in 1964 and never fully modernized, the property is being acquired at a below-market basis with the seller carrying the note — creating room for a comprehensive renovation and a strong projected spread to after-repair value.
+    </p>
+    <div class="grid4">
+      <div class="stat"><div class="label">Beds / Baths</div><div class="val">6 / 3</div></div>
+      <div class="stat"><div class="label">Living Area</div><div class="val">5,200 sf</div></div>
+      <div class="stat"><div class="label">Lot Size</div><div class="val">0.27 ac</div></div>
+      <div class="stat"><div class="label">Year Built</div><div class="val">1964</div></div>
+      <div class="stat"><div class="label">Purchase Price</div><div class="val">$800,000</div></div>
+      <div class="stat"><div class="label">Renovation Budget</div><div class="val">$350,000</div></div>
+      <div class="stat"><div class="label">Acquisition Structure</div><div class="val">Seller Carry</div></div>
+      <div class="stat"><div class="label">Neighborhood Market</div><div class="val">Very Competitive</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">Scope of Work</div>
+    <h2 class="serif">Full interior and exterior modernization.</h2>
+    <p class="lead">
+      The renovation targets a finish tier consistent with recent large-home sales in the immediate corridor — full kitchen and bath remodels, updated systems, refreshed flooring throughout, and exterior curb appeal upgrades. Renderings below illustrate the target finish level.
+    </p>
+    <div class="ba-grid">
+      <div class="ba-card">
+        <span class="ba-tag before">Current Condition</span>
+        <img src="https://v3b.fal.media/files/b/0aa19460/owviCG0uQcBgfhV3N6K0u_HeLVLouU.png" alt="Before exterior" />
+      </div>
+      <div class="ba-card">
+        <span class="ba-tag after">Target Finish</span>
+        <img src="https://v3b.fal.media/files/b/0aa19460/cEe64BSvLHb7MalkyGL9I_3Vv8OyOg.png" alt="After exterior" />
+      </div>
+      <div class="ba-card">
+        <span class="ba-tag before">Current Condition</span>
+        <img src="https://v3b.fal.media/files/b/0aa19462/ne22qFIwqKg51KtzF6egc_9eSj3ygf.png" alt="Before kitchen" />
+      </div>
+      <div class="ba-card">
+        <span class="ba-tag after">Target Finish</span>
+        <img src="https://v3b.fal.media/files/b/0aa19462/lFlxoDZ4R42XClkEq39EB_IaisqRVY.png" alt="After kitchen" />
+      </div>
+    </div>
+    <p class="mock-note">Renderings are illustrative representations of the target finish tier, not photographs of the subject property's current or future condition.</p>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">Market Support</div>
+    <h2 class="serif">Anchored by recent comparable sales.</h2>
+    <p class="lead">
+      Large-format homes in the immediate 84124/84109 corridor have sold consistently in the $1.45M–$2.1M range over the past 90 days. The comps below share the closest size, bed count, and renovation-tier characteristics to the projected finished product at 4688 Ledgemont.
+    </p>
+    <table class="comps">
+      <thead>
+        <tr><th>Address</th><th class="r">Beds/Ba</th><th class="r">Sqft</th><th class="r">Sale Price</th><th class="r">$/sf</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>3604 E Apple Mill Cv</td><td class="r">4/5</td><td class="r">5,172</td><td class="r">$1,600,000</td><td class="r">$309</td><td>Sold May 2026</td>
+        </tr>
+        <tr>
+          <td>3915 S Feramorz Dr</td><td class="r">9/6</td><td class="r">5,124</td><td class="r">$1,450,000</td><td class="r">$283</td><td>Active</td>
+        </tr>
+        <tr>
+          <td>3860 E Viewcrest Dr</td><td class="r">6/4.5</td><td class="r">6,239</td><td class="r">$2,100,000</td><td class="r">$337</td><td>Active</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="arv-callout">
+      <div>
+        <div class="l">Projected After-Repair Value</div>
+        <div class="v">$1,550,000</div>
+        <div class="range">Range: $1,471,500 – $1,664,000</div>
+      </div>
+      <div style="max-width:320px;font-size:13px;color:var(--ink-dim);">
+        Based on $283–$320 per square foot across comparable renovated homes in the immediate corridor, applied to the property's 5,200 square feet.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="invest" class="terms-section">
+  <div class="section-inner">
+    <div class="eyebrow">Investment Terms</div>
+    <h2 class="serif">Renovation-secured note. 28% annualized return.</h2>
+    <p class="lead">
+      Investor capital funds the renovation directly. The purchase of the property itself is structured as a seller-carried note, keeping investor funds focused on the visible, value-adding construction work — not blended into acquisition cost.
+    </p>
+    <div class="term-grid">
+      <div class="term-cell"><div class="l">Annual Rate</div><div class="v">28%</div></div>
+      <div class="term-cell"><div class="l">Minimum Investment</div><div class="v">$100K</div></div>
+      <div class="term-cell"><div class="l">Renovation Raise Target</div><div class="v">$350K</div></div>
+    </div>
+
+    <table class="repay-table">
+      <thead><tr><th>Hold Period</th><th>Interest on $100,000</th><th>Total Repayment</th></tr></thead>
+      <tbody>
+        <tr><td>6 months</td><td class="r">$14,000</td><td class="r">$114,000</td></tr>
+        <tr><td>9 months</td><td class="r">$21,000</td><td class="r">$121,000</td></tr>
+        <tr><td>12 months</td><td class="r">$28,000</td><td class="r">$128,000</td></tr>
+      </tbody>
+    </table>
+
+    <div class="use-of-funds">
+      <h4>Use of Investor Funds</h4>
+      <p>
+        Capital raised is applied directly to the $350,000 renovation scope — kitchen and bath remodels, systems upgrades, flooring, and exterior improvements. The $800,000 purchase price is financed separately through a seller-carried note, with principal repaid and profit split with the seller on the backend at resale. This structure keeps investor capital tied to a defined, visible scope of work with a clear repayment source: proceeds from the sale at projected after-repair value.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="section-inner">
+    <div class="eyebrow" style="color:var(--gold);">Limited Allocation</div>
+    <h2 class="serif">Reserve your position.</h2>
+    <p class="lead">Minimum investment $100,000. Renovation-secured note at 28% annualized return. Contact directly to review full offering documents and reserve an allocation.</p>
+    <a href="mailto:bryson@brysonhunter.com" class="btn-primary">Request Offering Documents</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <p><strong>Disclosures:</strong> This page describes a private investment opportunity and is provided for informational purposes only. It does not constitute an offer to sell, or a solicitation of an offer to buy, any security. Any actual offer will be made only pursuant to definitive offering documents, including a promissory note, subscription agreement, and applicable disclosures, provided directly to qualified prospective investors. Renovation renderings shown are illustrative representations of the target finish tier and are not photographs of the subject property. Projected after-repair value and investment returns are estimates based on comparable market data and are not guaranteed — actual results may differ materially. Real estate investments are speculative and involve risk, including risk of loss of principal. Prospective investors should consult their own legal, tax, and financial advisors before investing.</p>
+    <p style="margin-top:14px;">© 2026. All inquiries reviewed directly by principal.</p>
+  </div>
+</footer>
+
+</body>
+</html>
