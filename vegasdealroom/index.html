@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>Midtown Las Vegas — Internal Deal Room Analysis</title>
+<title>English Residences — Internal Deal Room Analysis</title>
 <style>
   #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#05111F;}
   .gate-card{width:100%;max-width:420px;background:#0A1E33;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:48px 40px;text-align:center;font-family:'Inter',sans-serif;}
@@ -33,7 +33,7 @@
   .cover{background:radial-gradient(ellipse at 30% 50%,rgba(255,77,77,0.10) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(201,169,97,0.08) 0%,transparent 50%),var(--navy);text-align:center;align-items:center;gap:28px;}
   .cover-label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);font-weight:700;}
   .cover h1{font-family:'Playfair Display',serif;font-size:clamp(38px,5.5vw,64px);font-weight:800;line-height:1.15;background:linear-gradient(135deg,var(--white) 0%,var(--gold2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-  .cover-sub{font-size:17px;color:var(--muted);max-width:640px;}
+  .cover-sub{font-size:17px;color:var(--muted);max-width:660px;}
   .cover-divider{width:80px;height:2px;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:2px;}
   .stats-row{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
   .stat-item{text-align:center;} .stat-item .val{font-size:32px;font-weight:800;color:var(--gold);display:block;}
@@ -45,6 +45,7 @@
   .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px;position:relative;overflow:hidden;}
   .card-locked::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#FF9999);}
   .card-flex::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--blue));}
+  .card-warn::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FF4D4D,#FFB347);}
   .card h3{font-size:17px;font-weight:700;margin-bottom:8px;}
   .card p{color:#B8C6D6;font-size:13.5px;}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
@@ -58,6 +59,8 @@
   .totals-row td{font-weight:800;color:var(--white);background:rgba(201,169,97,0.08)!important;border-top:2px solid var(--gold);}
   .callout{background:linear-gradient(135deg,rgba(255,77,77,0.06),var(--card));border:1px solid rgba(255,77,77,0.2);border-radius:14px;padding:26px;margin-top:20px;}
   .callout h4{color:#FF8080;font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+  .callout-warn{background:linear-gradient(135deg,rgba(255,77,77,0.1),var(--card));border:1px solid rgba(255,77,77,0.4);border-radius:14px;padding:28px;margin-bottom:24px;}
+  .callout-warn h4{color:#FF6B6B;font-size:15px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
   .lever-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:14px;}
   .lever-title{font-size:15px;font-weight:700;color:var(--teal);margin-bottom:6px;}
   .lever-range{display:flex;gap:24px;margin:10px 0;flex-wrap:wrap;}
@@ -66,6 +69,8 @@
   .script-box{background:var(--card);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:14px;}
   .script-box .who{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;}
   .script-box p{color:#DCE7F2;font-size:14px;font-style:italic;}
+  .fact-table td:first-child{color:var(--muted);font-size:12px;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;}
+  .fact-table td:last-child{color:var(--white);font-weight:600;}
   .page-num{position:absolute;bottom:24px;right:60px;font-size:11px;color:var(--muted);letter-spacing:1px;}
   .divider{height:1px;background:var(--border);margin:32px 0;}
   .footer-note{font-size:11px;color:var(--muted);text-align:center;margin-top:20px;letter-spacing:0.5px;}
@@ -94,175 +99,151 @@
 
 <!-- ═══════════ COVER ═══════════ -->
 <section class="slide cover" id="slide-cover">
-  <span class="cover-label">Deal Room Analysis · Confidential</span>
-  <h1>Midtown Las Vegas<br>The Room We Have to Work With</h1>
+  <span class="cover-label">Deal Room Analysis · Confidential · Source-Verified</span>
+  <h1>English Residences — Midtown<br>The Room We Have to Work With</h1>
   <div class="cover-divider"></div>
-  <p class="cover-sub">A partner-only breakdown of all 17 units, the exact margin between strike and buyback, and every lever available if the investor deck doesn't land on the first pass.</p>
+  <p class="cover-sub">A partner-only breakdown of all 17 units on the 5th floor, verified against the actual reservation, letter of agreement, and 2026 amendment — not the earlier deck's rounded figures.</p>
   <div class="stats-row">
-    <div class="stat-item"><span class="val">$11M</span><span class="lbl">Strike (Locked)</span></div>
-    <div class="stat-item"><span class="val">$16M</span><span class="lbl">Buyback (Locked)</span></div>
-    <div class="stat-item"><span class="val">$5M</span><span class="lbl">Total Spread</span></div>
-    <div class="stat-item"><span class="val">17</span><span class="lbl">Units, Unit-by-Unit</span></div>
+    <div class="stat-item"><span class="val">$11.70M</span><span class="lbl">Reservation Price (Actual)</span></div>
+    <div class="stat-item"><span class="val">$18M</span><span class="lbl">Developer ROFR (Not a Buyback)</span></div>
+    <div class="stat-item"><span class="val">$6.30M</span><span class="lbl">Max Theoretical Spread</span></div>
+    <div class="stat-item"><span class="val">17</span><span class="lbl">Units, 5th Floor</span></div>
   </div>
-  <div class="lock-badge">🔒 Strike & buyback numbers below are IDENTICAL to the public investor deck — never move these</div>
+  <div class="lock-badge">⚠ Figures below are pulled directly from source documents — see Fact Correction slide for what changed from the earlier deck</div>
 </section>
 
-<!-- ═══════════ WHAT NEVER MOVES ═══════════ -->
+<!-- ═══════════ FACT CORRECTION / LEGAL ACCURACY ═══════════ -->
 <section class="slide">
-  <div class="section-label">Fixed Terms — Do Not Touch</div>
-  <h2 class="section-title">What Stays <span>Exactly the Same</span> Across Every Conversation</h2>
-  <p style="color:#B8C6D6;max-width:800px;margin-bottom:28px;">These two numbers are what every investor, operator, or LP sees. They are contractual and they do not change no matter which structure or which partner is running the conversation. Everything negotiable in this document lives strictly between them.</p>
-  <div class="grid-2">
-    <div class="card card-locked">
-      <h3>🔒 Strike Price — $11,000,000</h3>
-      <p>The full 17-unit exercise price. Per-unit: <strong style="color:var(--gold)">$647,059</strong>. This is what we've told investors and it is what appears on the contract. It does not move up or down for any partner conversation.</p>
-    </div>
-    <div class="card card-locked">
-      <h3>🔒 Developer Buyback — $16,000,000</h3>
-      <p>Contractual guaranteed exit for the full position. Per-unit: <strong style="color:var(--gold)">$941,176</strong>. This is the developer's obligation in writing — no partner can adjust it, and no partner should imply it's negotiable.</p>
-    </div>
+  <div class="section-label">Read This First</div>
+  <h2 class="section-title">Corrected Against <span>Source Documents</span></h2>
+  <p style="color:#B8C6D6;max-width:820px;margin-bottom:24px;">This version replaces the earlier internal deal room, which used rounded/incorrect figures ($11M strike, $16M "guaranteed buyback"). The numbers below are pulled directly from three documents: the June 2024 Reservation Agreement, the June 2024 Letter of Agreement, and the April 2026 Amendment and Buyout Agreement. Read the legal characterization warning before using any of this in a partner or investor conversation.</p>
+
+  <div class="callout-warn">
+    <h4>⚠ Critical: The $18M Is Not a Guaranteed Buyback</h4>
+    <p style="color:#F0DEDE;font-size:14px;">The 2026 Amendment gives the Developer a <strong>first right of refusal</strong> to buy out Buyer's position for $18,000,000 — quoted directly: <em>"Developer shall have the first right of refusal to purchase and buy out Buyer's interest for the total sum of Eighteen Million Dollars."</em> A first right of refusal held by the Developer is the Developer's option, not the Buyer's guarantee. It does <strong>not</strong> obligate the Developer to pay $18M, and it gives the Buyer no contractual mechanism to force that outcome. Do not describe this to any partner or investor as a "guaranteed exit," "contractual buyback," or "locked in writing" — that language does not match this document and creates real legal exposure if repeated externally.</p>
   </div>
-  <div class="callout">
-    <h4>Why this matters for this document</h4>
-    <p style="color:#DCE7F2;">The $5M spread between strike and buyback is fixed and known. What's <em>not</em> fixed is how we price our own position inside that spread — the assignment fee, the carry, the carve-out split, the kicker. That's the room. This doc maps it so anyone on the team can explain, with numbers, that there's more flexibility than the headline deck shows — without ever touching the two numbers above.</p>
+
+  <div class="grid-2">
+    <div class="card card-warn">
+      <h3>What Actually Exists (3 Documents)</h3>
+      <p>1. <strong>Reservation Agreement</strong> (June 4, 2024) — explicitly non-binding, price is an "estimate" Developer can change at will.<br>2. <strong>Letter of Agreement</strong> (June 4, 2024) — only partially binding: deposit handling, exclusivity, confidentiality, governing law, and the Section 6A assignment clause are binding; the sale itself is not.<br>3. <strong>Amendment & Buyout Agreement</strong> (April 14, 2026) — converts the position into a Developer-held ROFR at $18M. No PSA (Purchase and Sale Agreement) exists among these documents.</p>
+    </div>
+    <div class="card card-warn">
+      <h3>What Does Not Exist</h3>
+      <p>A binding Purchase and Sale Agreement for the 17 units at any fixed price. The Letter explicitly anticipates a future PSA that "shall control" in the event of conflict — no PSA is in the file reviewed here. Until a PSA is signed, the "$11.7M strike" is a reservation estimate, not a locked purchase price.</p>
+    </div>
   </div>
   <span class="page-num">02</span>
 </section>
 
-<!-- ═══════════ FULL 17-UNIT LEDGER ═══════════ -->
+<!-- ═══════════ CORE FACTS TABLE ═══════════ -->
 <section class="slide">
-  <div class="section-label">Unit-by-Unit Ledger</div>
-  <h2 class="section-title">All 17 Condos, <span>Individually</span></h2>
-  <p style="color:#B8C6D6;margin-bottom:20px;max-width:800px;">Same strike, same buyback, same spread — applied unit by unit. This is the table to pull up if a partner asks "how much room is actually in this" and wants to see it broken down instead of taking the aggregate number on faith.</p>
+  <div class="section-label">Source-Verified Facts</div>
+  <h2 class="section-title">The Deal, <span>As Documented</span></h2>
+  <table class="fact-table">
+    <tr><td>Project Name</td><td>The English Residences (Midtown Development)</td></tr>
+    <tr><td>Address</td><td>917 1st Street, Las Vegas, NV — Reservation lists "917 E. Main St." (inconsistent even between the developer's own docs)</td></tr>
+    <tr><td>Developer Entity</td><td>ZLIFE AT 924 FIRST STREET LLC, dba "ZLife / Midtown Development Group" (Nevada LLC)</td></tr>
+    <tr><td>Developer Principal</td><td>Weina Zhang, CEO – Founder (signer on Letter and Amendment)</td></tr>
+    <tr><td>Named Buyer of Record</td><td>Judy Circo (individually, or her permitted assigns)</td></tr>
+    <tr><td>Units</td><td>17 units, 5th Floor: 501–517. Mix: 1 Studio (514), 12 One-Bedroom (502,503,504,505,507,508,510,511,512,513,516,517), 4 Two-Bedroom (501,506,509,515)</td></tr>
+    <tr><td>Reservation / Purchase Price</td><td>$11,695,500 total (not $11,000,000)</td></tr>
+    <tr><td>Reservation Deposit</td><td>$34,000 — paid, held in escrow at First American Title, Escrow #2689236</td></tr>
+    <tr><td>2026 Developer ROFR</td><td>$18,000,000 (not $16,000,000) — Developer's right, not Buyer's guarantee. See legal warning above.</td></tr>
+    <tr><td>Max Theoretical Spread</td><td>$18,000,000 − $11,695,500 = $6,304,500 (if the ROFR is ever exercised at full value)</td></tr>
+    <tr><td>Binding PSA</td><td>None on file. Original sale terms remain a non-binding reservation / partially-binding letter.</td></tr>
+    <tr><td>Assignment Rights</td><td>Section 6A of the Letter is binding: Buyer may assign to an affiliated entity, nominee, or third party with written notice; Developer's consent "shall not be unreasonably withheld" but may require proof of assignee's financial capability.</td></tr>
+  </table>
+  <span class="page-num">03</span>
+</section>
+
+<!-- ═══════════ FULL 17-UNIT LEDGER (CORRECTED) ═══════════ -->
+<section class="slide">
+  <div class="section-label">Unit-by-Unit Ledger — Corrected</div>
+  <h2 class="section-title">All 17 Condos, <span>Recalculated</span></h2>
+  <p style="color:#B8C6D6;margin-bottom:20px;max-width:820px;">Rebuilt using the actual $11,695,500 reservation price and the $18,000,000 ROFR figure. "ROFR Allocation" is theoretical only — it represents the Developer's option price, not a guaranteed value to Buyer, and should be labeled as such in any conversation.</p>
   <div style="max-height:640px;overflow:auto;border-radius:12px;border:1px solid var(--border);">
   <table>
     <thead>
-      <tr><th>Unit #</th><th>Strike Allocation</th><th>Buyback Allocation</th><th>Per-Unit Spread</th><th>Cumulative Strike</th><th>Cumulative Buyback</th><th>Cumulative Spread</th></tr>
+      <tr><th>Unit #</th><th>Type</th><th>Reservation Allocation</th><th>ROFR Allocation (Theoretical)</th><th>Per-Unit Max Spread</th></tr>
     </thead>
     <tbody id="unit-table-body"></tbody>
     <tfoot>
-      <tr class="totals-row"><td>All 17</td><td>$11,000,000</td><td>$16,000,000</td><td>$5,000,000</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr class="totals-row"><td colspan="2">All 17</td><td>$11,695,500</td><td>$18,000,000</td><td>$6,304,500</td></tr>
     </tfoot>
   </table>
   </div>
   <script>
+    const unitTypes = {
+      "501":"2BR","502":"1BR","503":"1BR","504":"1BR","505":"1BR","506":"2BR","507":"1BR","508":"1BR",
+      "509":"2BR","510":"1BR","511":"1BR","512":"1BR","513":"1BR","514":"Studio","515":"2BR","516":"1BR","517":"1BR"
+    };
     const body = document.getElementById('unit-table-body');
-    const strikeUnit = 11000000/17;
-    const buybackUnit = 16000000/17;
-    const spreadUnit = 5000000/17;
+    const totalStrike = 11695500;
+    const totalRofr = 18000000;
+    const totalSpread = totalStrike > 0 ? (totalRofr - totalStrike) : 0;
+    const n = 17;
+    const strikeUnit = totalStrike / n;
+    const rofrUnit = totalRofr / n;
+    const spreadUnit = totalSpread / n;
     let rows = '';
-    for (let i=1;i<=17;i++){
-      const cs = strikeUnit*i, cb = buybackUnit*i, csp = spreadUnit*i;
-      rows += `<tr><td>Unit ${i}</td><td class="locked-col">$${strikeUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td class="locked-col">$${buybackUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td class="flex-col">$${spreadUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td>$${cs.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td>$${cb.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td>$${csp.toLocaleString('en-US',{maximumFractionDigits:0})}</td></tr>`;
-    }
+    const units = Object.keys(unitTypes);
+    units.forEach(u => {
+      rows += `<tr><td>Unit ${u}</td><td>${unitTypes[u]}</td><td class="locked-col">$${strikeUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td class="flex-col">$${rofrUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td>$${spreadUnit.toLocaleString('en-US',{maximumFractionDigits:0})}</td></tr>`;
+    });
     body.innerHTML = rows;
   </script>
-  <span class="page-num">03</span>
-</section>
-
-<!-- ═══════════ THE 3-UNIT FLOOR MAPPED ═══════════ -->
-<section class="slide">
-  <div class="section-label">Guaranteed Floor, Mapped</div>
-  <h2 class="section-title">The 3-Unit Floor <span>Inside the Same Ledger</span></h2>
-  <p style="color:#B8C6D6;margin-bottom:24px;max-width:800px;">The contractual 3-unit minimum floor is not a separate deal — it's the first 3 rows of the same table above. Showing it this way makes clear to a hesitant partner that even the smallest possible entry sits on the identical per-unit economics as the full 17.</p>
-  <div class="grid-3">
-    <div class="card card-locked">
-      <h3>3-Unit Floor</h3>
-      <p>Strike: <strong style="color:var(--gold)">$1,941,176</strong><br>Buyback: <strong style="color:var(--gold)">$2,823,529</strong><br>Spread: <strong style="color:var(--teal)">$882,353</strong></p>
-    </div>
-    <div class="card card-locked">
-      <h3>Mid Split (10 Units)</h3>
-      <p>Strike: <strong style="color:var(--gold)">$6,470,588</strong><br>Buyback: <strong style="color:var(--gold)">$9,411,765</strong><br>Spread: <strong style="color:var(--teal)">$2,941,176</strong></p>
-    </div>
-    <div class="card card-locked">
-      <h3>Full 17</h3>
-      <p>Strike: <strong style="color:var(--gold)">$11,000,000</strong><br>Buyback: <strong style="color:var(--gold)">$16,000,000</strong><br>Spread: <strong style="color:var(--teal)">$5,000,000</strong></p>
-    </div>
-  </div>
-  <div class="callout">
-    <h4>Takeaway</h4>
-    <p style="color:#DCE7F2;">Any check size between 3 and 17 units carries the exact same ~26.7¢ of spread per dollar of strike. There is no unit count where the deal gets worse per-unit — the room scales linearly. That's a clean, honest thing to say to a partner who's only comfortable with a smaller position.</p>
-  </div>
   <span class="page-num">04</span>
 </section>
 
-<!-- ═══════════ THE ACTUAL NEGOTIATION LEVERS ═══════════ -->
+<!-- ═══════════ WHAT'S ACTUALLY NEGOTIABLE ═══════════ -->
 <section class="slide">
   <div class="section-label">What's Actually Flexible</div>
-  <h2 class="section-title">Four Levers That <span>Move</span> — With Strike & Buyback Untouched</h2>
-  <p style="color:#B8C6D6;margin-bottom:24px;max-width:820px;">If an investor balks at the published ask in the main deck, these are the four dials we can turn without changing a single number on the strike/buyback side. Published numbers are the anchor; these ranges are the actual room.</p>
+  <h2 class="section-title">Levers <span>Inside the Documented Position</span></h2>
+  <p style="color:#B8C6D6;margin-bottom:24px;max-width:820px;">These levers exist within the actual documents — not the earlier deck's invented deal structures. The prior version of this doc included assignment-price and syndication structures that were never sourced to any signed agreement; those have been removed pending confirmation of what's actually been offered or negotiated with the Developer.</p>
 
-  <div class="lever-card">
-    <div class="lever-title">1. Assignment Price (Structure 1 — Full Assignment)</div>
-    <p style="color:#B8C6D6;font-size:13.5px;">Published ask: $2.75M at close. The hospitality-operator angle in the main materials shows this can go as low as $1.5–2M cash and still clear a real margin over the $2.5M cost basis floor.</p>
-    <div class="lever-range">
-      <div class="r"><span class="rv">$1.5M</span><span class="rl">Real Floor</span></div>
-      <div class="r"><span class="rv">$2.75M</span><span class="rl">Published Ask</span></div>
-      <div class="r" style="color:var(--teal)"><span class="rv">$1.25M</span><span class="rl">Room to Give</span></div>
+  <div class="grid-2">
+    <div class="card card-flex">
+      <h3>Assignment (Section 6A — Binding)</h3>
+      <p>You can assign all or part of the position to an affiliated entity, nominee, or third party. Developer's consent can't be unreasonably withheld, though they can require proof of the assignee's financial capability. This is the one clearly binding lever available right now to bring in a partner or buyer for part or all of the 17-unit position.</p>
+    </div>
+    <div class="card card-flex">
+      <h3>ROFR Negotiation</h3>
+      <p>Because the $18M is the Developer's option (not your guarantee), there is room to negotiate directly with the Developer for better terms — a true mutual buyback obligation, a higher figure, or a shorter/longer exercise window — before treating $18M as the ceiling of what's achievable.</p>
     </div>
   </div>
 
-  <div class="lever-card">
-    <div class="lever-title">2. Back-End Kicker % (Structure 1)</div>
-    <p style="color:#B8C6D6;font-size:13.5px;">Published: 15% of net profit at exit. This is pure upside-sharing, doesn't touch cash at close — easiest single lever to sweeten without giving up current-dollar margin.</p>
-    <div class="lever-range">
-      <div class="r"><span class="rv">0%</span><span class="rl">Floor (walk-away)</span></div>
-      <div class="r"><span class="rv">15%</span><span class="rl">Published</span></div>
-      <div class="r" style="color:var(--teal)"><span class="rv">up to 25%</span><span class="rl">Can Offer</span></div>
-    </div>
-  </div>
-
-  <div class="lever-card">
-    <div class="lever-title">3. Carve-Out Split (Structure 2 — Carve X, Keep 17-X)</div>
-    <p style="color:#B8C6D6;font-size:13.5px;">Published: carve 14, keep 3 for $2.5M at close. The split itself is arbitrary — 12/5, 10/7, or any combination reprices proportionally off the same per-unit spread ($294K/unit) shown in the ledger above.</p>
-    <div class="lever-range">
-      <div class="r"><span class="rv">12 / 5</span><span class="rl">Smaller Carve</span></div>
-      <div class="r"><span class="rv">14 / 3</span><span class="rl">Published</span></div>
-      <div class="r" style="color:var(--teal)"><span class="rv">17 / 0</span><span class="rl">Full Carve Option</span></div>
-    </div>
-  </div>
-
-  <div class="lever-card">
-    <div class="lever-title">4. Origination Fee & Carry (Structure 3 — GP Syndication)</div>
-    <p style="color:#B8C6D6;font-size:13.5px;">Published: $1.5M fee + 30% carry above an 8% LP pref. Both numbers can flex down for a larger anchor LP without threatening the $16M floor case that makes the raise fundable in the first place.</p>
-    <div class="lever-range">
-      <div class="r"><span class="rv">$750K + 20%</span><span class="rl">Aggressive Give</span></div>
-      <div class="r"><span class="rv">$1.5M + 30%</span><span class="rl">Published</span></div>
-      <div class="r" style="color:var(--teal)"><span class="rv">$2M + 35%</span><span class="rl">Ceiling if Terms Improve</span></div>
-    </div>
+  <div class="callout">
+    <h4>What to Verify Next</h4>
+    <p style="color:#DCE7F2;">Before running this deal in front of any partner or investor: (1) confirm whether a PSA has since been signed that isn't in the current file set, (2) get written confirmation from Zhang/ZLife on the ROFR mechanics — specifically, what happens if Developer does NOT exercise the $18M option, and (3) confirm current status of the 5-10 day exclusivity period referenced in the 2024 Letter (it may be long expired, which could affect what's still enforceable).</p>
   </div>
 
   <span class="page-num">05</span>
 </section>
 
-<!-- ═══════════ HOW TO USE THIS ═══════════ -->
+<!-- ═══════════ HOW TO TALK ABOUT THIS ═══════════ -->
 <section class="slide">
-  <div class="section-label">Playbook</div>
-  <h2 class="section-title">If the Deck Doesn't Land — <span>What to Say</span></h2>
-  <p style="color:#B8C6D6;margin-bottom:24px;max-width:820px;">Talking points for partners running the conversation. Never quote the "real floor" numbers as an opening offer — start at published, concede from this map only as needed, and never let strike or buyback come up as something in play.</p>
+  <div class="section-label">Playbook — Corrected</div>
+  <h2 class="section-title">What to Say — <span>and What Not To</span></h2>
+  <p style="color:#B8C6D6;margin-bottom:24px;max-width:820px;">Use accurate language. The earlier "guaranteed buyback" framing is not supportable by the signed documents and should not be repeated to any partner, lender, or investor.</p>
 
   <div class="script-box">
-    <div class="who">If they say the entry price is too high</div>
-    <p>"The $2.75M is our ask, not a hard floor — there's room to structure this closer to $2M cash if the timeline or check size works for you. What we won't move is the $16M buyback or the $11M strike — those are contractual, in writing, from the developer."</p>
+    <div class="who">Accurate way to describe the exit</div>
+    <p>"The Developer holds a first right of refusal to buy back our position at $18M. That's not a guarantee to us — it's their option. If they don't exercise it, we hold the units and pursue our own exit."</p>
   </div>
 
   <div class="script-box">
-    <div class="who">If they want a smaller position than 3 units</div>
-    <p>"Every unit in this deal carries the same math — $647K in, $941K guaranteed value, roughly $294K of locked spread. We can size this to whatever check works. The floor isn't 3 units, it's however small you want to go — the per-unit economics don't change."</p>
-  </div>
-
-  <div class="script-box">
-    <div class="who">If they push on the back-end kicker</div>
-    <p>"15% is our starting split on profit above the buyback. That number has room — we can go meaningfully higher on the kicker without touching the cash price, since it only pays out on the upside we're both betting will show up anyway."</p>
+    <div class="who">If someone asks "is this locked in"</div>
+    <p>"The $11.7M is the reservation price from 2024, not yet formalized into a signed Purchase and Sale Agreement. The $18M is a developer option, not our guarantee. Both are real numbers in signed paperwork, but neither one is a locked, mutual, contractual exit for us — that's the honest picture."</p>
   </div>
 
   <div class="script-box">
     <div class="who">Hard line — never say this</div>
-    <p style="color:#FF8080;">Never suggest the $11M strike or $16M developer buyback are negotiable, approximate, or "could probably move." They are the two numbers every investor conversation is anchored to and they must stay identical to the public deck in every room, every time.</p>
+    <p style="color:#FF8080;">Never call the $18M a "guaranteed buyback," "contractual exit," or "locked in writing" from the Buyer's perspective. It is documented as the Developer's first right of refusal. Misstating this to an investor is a real legal exposure, not just a style issue.</p>
   </div>
 
   <div class="divider"></div>
-  <p class="footer-note">Internal deal room analysis — Midtown Las Vegas / 921 S. Main Street. Not for external distribution. Strike ($11M / $647K per unit) and Developer Buyback ($16M / $941K per unit) mirror the public investor deck exactly and must never be altered independently of that document.</p>
+  <p class="footer-note">Internal deal room analysis — English Residences, Midtown Development, 917 1st Street, Las Vegas, NV. Not for external distribution. Figures sourced directly from the June 2024 Reservation Agreement, June 2024 Letter of Agreement, and April 2026 Amendment & Buyout Agreement. Consult counsel before using ROFR/ownership language in any external-facing materials.</p>
   <span class="page-num">06</span>
 </section>
 
