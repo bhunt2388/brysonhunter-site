@@ -124,6 +124,16 @@
     color:var(--text); cursor:pointer; font-size:13px;
   }
   .modal-actions button.primary{background:var(--accent); color:#062; border:none; font-weight:600;}
+  .modal textarea{
+    display:block; width:100%; margin-top:6px; padding:10px 12px; border-radius:8px;
+    border:1px solid var(--border); background:#0f1115; color:var(--text); font-size:14px;
+    font-family:inherit; resize:vertical; min-height:70px;
+  }
+
+  .contact-line{color:var(--muted); font-size:12px; margin-top:2px; display:flex; gap:12px; flex-wrap:wrap;}
+  .contact-line a{color:var(--muted); text-decoration:none;}
+  .contact-line a:hover{color:var(--accent);}
+  .contact-note-preview{color:var(--muted); font-size:12px; font-style:italic; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border);}
 
   footer{margin-top:30px; color:var(--muted); font-size:12px; text-align:center;}
 </style>
@@ -224,6 +234,26 @@
   </div>
 </div>
 
+<!-- Contact Info Modal -->
+<div id="contactModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3>Contact Info — <span id="contactModalName"></span></h3>
+    <label>Phone
+      <input type="tel" id="contactPhone" placeholder="(555) 555-5555" />
+    </label>
+    <label>Email
+      <input type="email" id="contactEmail" placeholder="name@example.com" />
+    </label>
+    <label>Contact Notes
+      <textarea id="contactNotes" placeholder="Best way/time to reach, payment arrangements, follow-up reminders..."></textarea>
+    </label>
+    <div class="modal-actions">
+      <button onclick="closeModal('contactModal')">Cancel</button>
+      <button class="primary" onclick="submitContact()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ---- passcode gate (client-side hash check, deters casual access) ----
   const HASH = "b9f5c975a45de9d7ba1a5f0f7f8b0c8f2f1f7e6c1a2d3e4f5061728394a5b6c7"; // placeholder, replaced below
@@ -281,10 +311,11 @@
       if(!s.borrows) s.borrows = [];
       if(!s.customDebtors) s.customDebtors = [];
       if(s.notes === undefined) s.notes = '';
+      if(!s.contacts) s.contacts = {};
       return s;
     }
     // fresh install — migrate old binary paidMap if present
-    const state = { payments: [], borrows: [], customDebtors: [], notes: '' };
+    const state = { payments: [], borrows: [], customDebtors: [], notes: '', contacts: {} };
     const oldPaid = JSON.parse(localStorage.getItem('paidMap') || '{}');
     Object.keys(oldPaid).forEach(id=>{
       if(oldPaid[id]){
@@ -339,6 +370,16 @@
     document.getElementById('debtorAmount').value = '';
     document.getElementById('debtorModal').style.display = 'flex';
   }
+  function openContactModal(debtId, name){
+    modalDebtId = debtId;
+    const state = loadState();
+    const c = state.contacts[debtId] || {};
+    document.getElementById('contactModalName').textContent = name;
+    document.getElementById('contactPhone').value = c.phone || '';
+    document.getElementById('contactEmail').value = c.email || '';
+    document.getElementById('contactNotes').value = c.notes || '';
+    document.getElementById('contactModal').style.display = 'flex';
+  }
   function closeModal(id){ document.getElementById(id).style.display = 'none'; }
 
   function submitPayment(){
@@ -382,6 +423,21 @@
     state.customDebtors.push({ id, name, originalAmount: amount });
     saveState(state);
     closeModal('debtorModal');
+    render();
+  }
+
+  function submitContact(){
+    const phone = document.getElementById('contactPhone').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const notes = document.getElementById('contactNotes').value.trim();
+    const state = loadState();
+    if(!phone && !email && !notes){
+      delete state.contacts[modalDebtId];
+    } else {
+      state.contacts[modalDebtId] = { phone, email, notes };
+    }
+    saveState(state);
+    closeModal('contactModal');
     render();
   }
 
@@ -542,6 +598,12 @@
         .concat(state.borrows.filter(b=>b.debtId===d.id).map(b=>({...b, kind:'borrow'})))
         .sort((a,b)=> new Date(b.date)-new Date(a.date));
 
+      const contact = state.contacts[d.id] || {};
+      const hasContact = !!(contact.phone || contact.email || contact.notes);
+      const contactLineParts = [];
+      if(contact.phone) contactLineParts.push(`<a href="tel:${contact.phone.replace(/[^0-9+]/g,'')}">📞 ${contact.phone}</a>`);
+      if(contact.email) contactLineParts.push(`<a href="mailto:${contact.email}">✉️ ${contact.email}</a>`);
+
       const card = document.createElement('div');
       card.className = 'card' + (isSettled ? ' settled' : '');
       card.innerHTML = `
@@ -549,12 +611,15 @@
           <span class="name">${d.name}</span>
           <span class="amt">${fmt(remaining)} <span class="of">/ ${fmt(owed)}</span></span>
         </div>
+        ${contactLineParts.length ? `<div class="contact-line">${contactLineParts.join('')}</div>` : ''}
         <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
         <div class="card-actions">
           <button data-pay="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Payment</button>
           <button class="borrow-btn" data-borrow="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Borrowed More</button>
+          <button data-contact="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">${hasContact ? 'Edit Contact' : '+ Contact'}</button>
           <button data-toggle2="${d.id}">${isExpanded ? 'Hide History' : 'History (' + history.length + ')'}</button>
         </div>
+        ${contact.notes ? `<div class="contact-note-preview">📝 ${contact.notes.replace(/</g,'&lt;')}</div>` : ''}
         ${isExpanded ? `
           <div class="history">
             ${history.length === 0 ? '<div class="empty-hist">No activity logged yet.</div>' :
@@ -595,6 +660,12 @@
       btn.addEventListener('click', e=>{
         e.stopPropagation();
         openBorrowModal(btn.dataset.borrow, btn.dataset.name);
+      });
+    });
+    list.querySelectorAll('[data-contact]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        openContactModal(btn.dataset.contact, btn.dataset.name);
       });
     });
     list.querySelectorAll('[data-toggle], [data-toggle2]').forEach(el=>{
