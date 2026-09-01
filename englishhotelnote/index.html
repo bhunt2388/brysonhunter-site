@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>English Hotel Note Position — Internal</title>
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<link rel="icon" type="image/png" href="../assets/logo.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Archivo:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg:           #131110;
+    --bg-2:         #1b1815;
+    --bg-3:         #201a12;
+    --ink:          #e6dfd0;
+    --ink-dim:      #a89f8c;
+    --ink-muted:    #6d6555;
+    --gold:         #c9a45c;
+    --gold-bright:  #F2CD89;
+    --bronze:       #8B6F35;
+    --rust:         #c2410c;
+    --line:         rgba(201,164,92,0.18);
+    --line-soft:    rgba(230,223,208,0.08);
+    --serif:        'Cormorant Garamond', 'Times New Roman', serif;
+    --sans:         'Archivo', system-ui, sans-serif;
+    --mono:         'JetBrains Mono', monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(201,164,92,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(201,164,92,0.05) 0%, transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    min-height:100vh;
+  }
+
+  /* ═══ GATE ═══ */
+  #gate{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .gate-card{
+    width:100%;
+    max-width:420px;
+    background:var(--bg-2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:48px 40px;
+    text-align:center;
+  }
+  .gate-mark{
+    width:44px;height:44px;margin:0 auto 20px;
+    border:1px solid var(--line);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);
+    font-family:var(--serif);
+    font-size:20px;
+  }
+  .gate-card h1{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:26px;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .gate-card p{
+    color:var(--ink-muted);
+    font-size:13px;
+    margin-bottom:24px;
+  }
+  #pw-input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15px;
+    letter-spacing:1px;
+    outline:none;
+  }
+  #pw-input:focus{border-color:var(--gold);}
+  #gate-submit{
+    width:100%;
+    margin-top:14px;
+    background:linear-gradient(135deg,var(--gold),var(--gold-bright));
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    color:#1b1611;
+    font-family:var(--sans);
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  #gate-submit:hover{opacity:0.9;}
+  #gate-error{
+    color:var(--rust);
+    font-size:12px;
+    margin-top:14px;
+    min-height:16px;
+  }
+
+  /* ═══ CONTENT ═══ */
+  #content{ display:none; }
+  .internal-banner{
+    background:linear-gradient(90deg,#3A2200,#5A3300);
+    border-bottom:2px solid var(--rust);
+    padding:10px 24px;
+    text-align:center;
+    font-size:11px;
+    letter-spacing:2px;
+    font-weight:700;
+    color:#FFD9A8;
+    text-transform:uppercase;
+    font-family:var(--mono);
+  }
+  .wrap{ max-width:880px; margin:0 auto; padding:48px 24px 80px; }
+
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:2px solid var(--gold);
+    padding-bottom:16px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{ font-family:var(--serif); font-size:20px; color:var(--gold); font-weight:600; }
+  .tag{
+    font-family:var(--mono);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--ink-muted);
+    text-align:right;
+    line-height:1.6;
+  }
+  .confidential{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--rust);
+    border:1px solid var(--rust);
+    padding:4px 12px;
+    border-radius:3px;
+    margin-bottom:20px;
+  }
+  h1.title{
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:36px;
+    color:var(--ink);
+    margin:0 0 8px 0;
+    line-height:1.15;
+  }
+  h1.title em{ font-style:italic; color:var(--gold-bright); }
+  .subtitle{
+    font-family:var(--sans);
+    font-style:italic;
+    font-weight:300;
+    font-size:14px;
+    color:var(--ink-dim);
+    margin-bottom:24px;
+  }
+
+  .metrics{ display:flex; gap:12px; margin:8px 0 28px; flex-wrap:wrap; }
+  .metric{
+    flex:1 1 140px;
+    background:var(--bg-2);
+    border:1px solid var(--line);
+    border-top:3px solid var(--gold);
+    border-radius:6px;
+    padding:16px 14px;
+  }
+  .metric .val{
+    font-family:var(--mono);
+    font-size:24px;
+    font-weight:600;
+    color:var(--gold-bright);
+  }
+  .metric .lbl{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-muted);
+    margin-top:6px;
+  }
+
+  h2{
+    font-family:var(--mono);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    color:var(--gold);
+    border-bottom:1px solid var(--line);
+    padding-bottom:6px;
+    margin:32px 0 14px;
+  }
+  h2:first-of-type{ margin-top:0; }
+
+  p, li{ font-size:14px; line-height:1.7; color:var(--ink); margin:8px 0; }
+  ul{ margin:8px 0; padding-left:22px; }
+  ul li{ margin-bottom:8px; }
+  .two-col{ display:flex; gap:24px; margin-top:8px; flex-wrap:wrap; }
+  .two-col > div{ flex:1 1 260px; }
+
+  .card{
+    background:var(--bg-2);
+    border:1px solid var(--line-soft);
+    border-radius:10px;
+    padding:18px 20px;
+    margin:12px 0;
+  }
+  .flag{
+    background:rgba(224,122,95,0.08);
+    border-left:4px solid var(--rust);
+    padding:14px 16px;
+    margin:12px 0;
+    border-radius:0 8px 8px 0;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--ink-dim);
+  }
+  .flag .flag-label{
+    display:block;
+    font-family:var(--mono);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--rust);
+    margin-bottom:6px;
+  }
+  .flag b{ color:var(--ink); }
+
+  table.terms{ width:100%; border-collapse:collapse; font-size:13.5px; margin:12px 0; }
+  table.terms td{ padding:9px 10px; border-bottom:1px solid var(--line-soft); }
+  table.terms td:first-child{ color:var(--ink-dim); width:60%; }
+  table.terms td:last-child{
+    text-align:right; font-weight:600; font-family:var(--mono);
+    font-variant-numeric:tabular-nums; color:var(--ink);
+  }
+  table.terms tr.total td{
+    border-top:2px solid var(--gold);
+    border-bottom:none;
+    font-size:15px;
+    font-weight:700;
+    padding-top:14px;
+    color:var(--gold-bright);
+  }
+
+  .checklist{ list-style:none; padding-left:0; counter-reset:step; }
+  .checklist li{
+    counter-increment:step;
+    padding-left:36px;
+    position:relative;
+    margin-bottom:12px;
+  }
+  .checklist li::before{
+    content:counter(step);
+    position:absolute; left:0; top:0;
+    width:24px; height:24px;
+    background:var(--gold);
+    color:#1b1611;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:700;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .section-note{ font-size:13px; color:var(--ink-dim); line-height:1.6; }
+  .divider{ height:1px; background:var(--line-soft); margin:24px 0 0; }
+
+  .sig-row{ display:flex; gap:24px; margin-top:16px; flex-wrap:wrap; }
+  .sig-block{ flex:1 1 260px; }
+  .sig-block .who{ font-size:13px; font-weight:600; margin-bottom:20px; color:var(--ink); }
+  .sig-line{ border-bottom:1.5px solid var(--ink-muted); height:1px; margin-bottom:6px; }
+  .sig-date{ font-size:11px; color:var(--ink-muted); }
+
+  .footer{
+    margin-top:32px;
+    padding-top:16px;
+    border-top:1px solid var(--line-soft);
+    font-size:11px;
+    color:var(--ink-muted);
+    line-height:1.6;
+  }
+
+  @media(max-width:600px){
+    h1.title{ font-size:28px; }
+    .metrics{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ PASSWORD GATE ═══════════ -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-mark">B</div>
+    <h1>English Hotel Note</h1>
+    <p>Internal deal page — enter password to continue</p>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="off" />
+    <button id="gate-submit">Unlock</button>
+    <div id="gate-error"></div>
+  </div>
+</div>
+
+<!-- ═══════════ CONTENT ═══════════ -->
+<div id="content">
+<div class="internal-banner">⚠ Internal — Not For Public Distribution ⚠</div>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="brand">Bryson Hunter Real Estate</div>
+    <div class="tag">Confidential Investment Summary<br>Prepared August 2026</div>
+  </div>
+
+  <div class="confidential">Confidential — For Discussion Purposes Only</div>
+
+  <h1 class="title">Secured Note Position — <em>English Hotel / Midtown</em>, Las Vegas</h1>
+  <div class="subtitle">A discounted entry into an over-collateralized, defaulted note, with near-term catalysts under review</div>
+
+  <div class="metrics">
+    <div class="metric"><div class="val">$500K</div><div class="lbl">Capital In</div></div>
+    <div class="metric"><div class="val">$625K</div><div class="lbl">Paid Out by 12/31/26</div></div>
+    <div class="metric"><div class="val">$12.77M</div><div class="lbl">Total Collateral Value</div></div>
+    <div class="metric"><div class="val">20.4x</div><div class="lbl">Collateral Coverage</div></div>
+  </div>
+
+  <h2>The Asset</h2>
+  <p>Bryson Hunter Real Estate LLC holds a secured promissory note to Midtown Development Group LLC — the
+  entity behind the English Hotel and the Midtown condo-tower project in the Las Vegas Arts District —
+  personally guaranteed by developer Weina Zhang, and secured by a pledge of 22.5% of the membership
+  interest in Fuyi Properties LLC, which holds 66.33% of the English Hotel itself.</p>
+
+  <div class="card">
+  <table class="terms">
+    <tr><td>Note principal (2/14/25)</td><td>$1,000,000</td></tr>
+    <tr><td>Fixed interest</td><td>$800,000</td></tr>
+    <tr><td>Payments received (9/25/25, 10/23/25)</td><td>($300,000)</td></tr>
+    <tr><td>Outstanding principal (in default since 10/18/25)</td><td>$700,000</td></tr>
+    <tr><td>Late fee accrual (1%/week on unpaid principal)</td><td>~$7,000/wk</td></tr>
+    <tr><td>Total currently demandable (as of 8/27/26)</td><td>~$1,014,000</td></tr>
+    <tr class="total"><td>Total if accelerated (principal + late fee + full interest)</td><td>~$1,814,000</td></tr>
+  </table>
+  </div>
+
+  <p><b>Personal Guaranty:</b> Weina Zhang, unconditional and irrevocable, guaranty of payment (not merely
+  collection), jury trial waived, Clark County NV venue.</p>
+  <p><b>Pledge Collateral:</b> 22.5% interest in Fuyi Properties LLC, valued at $5,530,090 per the parties' own
+  signed Exhibit A (English Hotel valued at $36M less $11.4M in debt) — collateral already ~3x the note's
+  face plus interest at signing.</p>
+
+  <h2>Why Now — The Catalyst</h2>
+  <div class="two-col">
+    <div>
+      <ul>
+        <li>Per Weina Zhang (call, 8/27/26): the English Hotel has obtained gaming/casino approval. She is
+        described as a founding figure behind the Cosmopolitan Las Vegas.</li>
+        <li>Per Weina: a lending group is providing a $100,000,000 construction/gaming buildout loan to
+        complete the project.</li>
+        <li>Per Weina: 11 active EB-5 investor-visa capital applications are in process, plus discussions
+        with a Canadian pension fund for project financing.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="flag"><span class="flag-label">Verification status</span><b>Unconfirmed by Bryson.</b> All three items above are reported by Weina Zhang only
+      and have not been independently confirmed. Nevada Gaming Control Board's published August and
+      September 2026 meeting agendas show no item referencing English Hotel, Z Life Co., Midtown
+      Development Group, or Fuyi Properties. No public record ties Weina Zhang to the Cosmopolitan Las
+      Vegas. No term sheet has been produced for the $100M loan. EB-5/pension fund financing should be
+      treated as pipeline, not committed capital, absent a signed term sheet or I-526 approval notice.</div>
+    </div>
+  </div>
+
+  <p>If some or all of the above close, the pledged collateral sits behind an asset that could be
+  re-rated from a stalled condo-tower to a licensed, financed gaming property — a material step-change in
+  downside protection and upside, contingent on these financing sources actually materializing.</p>
+
+  <h2>Supplemental Collateral — South Dakota Land</h2>
+  <p>To further secure the investor's $500,000 first-out position, Bryson is prepared to pledge a
+  subordinate/second security interest in a separate, unrelated asset: the <b>Preservation Tract</b> of
+  Cascade Springs Ranch Subdivision, Fall River County, South Dakota — <b>241.34 acres, free and clear,
+  no existing liens</b>. A Broker Price Opinion (BPO) dated September 2025 from Tommy Wiles, #1
+  Properties Ranch & Recreation, values the tract at <b>$30,000/acre — $7,240,200 total</b>, based on
+  comparable Black Hills-area land sales ranging $2,056–$65,699/acre and the tract's access to Black
+  Hills National Forest and Angostura Reservoir.</p>
+  <div class="flag"><span class="flag-label">Verification status</span>The $7.24M figure is a broker's opinion of value, not a
+  certified appraisal — the BPO itself states this explicitly. Treat it as directional, not bank-grade,
+  until an independent appraisal is obtained. The land is currently unencumbered and not pledged to any
+  other transaction.</div>
+  <p class="section-note">Combined with the existing Fuyi Properties pledge ($5,530,090), total collateral behind the
+  investor's $500,000 comes to approximately <b>$12,770,290 — over 20x coverage</b> on the capital in.</p>
+
+  <h2>Secondary Asset In Play</h2>
+  <p>Bryson holds a <b>signed</b> contract right to 17 condo units on the 5th floor of the Midtown tower
+  (equity-in-kind, ~$700K–$800K/unit median in prior negotiations) — a closed, executed agreement, not a
+  pending negotiation. This stands as an additional, independent asset behind the Note position and adds
+  further depth to Bryson's overall claim against Midtown beyond the collateral pledge described above.</p>
+
+  <div class="divider"></div>
+
+  <h2>The Opportunity</h2>
+  <p>Bryson is seeking to convert part of this position to cash now — $500,000 — rather than
+  wait out a slow workout or a fully litigated collection. Structured as a participation or partial
+  assignment of the existing claim, not a sale of the whole position.</p>
+  <ul>
+    <li><b>Investment:</b> $500,000 now, as a first-out senior participation in a defined slice of the
+    $1,014,000–$1,814,000 claim (structure: participation, subject to final counsel documentation).</li>
+    <li><b>Return:</b> $625,000 back by 12/31/26 — a flat 25% return in roughly four months. Investor is
+    repaid first out of any recovery, in full, before Bryson's remaining ~$1.19M interest in the claim is
+    touched. Bryson's position is fully subordinate to the investor's $625,000.</li>
+    <li><b>Assignability:</b> Midtown Development Group and Weina Zhang have confirmed Bryson has full
+    discretion to assign, participate, or restructure this Note as he sees fit. This is a direct,
+    relationship-based loan between Bryson and Midtown — terms of the participation can be tightened or
+    loosened by mutual agreement, not constrained by third-party loan covenants.</li>
+    <li><b>Backing:</b> Weina Zhang and Midtown will sign an acknowledgment of the debt and consent to
+    assignment as part of closing. Wade Wilkins will execute a deed of trust/security agreement pledging
+    the South Dakota Preservation Tract as supplemental collateral for the investor's position.</li>
+  </ul>
+
+  <h2>Why This Is Defensible</h2>
+  <ul>
+    <li>Signed Note, Guaranty, and Pledge Agreement already in hand.</li>
+    <li>Written admission of fault from Weina (8/26/26: "I'm very guilty on this") and her own statement
+    that she must "give you what you need for legal action" (5/7/26).</li>
+    <li>Formal demand and acceleration letter already drafted and ready to send.</li>
+    <li>Collateral value of $5.53M was fixed by the parties' own signed Exhibit A — not Bryson's estimate.</li>
+    <li>South Dakota tract adds a second, unrelated real-property backstop — 241 acres, unencumbered,
+    $7.24M broker opinion of value — reducing reliance on any single asset's recovery.</li>
+  </ul>
+
+  <h2>Path to Close</h2>
+  <ul class="checklist">
+    <li>Execute Participation Agreement and consent-to-assignment (drafts ready, Midtown has confirmed
+    full flexibility on structure).</li>
+    <li>Execute deed of trust/security agreement on the South Dakota Preservation Tract in favor of
+    investor as supplemental collateral.</li>
+    <li>Investor wires $500,000 to closing escrow.</li>
+    <li>Weina Zhang / Midtown execute acknowledgment of debt and consent to assignment.</li>
+    <li>Investor repaid $625,000 by 12/31/26, first-out ahead of Bryson's subordinate interest.</li>
+  </ul>
+
+  <h2>Signatures</h2>
+  <div class="sig-row">
+    <div class="sig-block">
+      <div class="who">Bryson Hunter, Managing Member<br>Bryson Hunter Real Estate, LLC</div>
+      <div class="sig-line"></div>
+      <div class="sig-date">Date: __________</div>
+    </div>
+    <div class="sig-block">
+      <div class="who">Investor</div>
+      <div class="sig-line"></div>
+      <div class="sig-date">Date: __________</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Prepared by Bryson Hunter Real Estate LLC. Certain forward-looking catalyst items (gaming approval,
+    construction financing, EB-5/pension financing) are reported by a third party (Weina Zhang / Midtown
+    Development Group LLC / Z Life Co.) and have not been independently verified as of the date above.
+    The South Dakota Preservation Tract valuation ($7,240,200) is a Broker Price Opinion (Tommy Wiles,
+    #1 Properties Ranch & Recreation, Sept. 2025), not a certified appraisal, and remains subject to
+    independent verification and to execution of a deed of trust/security agreement with landowner Wade
+    Wilkins. Signed Note, Guaranty, Pledge Agreement, and 5th-floor unit contract are executed instruments
+    held by Bryson Hunter Real Estate LLC. This document is not an offer to sell securities and is intended
+    for discussion among close, trusted connections only; final terms subject to a definitive Participation
+    Agreement and legal review.
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  // SHA-256 hash of the access password — change PASSWORD_HASH to rotate credentials.
+  // To generate a new hash: python3 -c "import hashlib;print(hashlib.sha256(b'yourpassword').hexdigest())"
+  const PASSWORD_HASH = "843d08f10af48f7ad47d5a514dc3690d629e71e77c50e05f2a184437cabfb3f9";
+  const SESSION_KEY = "bh_englishhotelnote_unlocked";
+
+  async function sha256Hex(str){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  function showContent(){
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  }
+  function showGate(){
+    document.getElementById("content").style.display = "none";
+    document.getElementById("gate").style.display = "flex";
+  }
+  async function tryUnlock(){
+    const val = document.getElementById("pw-input").value;
+    const hash = await sha256Hex(val);
+    const errEl = document.getElementById("gate-error");
+    if (hash === PASSWORD_HASH){
+      sessionStorage.setItem(SESSION_KEY, "1");
+      errEl.textContent = "";
+      showContent();
+    } else {
+      errEl.textContent = "Incorrect password.";
+    }
+  }
+  document.getElementById("gate-submit").addEventListener("click", tryUnlock);
+  document.getElementById("pw-input").addEventListener("keydown", function(e){
+    if (e.key === "Enter") tryUnlock();
+  });
+  if (sessionStorage.getItem(SESSION_KEY) === "1"){ showContent(); } else { showGate(); }
+})();
+</script>
+
+</body>
+</html>
