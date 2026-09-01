@@ -256,7 +256,6 @@
 
 <script>
   // ---- passcode gate (client-side hash check, deters casual access) ----
-  const HASH = "b9f5c975a45de9d7ba1a5f0f7f8b0c8f2f1f7e6c1a2d3e4f5061728394a5b6c7"; // placeholder, replaced below
   async function sha256(str){
     const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
     return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
@@ -280,73 +279,73 @@
     document.getElementById('app').style.display='block';
   }
 
-  // ---- base debtor list (original amounts owed) ----
-  const BASE_DEBTS = [
-    { id:'josh-munday', name:'Josh Munday', originalAmount:2350 },
-    { id:'landon-roberts', name:'Landon Roberts', originalAmount:3600 },
-    { id:'travis-holmes', name:'Travis Holmes', originalAmount:51000 },
-    { id:'weina-zhang', name:'Weina Zhang', originalAmount:2100000 },
-    { id:'rajiv-rishi', name:'Rajiv Rishi', originalAmount:600000 },
-    { id:'hemsworth-family', name:'The Hemsworth Family', originalAmount:70000 },
-    { id:'dr-kirk-moore', name:'Dr. Kirk Moore', originalAmount:250000 },
-    { id:'paul-isom', name:'Paul Isom', originalAmount:59000 },
-    { id:'robert-mcfarlane', name:'Robert Mcfarlane', originalAmount:50000 },
-    { id:'chong', name:'Chong', originalAmount:20000 },
-    { id:'cindy', name:'Cindy', originalAmount:4000 },
-    { id:'eminent-wellness', name:'Eminent Wellness', originalAmount:8000 },
-    { id:'axiom-labs', name:'Axiom Labs', originalAmount:8400 },
-  ];
+  // ---- Supabase shared datastore (both Bryson and Nancy read/write the same live data) ----
+  const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
+  const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
+  async function sb(path, opts={}){
+    const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+      ...opts,
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': opts.prefer || 'return=representation',
+        ...(opts.headers || {})
+      }
+    });
+    if(!res.ok){
+      const text = await res.text().catch(()=> '');
+      throw new Error(`Supabase ${opts.method||'GET'} ${path} failed: ${res.status} ${text}`);
+    }
+    if(res.status === 204) return null;
+    return res.json();
+  }
 
-  const STATE_KEY = 'trackerState';
   let expandedIds = new Set();
   let modalDebtId = null;
+  let state = { debtors: [], payments: [], borrows: [], contacts: {}, notes: '' };
+  let loadError = null;
 
   function todayStr(){ return new Date().toISOString().slice(0,10); }
 
-  function loadState(){
-    const raw = localStorage.getItem(STATE_KEY);
-    if(raw){
-      const s = JSON.parse(raw);
-      if(!s.payments) s.payments = [];
-      if(!s.borrows) s.borrows = [];
-      if(!s.customDebtors) s.customDebtors = [];
-      if(s.notes === undefined) s.notes = '';
-      if(!s.contacts) s.contacts = {};
-      return s;
-    }
-    // fresh install — migrate old binary paidMap if present
-    const state = { payments: [], borrows: [], customDebtors: [], notes: '', contacts: {} };
-    const oldPaid = JSON.parse(localStorage.getItem('paidMap') || '{}');
-    Object.keys(oldPaid).forEach(id=>{
-      if(oldPaid[id]){
-        const d = BASE_DEBTS.find(x=>x.id===id);
-        if(d){
-          state.payments.push({
-            id: 'mig-'+id, debtId: id, amount: d.originalAmount,
-            date: todayStr(), note: 'Migrated from previous paid mark'
-          });
-        }
-      }
-    });
-    saveState(state);
+  // Loads the full shared state fresh from Supabase. Called on init and after every mutation
+  // so both Bryson and Nancy always see the latest data, regardless of which device wrote it.
+  async function loadState(){
+    const [debtorRows, paymentRows, borrowRows, contactRows, notesRows] = await Promise.all([
+      sb('mt_debtors?select=id,name,original_amount,is_custom&order=created_at.asc'),
+      sb('mt_payments?select=id,debt_id,amount,date,note'),
+      sb('mt_borrows?select=id,debt_id,amount,date,note'),
+      sb('mt_contacts?select=debt_id,phone,email,notes'),
+      sb('mt_notes?select=content&id=eq.1'),
+    ]);
+    const contacts = {};
+    contactRows.forEach(c=>{ contacts[c.debt_id] = { phone: c.phone||'', email: c.email||'', notes: c.notes||'' }; });
+    state = {
+      debtors: debtorRows.map(d=>({ id:d.id, name:d.name, originalAmount: Number(d.original_amount) })),
+      payments: paymentRows.map(p=>({ id:p.id, debtId:p.debt_id, amount:Number(p.amount), date:p.date, note:p.note||'' })),
+      borrows: borrowRows.map(b=>({ id:b.id, debtId:b.debt_id, amount:Number(b.amount), date:b.date, note:b.note||'' })),
+      contacts,
+      notes: (notesRows[0] && notesRows[0].content) || '',
+    };
     return state;
   }
-  function saveState(s){ localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
 
-  function allDebts(state){ return BASE_DEBTS.concat(state.customDebtors); }
-  function paidFor(state, debtId){
-    return state.payments.filter(p=>p.debtId===debtId).reduce((s,p)=>s+p.amount,0);
+  function allDebts(s){ return s.debtors; }
+  function paidFor(s, debtId){
+    return s.payments.filter(p=>p.debtId===debtId).reduce((sum,p)=>sum+p.amount,0);
   }
-  function borrowedFor(state, debtId){
-    return state.borrows.filter(b=>b.debtId===debtId).reduce((s,b)=>s+b.amount,0);
+  function borrowedFor(s, debtId){
+    return s.borrows.filter(b=>b.debtId===debtId).reduce((sum,b)=>sum+b.amount,0);
   }
-  function owedFor(state, d){
-    return d.originalAmount + borrowedFor(state, d.id);
+  function owedFor(s, d){
+    return d.originalAmount + borrowedFor(s, d.id);
   }
 
   function fmt(n){
     return '$' + Math.round(n).toLocaleString('en-US');
   }
+
+  function genId(prefix){ return prefix + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,7); }
 
   // ---- modals ----
   function openPaymentModal(debtId, name){
@@ -372,7 +371,6 @@
   }
   function openContactModal(debtId, name){
     modalDebtId = debtId;
-    const state = loadState();
     const c = state.contacts[debtId] || {};
     document.getElementById('contactModalName').textContent = name;
     document.getElementById('contactPhone').value = c.phone || '';
@@ -382,79 +380,83 @@
   }
   function closeModal(id){ document.getElementById(id).style.display = 'none'; }
 
-  function submitPayment(){
+  async function submitPayment(){
     const amount = parseFloat(document.getElementById('payAmount').value);
     const date = document.getElementById('payDate').value || todayStr();
     const note = document.getElementById('payNote').value.trim();
     if(!amount || amount <= 0){ alert('Enter a valid amount.'); return; }
-    const state = loadState();
-    state.payments.push({
-      id: 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
-      debtId: modalDebtId, amount, date, note
-    });
-    saveState(state);
-    closeModal('payModal');
-    render();
+    try{
+      await sb('mt_payments', { method:'POST', body: JSON.stringify({
+        id: genId('p'), debt_id: modalDebtId, amount, date, note
+      })});
+      closeModal('payModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save payment: ' + e.message); }
   }
 
-  function submitBorrow(){
+  async function submitBorrow(){
     const amount = parseFloat(document.getElementById('borrowAmount').value);
     const date = document.getElementById('borrowDate').value || todayStr();
     const note = document.getElementById('borrowNote').value.trim();
     if(!amount || amount <= 0){ alert('Enter a valid amount.'); return; }
-    const state = loadState();
-    state.borrows.push({
-      id: 'b-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
-      debtId: modalDebtId, amount, date, note
-    });
-    saveState(state);
-    closeModal('borrowModal');
-    render();
+    try{
+      await sb('mt_borrows', { method:'POST', body: JSON.stringify({
+        id: genId('b'), debt_id: modalDebtId, amount, date, note
+      })});
+      closeModal('borrowModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save borrow: ' + e.message); }
   }
 
-  function submitDebtor(){
+  async function submitDebtor(){
     const name = document.getElementById('debtorName').value.trim();
     const amount = parseFloat(document.getElementById('debtorAmount').value);
     if(!name){ alert('Enter a name.'); return; }
     if(!amount || amount <= 0){ alert('Enter a valid amount.'); return; }
-    const state = loadState();
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'debtor';
     const id = 'custom-' + slug + '-' + Date.now();
-    state.customDebtors.push({ id, name, originalAmount: amount });
-    saveState(state);
-    closeModal('debtorModal');
-    render();
+    try{
+      await sb('mt_debtors', { method:'POST', body: JSON.stringify({
+        id, name, original_amount: amount, is_custom: true
+      })});
+      closeModal('debtorModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to add debtor: ' + e.message); }
   }
 
-  function submitContact(){
+  async function submitContact(){
     const phone = document.getElementById('contactPhone').value.trim();
     const email = document.getElementById('contactEmail').value.trim();
     const notes = document.getElementById('contactNotes').value.trim();
-    const state = loadState();
-    if(!phone && !email && !notes){
-      delete state.contacts[modalDebtId];
-    } else {
-      state.contacts[modalDebtId] = { phone, email, notes };
-    }
-    saveState(state);
-    closeModal('contactModal');
-    render();
+    try{
+      if(!phone && !email && !notes){
+        await sb(`mt_contacts?debt_id=eq.${encodeURIComponent(modalDebtId)}`, { method:'DELETE', prefer:'return=minimal' });
+      } else {
+        await sb('mt_contacts', {
+          method:'POST',
+          prefer: 'resolution=merge-duplicates,return=representation',
+          body: JSON.stringify({ debt_id: modalDebtId, phone, email, notes, updated_at: new Date().toISOString() })
+        });
+      }
+      closeModal('contactModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save contact: ' + e.message); }
   }
 
-  function deletePayment(paymentId){
+  async function deletePayment(paymentId){
     if(!confirm('Remove this payment entry?')) return;
-    const state = loadState();
-    state.payments = state.payments.filter(p=>p.id !== paymentId);
-    saveState(state);
-    render();
+    try{
+      await sb(`mt_payments?id=eq.${encodeURIComponent(paymentId)}`, { method:'DELETE', prefer:'return=minimal' });
+      await refreshAndRender();
+    } catch(e){ alert('Failed to delete payment: ' + e.message); }
   }
 
-  function deleteBorrow(borrowId){
+  async function deleteBorrow(borrowId){
     if(!confirm('Remove this borrowed-amount entry?')) return;
-    const state = loadState();
-    state.borrows = state.borrows.filter(b=>b.id !== borrowId);
-    saveState(state);
-    render();
+    try{
+      await sb(`mt_borrows?id=eq.${encodeURIComponent(borrowId)}`, { method:'DELETE', prefer:'return=minimal' });
+      await refreshAndRender();
+    } catch(e){ alert('Failed to delete borrow: ' + e.message); }
   }
 
   function toggleHistory(debtId){
@@ -464,15 +466,15 @@
   }
 
   // ---- chart ----
-  function computeTimeline(state){
-    const debts = allDebts(state);
-    const baseTotal = debts.reduce((s,d)=>s+d.originalAmount,0);
-    const currentTotalOwed = debts.reduce((s,d)=>s+owedFor(state,d),0);
+  function computeTimeline(s){
+    const debts = allDebts(s);
+    const baseTotal = debts.reduce((sum,d)=>sum+d.originalAmount,0);
+    const currentTotalOwed = debts.reduce((sum,d)=>sum+owedFor(s,d),0);
 
     // merge payments (negative) and borrows (positive) into one chronological event stream
     const events = []
-      .concat(state.payments.map(p=>({ date:p.date, delta:-p.amount })))
-      .concat(state.borrows.map(b=>({ date:b.date, delta:b.amount })))
+      .concat(s.payments.map(p=>({ date:p.date, delta:-p.amount })))
+      .concat(s.borrows.map(b=>({ date:b.date, delta:b.amount })))
       .sort((a,b)=> new Date(a.date) - new Date(b.date));
 
     const points = [];
@@ -559,33 +561,42 @@
 
   // ---- notes ----
   let notesSaveTimer = null;
-  function bindNotes(state){
+  function bindNotes(s){
     const area = document.getElementById('notesArea');
-    area.value = state.notes || '';
+    area.value = s.notes || '';
     area.oninput = () => {
-      const s = loadState();
-      s.notes = area.value;
-      saveState(s);
       const savedEl = document.getElementById('notesSaved');
-      savedEl.textContent = 'Saved';
+      savedEl.textContent = 'Saving…';
       clearTimeout(notesSaveTimer);
-      notesSaveTimer = setTimeout(()=>{ savedEl.textContent = ''; }, 1200);
+      notesSaveTimer = setTimeout(async ()=>{
+        try{
+          await sb('mt_notes?id=eq.1', {
+            method:'PATCH', prefer:'return=minimal',
+            body: JSON.stringify({ content: area.value, updated_at: new Date().toISOString() })
+          });
+          state.notes = area.value;
+          savedEl.textContent = 'Saved';
+          setTimeout(()=>{ savedEl.textContent = ''; }, 1200);
+        } catch(e){
+          savedEl.textContent = 'Failed to save';
+        }
+      }, 500);
     };
   }
 
   // ---- render ----
   function render(){
-    const state = loadState();
-    const debts = allDebts(state);
+    const s = state;
+    const debts = allDebts(s);
     const list = document.getElementById('list');
     list.innerHTML = '';
 
     let total = 0, paidCapped = 0;
 
     debts.forEach(d=>{
-      const owed = owedFor(state, d);
+      const owed = owedFor(s, d);
       total += owed;
-      const paidRaw = paidFor(state, d.id);
+      const paidRaw = paidFor(s, d.id);
       const paid = Math.min(paidRaw, owed);
       paidCapped += paid;
       const remaining = Math.max(owed - paidRaw, 0);
@@ -594,11 +605,11 @@
       const isExpanded = expandedIds.has(d.id);
 
       const history = []
-        .concat(state.payments.filter(p=>p.debtId===d.id).map(p=>({...p, kind:'pay'})))
-        .concat(state.borrows.filter(b=>b.debtId===d.id).map(b=>({...b, kind:'borrow'})))
+        .concat(s.payments.filter(p=>p.debtId===d.id).map(p=>({...p, kind:'pay'})))
+        .concat(s.borrows.filter(b=>b.debtId===d.id).map(b=>({...b, kind:'borrow'})))
         .sort((a,b)=> new Date(b.date)-new Date(a.date));
 
-      const contact = state.contacts[d.id] || {};
+      const contact = s.contacts[d.id] || {};
       const hasContact = !!(contact.phone || contact.email || contact.notes);
       const contactLineParts = [];
       if(contact.phone) contactLineParts.push(`<a href="tel:${contact.phone.replace(/[^0-9+]/g,'')}">📞 ${contact.phone}</a>`);
@@ -646,7 +657,7 @@
     document.getElementById('remainingVal').textContent = fmt(total - paidCapped);
 
     // chart
-    const { points, totalOriginal } = computeTimeline(state);
+    const { points, totalOriginal } = computeTimeline(s);
     drawChart(points, totalOriginal);
 
     // wire up events (list is rebuilt each render, so rebind each time)
@@ -682,18 +693,31 @@
       });
     });
 
-    bindNotes(state);
+    bindNotes(s);
   }
 
   window.addEventListener('resize', ()=>{
-    if(document.getElementById('app').style.display === 'block'){
-      const state = loadState();
+    if(document.getElementById('app').style.display === 'block' && state.debtors.length){
       const { points, totalOriginal } = computeTimeline(state);
       drawChart(points, totalOriginal);
     }
   });
 
-  function init(){ render(); }
+  async function refreshAndRender(){
+    await loadState();
+    render();
+  }
+
+  async function init(){
+    const list = document.getElementById('list');
+    list.innerHTML = '<div class="empty-hist">Loading shared data…</div>';
+    try{
+      await loadState();
+      render();
+    } catch(e){
+      list.innerHTML = `<div class="empty-hist" style="color:var(--danger);">Failed to load data: ${e.message.replace(/</g,'&lt;')}. Check your connection and reload.</div>`;
+    }
+  }
 
   if(sessionStorage.getItem('unlocked')==='1') init();
 </script>
