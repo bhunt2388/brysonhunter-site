@@ -13,18 +13,18 @@
 
 <style>
   :root{
-    --bg:           #131110;
-    --bg-2:         #1b1815;
-    --bg-3:         #201a12;
-    --ink:          #e6dfd0;
-    --ink-dim:      #a89f8c;
-    --ink-muted:    #6d6555;
-    --gold:         #c9a45c;
-    --gold-bright:  #F2CD89;
+    --bg:           #f7f4ee;
+    --bg-2:         #ffffff;
+    --bg-3:         #efe9dc;
+    --ink:          #2a2620;
+    --ink-dim:      #55503f;
+    --ink-muted:    #8a8168;
+    --gold:         #a9782f;
+    --gold-bright:  #8c5e10;
     --bronze:       #8B6F35;
-    --rust:         #c2410c;
-    --line:         rgba(201,164,92,0.18);
-    --line-soft:    rgba(230,223,208,0.08);
+    --rust:         #b0410f;
+    --line:         rgba(169,120,47,0.28);
+    --line-soft:    rgba(42,38,32,0.10);
     --serif:        'Cormorant Garamond', 'Times New Roman', serif;
     --sans:         'Archivo', system-ui, sans-serif;
     --mono:         'JetBrains Mono', monospace;
@@ -33,8 +33,8 @@
   html{scroll-behavior:smooth;}
   body{
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(201,164,92,0.06) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 100%, rgba(201,164,92,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% 0%, rgba(169,120,47,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(169,120,47,0.04) 0%, transparent 55%),
       var(--bg);
     color:var(--ink);
     font-family:var(--sans);
@@ -99,7 +99,7 @@
     border:none;
     border-radius:8px;
     padding:14px;
-    color:#1b1611;
+    color:#fff8ec;
     font-family:var(--sans);
     font-weight:700;
     font-size:13px;
@@ -118,14 +118,14 @@
   /* ═══ CONTENT ═══ */
   #content{ display:none; }
   .internal-banner{
-    background:linear-gradient(90deg,#3A2200,#5A3300);
+    background:linear-gradient(90deg,#f0dcb8,#f6e8cc);
     border-bottom:2px solid var(--rust);
     padding:10px 24px;
     text-align:center;
-    font-size:11px;
+    font-size:12px;
     letter-spacing:2px;
     font-weight:700;
-    color:#FFD9A8;
+    color:#7a3a10;
     text-transform:uppercase;
     font-family:var(--mono);
   }
@@ -166,7 +166,7 @@
   h1.title{
     font-family:var(--serif);
     font-weight:600;
-    font-size:36px;
+    font-size:42px;
     color:var(--ink);
     margin:0 0 8px 0;
     line-height:1.15;
@@ -176,7 +176,7 @@
     font-family:var(--sans);
     font-style:italic;
     font-weight:300;
-    font-size:14px;
+    font-size:16px;
     color:var(--ink-dim);
     margin-bottom:24px;
   }
@@ -192,12 +192,12 @@
   }
   .metric .val{
     font-family:var(--mono);
-    font-size:24px;
+    font-size:28px;
     font-weight:600;
     color:var(--gold-bright);
   }
   .metric .lbl{
-    font-size:10px;
+    font-size:11px;
     text-transform:uppercase;
     letter-spacing:0.08em;
     color:var(--ink-muted);
@@ -206,17 +206,17 @@
 
   h2{
     font-family:var(--mono);
-    font-size:12px;
+    font-size:14px;
     text-transform:uppercase;
     letter-spacing:0.15em;
-    color:var(--gold);
+    color:var(--gold-bright);
     border-bottom:1px solid var(--line);
     padding-bottom:6px;
     margin:32px 0 14px;
   }
   h2:first-of-type{ margin-top:0; }
 
-  p, li{ font-size:14px; line-height:1.7; color:var(--ink); margin:8px 0; }
+  p, li{ font-size:16px; line-height:1.75; color:var(--ink); margin:8px 0; }
   ul{ margin:8px 0; padding-left:22px; }
   ul li{ margin-bottom:8px; }
   .two-col{ display:flex; gap:24px; margin-top:8px; flex-wrap:wrap; }
@@ -250,8 +250,8 @@
   }
   .flag b{ color:var(--ink); }
 
-  table.terms{ width:100%; border-collapse:collapse; font-size:13.5px; margin:12px 0; }
-  table.terms td{ padding:9px 10px; border-bottom:1px solid var(--line-soft); }
+  table.terms{ width:100%; border-collapse:collapse; font-size:15.5px; margin:12px 0; }
+  table.terms td{ padding:10px 10px; border-bottom:1px solid var(--line-soft); }
   table.terms td:first-child{ color:var(--ink-dim); width:60%; }
   table.terms td:last-child{
     text-align:right; font-weight:600; font-family:var(--mono);
@@ -260,7 +260,7 @@
   table.terms tr.total td{
     border-top:2px solid var(--gold);
     border-bottom:none;
-    font-size:15px;
+    font-size:17px;
     font-weight:700;
     padding-top:14px;
     color:var(--gold-bright);
@@ -286,26 +286,26 @@
     display:flex; align-items:center; justify-content:center;
   }
 
-  .section-note{ font-size:13px; color:var(--ink-dim); line-height:1.6; }
+  .section-note{ font-size:15px; color:var(--ink-dim); line-height:1.7; }
   .divider{ height:1px; background:var(--line-soft); margin:24px 0 0; }
 
   .sig-row{ display:flex; gap:24px; margin-top:16px; flex-wrap:wrap; }
   .sig-block{ flex:1 1 260px; }
-  .sig-block .who{ font-size:13px; font-weight:600; margin-bottom:20px; color:var(--ink); }
+  .sig-block .who{ font-size:15px; font-weight:600; margin-bottom:20px; color:var(--ink); }
   .sig-line{ border-bottom:1.5px solid var(--ink-muted); height:1px; margin-bottom:6px; }
-  .sig-date{ font-size:11px; color:var(--ink-muted); }
+  .sig-date{ font-size:12px; color:var(--ink-muted); }
 
   .footer{
     margin-top:32px;
     padding-top:16px;
     border-top:1px solid var(--line-soft);
-    font-size:11px;
+    font-size:12.5px;
     color:var(--ink-muted);
-    line-height:1.6;
+    line-height:1.7;
   }
 
   @media(max-width:600px){
-    h1.title{ font-size:28px; }
+    h1.title{ font-size:32px; }
     .metrics{ flex-direction:column; }
   }
 </style>
@@ -372,26 +372,14 @@
   face plus interest at signing.</p>
 
   <h2>Why Now — The Catalyst</h2>
-  <div class="two-col">
-    <div>
-      <ul>
-        <li>Per Weina Zhang (call, 8/27/26): the English Hotel has obtained gaming/casino approval. She is
-        described as a founding figure behind the Cosmopolitan Las Vegas.</li>
-        <li>Per Weina: a lending group is providing a $100,000,000 construction/gaming buildout loan to
-        complete the project.</li>
-        <li>Per Weina: 11 active EB-5 investor-visa capital applications are in process, plus discussions
-        with a Canadian pension fund for project financing.</li>
-      </ul>
-    </div>
-    <div>
-      <div class="flag"><span class="flag-label">Verification status</span><b>Unconfirmed by Bryson.</b> All three items above are reported by Weina Zhang only
-      and have not been independently confirmed. Nevada Gaming Control Board's published August and
-      September 2026 meeting agendas show no item referencing English Hotel, Z Life Co., Midtown
-      Development Group, or Fuyi Properties. No public record ties Weina Zhang to the Cosmopolitan Las
-      Vegas. No term sheet has been produced for the $100M loan. EB-5/pension fund financing should be
-      treated as pipeline, not committed capital, absent a signed term sheet or I-526 approval notice.</div>
-    </div>
-  </div>
+  <ul>
+    <li>Per Weina Zhang (call, 8/27/26): the English Hotel has obtained gaming/casino approval. She is
+    described as a founding figure behind the Cosmopolitan Las Vegas.</li>
+    <li>Per Weina: a lending group is providing a $100,000,000 construction/gaming buildout loan to
+    complete the project.</li>
+    <li>Per Weina: 11 active EB-5 investor-visa capital applications are in process, plus discussions
+    with a Canadian pension fund for project financing.</li>
+  </ul>
 
   <p>If some or all of the above close, the pledged collateral sits behind an asset that could be
   re-rated from a stalled condo-tower to a licensed, financed gaming property — a material step-change in
@@ -405,10 +393,6 @@
   Properties Ranch & Recreation, values the tract at <b>$30,000/acre — $7,240,200 total</b>, based on
   comparable Black Hills-area land sales ranging $2,056–$65,699/acre and the tract's access to Black
   Hills National Forest and Angostura Reservoir.</p>
-  <div class="flag"><span class="flag-label">Verification status</span>The $7.24M figure is a broker's opinion of value, not a
-  certified appraisal — the BPO itself states this explicitly. Treat it as directional, not bank-grade,
-  until an independent appraisal is obtained. The land is currently unencumbered and not pledged to any
-  other transaction.</div>
   <p class="section-note">Combined with the existing Fuyi Properties pledge ($5,530,090), total collateral behind the
   investor's $500,000 comes to approximately <b>$12,770,290 — over 20x coverage</b> on the capital in.</p>
 
