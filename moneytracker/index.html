@@ -77,6 +77,9 @@
   .card-actions button.borrow-btn:hover{border-color:var(--danger);}
   .card-actions button.contact-btn{border-color:#3b4252; color:var(--accent);}
   .card-actions button.contact-btn:hover{border-color:var(--accent); background:rgba(74,222,128,.08);}
+  .card-actions button.invoice-btn{border-color:var(--gold); color:var(--gold); font-weight:600;}
+  .card-actions button.invoice-btn:hover{background:rgba(250,204,21,.1);}
+  .card-actions button.invoice-btn:disabled{opacity:.4; cursor:not-allowed;}
   .history{margin-top:12px; border-top:1px solid var(--border); padding-top:10px;}
   .history-row{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; padding:6px 0;}
   .history-row .h-info{color:var(--text);}
@@ -469,6 +472,39 @@
     render();
   }
 
+  async function sendInvoice(debtId, name, remaining, email, btnEl){
+    if(!email){
+      alert(`No email on file for ${name}. Add one via "📇 Edit Contact" first.`);
+      return;
+    }
+    if(!remaining || remaining <= 0){
+      alert(`${name} has no outstanding balance to invoice.`);
+      return;
+    }
+    if(!confirm(`Send an invoice for ${fmt(remaining)} to ${name} (${email})?`)) return;
+
+    const originalText = btnEl.textContent;
+    btnEl.disabled = true;
+    btnEl.textContent = 'Sending…';
+    try{
+      const res = await fetch('/api/send-invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ debtId, debtorName: name, amount: remaining, toEmail: email })
+      });
+      const json = await res.json().catch(()=> ({}));
+      if(!res.ok){
+        throw new Error(json.error ? (typeof json.error === 'string' ? json.error : JSON.stringify(json.error)) : `HTTP ${res.status}`);
+      }
+      btnEl.textContent = '✓ Sent';
+      setTimeout(()=>{ btnEl.textContent = originalText; btnEl.disabled = false; }, 2000);
+    } catch(e){
+      alert('Failed to send invoice: ' + e.message);
+      btnEl.textContent = originalText;
+      btnEl.disabled = false;
+    }
+  }
+
   // ---- chart ----
   function computeTimeline(s){
     const debts = allDebts(s);
@@ -634,6 +670,9 @@
           <button class="contact-btn" data-contact="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">${hasContact ? '📇 Edit Contact' : '📇 + Contact'}</button>
           <button data-toggle2="${d.id}">${isExpanded ? 'Hide History' : 'History (' + history.length + ')'}</button>
         </div>
+        <div class="card-actions" style="margin-top:8px;">
+          <button class="invoice-btn" data-invoice="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-email="${(contact.email||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>🧾 Send Invoice</button>
+        </div>
         ${contact.notes ? `<div class="contact-note-preview">📝 ${contact.notes.replace(/</g,'&lt;')}</div>` : ''}
         ${isExpanded ? `
           <div class="history">
@@ -681,6 +720,12 @@
       btn.addEventListener('click', e=>{
         e.stopPropagation();
         openContactModal(btn.dataset.contact, btn.dataset.name);
+      });
+    });
+    list.querySelectorAll('[data-invoice]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        sendInvoice(btn.dataset.invoice, btn.dataset.name, parseFloat(btn.dataset.remaining), btn.dataset.email, btn);
       });
     });
     list.querySelectorAll('[data-toggle], [data-toggle2]').forEach(el=>{
