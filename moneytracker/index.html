@@ -46,6 +46,7 @@
   .stat.remaining .val{color:var(--danger);}
 
   .section-title{font-size:13px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin:28px 0 12px;}
+  .hint-line{color:var(--muted); font-size:12.5px; margin:-6px 0 14px;}
 
   .chart-wrap{
     background:var(--card); border:1px solid var(--border); border-radius:14px;
@@ -74,6 +75,8 @@
   }
   .card-actions button:hover{border-color:var(--accent);}
   .card-actions button.borrow-btn:hover{border-color:var(--danger);}
+  .card-actions button.contact-btn{border-color:#3b4252; color:var(--accent);}
+  .card-actions button.contact-btn:hover{border-color:var(--accent); background:rgba(74,222,128,.08);}
   .history{margin-top:12px; border-top:1px solid var(--border); padding-top:10px;}
   .history-row{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; padding:6px 0;}
   .history-row .h-info{color:var(--text);}
@@ -150,7 +153,7 @@
 <div id="app">
   <header>
     <h1>Money Owed — Running Tracker</h1>
-    <div class="sub">Log payments as they come in. Everything saved on this device.</div>
+    <div class="sub">Log payments as they come in. Shared live data — you and Nancy see the same tracker.</div>
   </header>
 
   <div class="summary">
@@ -165,16 +168,17 @@
   </div>
 
   <div class="section-title">Debtors</div>
+  <div class="hint-line">Use "+ Contact" on a debtor's card below to add their phone, email, and notes about them specifically.</div>
   <ul id="list"></ul>
   <button class="add-debtor-btn" onclick="openDebtorModal()">+ Add New Debtor</button>
 
-  <div class="section-title">Notes</div>
+  <div class="section-title">General Notes</div>
   <div class="notes-wrap">
-    <textarea id="notesArea" placeholder="Anything worth remembering — payment plans, promises, follow-ups..."></textarea>
+    <textarea id="notesArea" placeholder="Overall notes not tied to any one debtor — general reminders, context for whoever's using this tracker..."></textarea>
     <div class="notes-saved" id="notesSaved"></div>
   </div>
 
-  <footer>Private tracker · not indexed · data stored locally per device</footer>
+  <footer>Private tracker · not indexed · shared live data (Supabase)</footer>
 </div>
 
 <!-- Add Payment Modal -->
@@ -627,7 +631,7 @@
         <div class="card-actions">
           <button data-pay="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Payment</button>
           <button class="borrow-btn" data-borrow="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Borrowed More</button>
-          <button data-contact="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">${hasContact ? 'Edit Contact' : '+ Contact'}</button>
+          <button class="contact-btn" data-contact="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">${hasContact ? '📇 Edit Contact' : '📇 + Contact'}</button>
           <button data-toggle2="${d.id}">${isExpanded ? 'Hide History' : 'History (' + history.length + ')'}</button>
         </div>
         ${contact.notes ? `<div class="contact-note-preview">📝 ${contact.notes.replace(/</g,'&lt;')}</div>` : ''}
