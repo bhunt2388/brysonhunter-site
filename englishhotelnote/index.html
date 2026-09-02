@@ -514,7 +514,9 @@
   document.getElementById("pw-input").addEventListener("keydown", function(e){
     if (e.key === "Enter") tryUnlock();
   });
-  if (sessionStorage.getItem(SESSION_KEY) === "1"){ showContent(); } else { showGate(); }
+  // TEMP: password gate disabled by Bryson's request (2026-09-02) — flip GATE_DISABLED to false to restore.
+  const GATE_DISABLED = true;
+  if (GATE_DISABLED || sessionStorage.getItem(SESSION_KEY) === "1"){ showContent(); } else { showGate(); }
 })();
 </script>
 
