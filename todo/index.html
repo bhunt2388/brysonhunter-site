@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow, noarchive" />
-<title>Follow-Up Tracker — Bryson Hunter</title>
+<title>To-Do — Bryson Hunter</title>
 <link rel="icon" type="image/png" href="../assets/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,7 +17,7 @@
     --line:rgba(201,164,92,0.18); --line-soft:rgba(230,223,208,0.08);
     --serif:'Cormorant Garamond','Times New Roman',serif;
     --sans:'Archivo',system-ui,sans-serif;
-    --red:#e07a5f; --amber:#e0b95f; --green:#7ac491;
+    --red:#e07a5f; --green:#7ac491;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
@@ -39,41 +39,43 @@
   header.top .label{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:600;}
   header.top h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,5vw,42px);margin:10px 0 8px;}
   header.top p{color:var(--ink-dim);font-size:13.5px;max-width:560px;margin:0 auto;}
-  #updated{color:var(--ink-muted);font-size:11.5px;margin-top:14px;letter-spacing:0.5px;}
 
-  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px;}
 
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;justify-content:center;}
-  .filter-btn{background:var(--bg-2);border:1px solid var(--line);color:var(--ink-dim);padding:8px 16px;border-radius:100px;font-size:12px;letter-spacing:0.5px;cursor:pointer;transition:all .15s ease;}
+  .add-row{display:flex;gap:10px;margin-bottom:12px;}
+  .add-row input[type=text]{flex:1;background:var(--bg-2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--ink);font-family:var(--sans);font-size:14px;outline:none;}
+  .add-row input[type=text]:focus{border-color:var(--gold);}
+  .add-row input#new-source{max-width:220px;}
+  .add-row button{background:linear-gradient(135deg,var(--gold),var(--gold-bright));border:none;border-radius:8px;padding:0 20px;color:#1a1408;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
+  .add-row button:hover{opacity:0.9;}
+  #add-err{color:var(--red);font-size:12px;margin-bottom:20px;min-height:14px;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+  .filter-btn{background:var(--bg-2);border:1px solid var(--line);color:var(--ink-dim);padding:7px 15px;border-radius:100px;font-size:12px;letter-spacing:0.5px;cursor:pointer;transition:all .15s ease;}
   .filter-btn:hover, .filter-btn.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(201,164,92,0.08);}
-
-  .group{margin-bottom:36px;}
-  .group h2{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--gold-bright);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--line);}
 
   .row{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line-soft);border-radius:10px;background:var(--bg-2);margin-bottom:8px;transition:border-color .15s ease;}
   .row:hover{border-color:var(--line);}
-  .row.status-done{opacity:0.45;}
-  .row.status-dead{opacity:0.3;}
+  .row.done{opacity:0.4;}
+  .row.done .text{text-decoration:line-through;}
 
-  .row .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;}
-  .dot.high{background:var(--red);box-shadow:0 0 8px rgba(224,122,95,0.6);}
-  .dot.medium{background:var(--amber);}
-  .dot.low{background:var(--ink-muted);}
+  .check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--gold);background:transparent;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;}
+  .check:hover{background:rgba(201,164,92,0.15);}
+  .row.done .check{background:var(--green);border-color:var(--green);}
+  .check svg{width:12px;height:12px;display:none;}
+  .row.done .check svg{display:block;}
 
   .row .body{flex:1;min-width:0;}
-  .row .name-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
-  .row .name{font-family:var(--serif);font-weight:600;font-size:17px;color:var(--ink);}
-  .badge{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:100px;font-weight:600;}
-  .badge.status-not_started{background:rgba(230,223,208,0.08);color:var(--ink-dim);}
-  .badge.status-in_progress{background:rgba(224,185,95,0.12);color:var(--amber);}
-  .badge.status-waiting{background:rgba(122,196,145,0.1);color:var(--green);}
-  .badge.status-done{background:rgba(122,196,145,0.15);color:var(--green);}
-  .badge.status-dead{background:rgba(230,223,208,0.06);color:var(--ink-muted);}
-  .row .context{color:var(--ink-dim);font-size:13px;margin-top:4px;}
-  .row .next{color:var(--gold-bright);font-size:12.5px;margin-top:6px;font-style:italic;}
-  .row .next::before{content:"→ ";}
+  .row .text{font-family:var(--serif);font-weight:500;font-size:16.5px;color:var(--ink);}
+  .row .source{color:var(--ink-muted);font-size:12px;margin-top:4px;}
+  .row .source::before{content:"source: ";color:var(--ink-muted);}
+  .row .meta{color:var(--ink-muted);font-size:11px;margin-top:2px;}
+
+  .del-btn{background:transparent;border:none;color:var(--ink-muted);cursor:pointer;font-size:16px;padding:2px 6px;flex-shrink:0;}
+  .del-btn:hover{color:var(--red);}
 
   .empty-note{text-align:center;color:var(--ink-muted);font-size:13px;padding:30px 0;}
+  #updated{color:var(--ink-muted);font-size:11.5px;text-align:center;margin-top:14px;letter-spacing:0.5px;}
 
   footer{text-align:center;padding:30px 20px;color:var(--ink-muted);font-size:11.5px;border-top:1px solid var(--line-soft);}
   footer a{color:var(--gold);text-decoration:none;}
@@ -84,7 +86,7 @@
 <div id="gate">
   <div class="gate-card">
     <div class="gate-mark">B</div>
-    <h1>Follow-Up Tracker</h1>
+    <h1>To-Do</h1>
     <p>Private — enter password to continue</p>
     <input type="password" id="gate-pw" placeholder="Password" autocomplete="off" />
     <button id="gate-btn">Unlock</button>
@@ -95,28 +97,58 @@
 <div id="content">
   <header class="top">
     <div class="label">Private · Bryson Hunter</div>
-    <h1>Who I'm Behind On</h1>
-    <p>Every name here is currently unactioned or overdue. Nothing gets removed without a status change to Done or Dead.</p>
-    <div id="updated">Last synced: —</div>
+    <h1>To-Do</h1>
+    <p>Real tasks, independently completable. Each one tagged with where it came from.</p>
   </header>
 
   <div class="wrap">
-    <div class="toolbar" id="toolbar">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="high">🔥 High Priority</button>
-      <button class="filter-btn" data-filter="open">Open Only</button>
+    <div class="add-row">
+      <input type="text" id="new-text" placeholder="New to-do..." />
+      <input type="text" id="new-source" placeholder="Source (e.g. iMessage - Ben)" />
+      <button id="add-btn">Add</button>
     </div>
-    <div id="groups"></div>
+    <div id="add-err"></div>
+
+    <div class="toolbar" id="toolbar">
+      <button class="filter-btn active" data-filter="open">Open</button>
+      <button class="filter-btn" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="done">Done</button>
+    </div>
+
+    <div id="list"></div>
+    <div id="updated">Loading...</div>
   </div>
 
   <footer>
-    Synced from Obsidian vault · <a href="/pages">Back to hub</a>
+    <a href="/pages">Back to hub</a>
   </footer>
 </div>
 
 <script>
   const PASSWORD_HASH = "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0";
   const SESSION_KEY = "bh_todo_unlocked";
+
+  const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
+  const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
+
+  async function sb(path, opts = {}) {
+    const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+      ...opts,
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': opts.prefer || 'return=representation',
+        ...(opts.headers || {})
+      }
+    });
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Supabase ${res.status}: ${errText}`);
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
 
   async function sha256Hex(str){
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -125,7 +157,7 @@
   function showContent(){
     document.getElementById('gate').style.display = 'none';
     document.getElementById('content').style.display = 'block';
-    loadData();
+    loadTodos();
   }
   function showGate(){
     document.getElementById('gate').style.display = 'flex';
@@ -145,65 +177,18 @@
   document.getElementById('gate-btn').addEventListener('click', tryUnlock);
   document.getElementById('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
 
-  const STATUS_LABELS = {
-    not_started: "Not Started",
-    in_progress: "In Progress",
-    waiting: "Waiting on Them",
-    done: "Done",
-    dead: "Dead"
-  };
+  let currentFilter = 'open';
+  let allTodos = [];
 
-  let currentFilter = 'all';
-  let allData = null;
-
-  async function loadData(){
-    try{
-      const res = await fetch('/todo/todo-data.json?_=' + Date.now());
-      const data = await res.json();
-      allData = data;
-      document.getElementById('updated').textContent = 'Last synced: ' + (data.generated_at || 'unknown');
+  async function loadTodos(){
+    const updated = document.getElementById('updated');
+    try {
+      allTodos = await sb('site_todos?select=*&order=created_at.desc');
+      updated.textContent = 'Synced live · ' + allTodos.length + ' total';
       render();
-    } catch(e){
-      document.getElementById('groups').innerHTML = '<div class="empty-note">Could not load tracker data.</div>';
-    }
-  }
-
-  function render(){
-    if (!allData) return;
-    const container = document.getElementById('groups');
-    container.innerHTML = '';
-    allData.groups.forEach(group => {
-      let people = group.people.filter(p => {
-        if (currentFilter === 'high') return p.priority === 'high';
-        if (currentFilter === 'open') return p.status !== 'done' && p.status !== 'dead';
-        return true;
-      });
-      if (people.length === 0) return;
-      const groupEl = document.createElement('div');
-      groupEl.className = 'group';
-      const h2 = document.createElement('h2');
-      h2.textContent = group.name;
-      groupEl.appendChild(h2);
-      people.forEach(p => {
-        const row = document.createElement('div');
-        row.className = 'row status-' + p.status;
-        row.innerHTML = `
-          <div class="dot ${p.priority}"></div>
-          <div class="body">
-            <div class="name-line">
-              <span class="name">${escapeHtml(p.name)}</span>
-              <span class="badge status-${p.status}">${STATUS_LABELS[p.status] || p.status}</span>
-            </div>
-            ${p.context ? `<div class="context">${escapeHtml(p.context)}</div>` : ''}
-            ${p.next_action ? `<div class="next">${escapeHtml(p.next_action)}</div>` : ''}
-          </div>
-        `;
-        groupEl.appendChild(row);
-      });
-      container.appendChild(groupEl);
-    });
-    if (!container.innerHTML) {
-      container.innerHTML = '<div class="empty-note">Nothing matches this filter.</div>';
+    } catch (e) {
+      document.getElementById('list').innerHTML = '<div class="empty-note">Could not load. ' + escapeHtml(e.message) + '</div>';
+      updated.textContent = '';
     }
   }
 
@@ -211,6 +196,89 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function render(){
+    const list = document.getElementById('list');
+    let items = allTodos;
+    if (currentFilter === 'open') items = items.filter(t => t.status !== 'done');
+    if (currentFilter === 'done') items = items.filter(t => t.status === 'done');
+
+    if (items.length === 0){
+      list.innerHTML = '<div class="empty-note">Nothing here.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
+    items.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'row' + (t.status === 'done' ? ' done' : '');
+      row.dataset.id = t.id;
+      const created = t.created_at ? new Date(t.created_at).toLocaleDateString() : '';
+      row.innerHTML = `
+        <button class="check" data-action="toggle" data-id="${t.id}" data-status="${t.status}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1408" stroke-width="3"><path d="M4 12l5 5L20 7"/></svg>
+        </button>
+        <div class="body">
+          <div class="text">${escapeHtml(t.text)}</div>
+          ${t.source ? `<div class="source">${escapeHtml(t.source)}</div>` : ''}
+          <div class="meta">${created}</div>
+        </div>
+        <button class="del-btn" data-action="delete" data-id="${t.id}">✕</button>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById('list').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    if (btn.dataset.action === 'toggle'){
+      const newStatus = btn.dataset.status === 'done' ? 'open' : 'done';
+      try {
+        await sb(`site_todos?id=eq.${id}`, {
+          method: 'PATCH',
+          prefer: 'return=minimal',
+          body: JSON.stringify({ status: newStatus, completed_at: newStatus === 'done' ? new Date().toISOString() : null })
+        });
+        await loadTodos();
+      } catch (err) { alert('Failed to update: ' + err.message); }
+    } else if (btn.dataset.action === 'delete'){
+      if (!confirm('Delete this to-do?')) return;
+      try {
+        await sb(`site_todos?id=eq.${id}`, { method: 'DELETE', prefer: 'return=minimal' });
+        await loadTodos();
+      } catch (err) { alert('Failed to delete: ' + err.message); }
+    }
+  });
+
+  document.getElementById('add-btn').addEventListener('click', addTodo);
+  document.getElementById('new-text').addEventListener('keydown', e => { if (e.key === 'Enter') addTodo(); });
+
+  async function addTodo(){
+    const textEl = document.getElementById('new-text');
+    const sourceEl = document.getElementById('new-source');
+    const errEl = document.getElementById('add-err');
+    const text = textEl.value.trim();
+    const source = sourceEl.value.trim();
+    if (!text){
+      errEl.textContent = 'Enter a to-do first.';
+      return;
+    }
+    errEl.textContent = '';
+    try {
+      await sb('site_todos', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: JSON.stringify({ text, source, status: 'open' })
+      });
+      textEl.value = '';
+      sourceEl.value = '';
+      await loadTodos();
+    } catch (err) {
+      errEl.textContent = 'Failed to add: ' + err.message;
+    }
   }
 
   document.getElementById('toolbar').addEventListener('click', e => {
