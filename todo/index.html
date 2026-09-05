@@ -158,7 +158,7 @@
 
   async function loadData(){
     try{
-      const res = await fetch('./todo-data.json?_=' + Date.now());
+      const res = await fetch('/todo/todo-data.json?_=' + Date.now());
       const data = await res.json();
       allData = data;
       document.getElementById('updated').textContent = 'Last synced: ' + (data.generated_at || 'unknown');
