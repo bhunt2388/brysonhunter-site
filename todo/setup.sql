@@ -23,3 +23,6 @@ create policy "todos_insert_anon" on public.site_todos
 
 create policy "todos_update_anon" on public.site_todos
   for update using (true);
+
+create policy "todos_delete_anon" on public.site_todos
+  for delete using (true);
