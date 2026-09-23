@@ -58,6 +58,11 @@
   .row:hover{border-color:var(--line);}
   .row.done{opacity:0.4;}
   .row.done .text{text-decoration:line-through;}
+  .row.autoresolved{opacity:0.5;border-style:dashed;}
+  .row .badge{display:inline-block;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink-muted);border:1px solid var(--line-soft);border-radius:4px;padding:1px 6px;margin-left:6px;}
+
+  .ignore-btn{background:transparent;border:1px solid var(--line-soft);color:var(--ink-muted);cursor:pointer;font-size:11px;padding:3px 10px;border-radius:6px;flex-shrink:0;white-space:nowrap;}
+  .ignore-btn:hover{color:var(--red);border-color:var(--red);}
 
   .check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--gold);background:transparent;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;}
   .check:hover{background:rgba(201,164,92,0.15);}
@@ -113,6 +118,7 @@
       <button class="filter-btn active" data-filter="open">Open</button>
       <button class="filter-btn" data-filter="all">All</button>
       <button class="filter-btn" data-filter="done">Done</button>
+      <button class="filter-btn" data-filter="ignored">Ignored</button>
     </div>
 
     <div id="list"></div>
@@ -201,8 +207,9 @@
   function render(){
     const list = document.getElementById('list');
     let items = allTodos;
-    if (currentFilter === 'open') items = items.filter(t => t.status !== 'done');
+    if (currentFilter === 'open') items = items.filter(t => t.status !== 'done' && t.status !== 'ignored');
     if (currentFilter === 'done') items = items.filter(t => t.status === 'done');
+    if (currentFilter === 'ignored') items = items.filter(t => t.status === 'ignored' || t.status === 'auto-resolved');
 
     if (items.length === 0){
       list.innerHTML = '<div class="empty-note">Nothing here.</div>';
@@ -212,18 +219,22 @@
     list.innerHTML = '';
     items.forEach(t => {
       const row = document.createElement('div');
-      row.className = 'row' + (t.status === 'done' ? ' done' : '');
+      const doneLike = t.status === 'done' || t.status === 'ignored' || t.status === 'auto-resolved';
+      row.className = 'row' + (doneLike ? ' done' : '') + (t.status === 'auto-resolved' ? ' autoresolved' : '');
       row.dataset.id = t.id;
       const created = t.created_at ? new Date(t.created_at).toLocaleDateString() : '';
+      const badge = t.status === 'auto-resolved' ? '<span class="badge">auto-resolved</span>'
+        : t.status === 'ignored' ? '<span class="badge">ignored</span>' : '';
       row.innerHTML = `
         <button class="check" data-action="toggle" data-id="${t.id}" data-status="${t.status}">
           <svg viewBox="0 0 24 24" fill="none" stroke="#1a1408" stroke-width="3"><path d="M4 12l5 5L20 7"/></svg>
         </button>
         <div class="body">
-          <div class="text">${escapeHtml(t.text)}</div>
+          <div class="text">${escapeHtml(t.text)}${badge}</div>
           ${t.source ? `<div class="source">${escapeHtml(t.source)}</div>` : ''}
           <div class="meta">${created}</div>
         </div>
+        ${t.status === 'open' ? `<button class="ignore-btn" data-action="ignore" data-id="${t.id}">Ignore</button>` : ''}
         <button class="del-btn" data-action="delete" data-id="${t.id}">✕</button>
       `;
       list.appendChild(row);
@@ -244,6 +255,15 @@
         });
         await loadTodos();
       } catch (err) { alert('Failed to update: ' + err.message); }
+    } else if (btn.dataset.action === 'ignore'){
+      try {
+        await sb(`site_todos?id=eq.${id}`, {
+          method: 'PATCH',
+          prefer: 'return=minimal',
+          body: JSON.stringify({ status: 'ignored', completed_at: new Date().toISOString() })
+        });
+        await loadTodos();
+      } catch (err) { alert('Failed to ignore: ' + err.message); }
     } else if (btn.dataset.action === 'delete'){
       if (!confirm('Delete this to-do?')) return;
       try {
