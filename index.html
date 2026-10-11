@@ -827,6 +827,10 @@
   }
   .field input:focus, .field textarea:focus, .field select:focus{border-color:var(--gold);}
   .field textarea{min-height:100px; resize:vertical; font-family:var(--sans);}
+  .consent{flex-direction:row !important; align-items:flex-start; gap:12px !important;}
+  .consent input[type=checkbox]{width:18px; height:18px; padding:0; margin-top:3px; flex:none; accent-color:var(--gold);}
+  .consent label{font-size:11px !important; letter-spacing:.02em !important; text-transform:none !important; color:var(--ink-dim) !important; line-height:1.6;}
+  .consent label a{color:var(--gold);}
   .form-row{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
   .modal .btn-primary{margin-top:12px; cursor:pointer; border:none; width:100%;}
 
@@ -1744,11 +1748,12 @@
     </div>
     <div class="footer-bottom">
       <div style="width:100%;font-size:10px;color:rgba(201,169,97,0.35);line-height:1.7;margin-bottom:12px;">
-        This site is intended for individuals 18 years of age or older. By submitting a form on this site, you agree to receive SMS/text communications from Bryson Hunter Enterprises. Message &amp; data rates may apply. Message frequency varies. Reply STOP to opt out at any time. Reply HELP for assistance. Carrier liability is not assumed. View our <a href="/privacy" style="color:rgba(201,169,97,0.5);">Privacy Policy</a> and <a href="/terms" style="color:rgba(201,169,97,0.5);">Terms of Service</a>.
+        This site is intended for individuals 18 years of age or older. You can opt in to text messages from Bryson Hunter Enterprises by checking the optional SMS consent box on our inquiry forms at brysonhunter.com or at <a href="/sms" style="color:rgba(201,169,97,0.5);">brysonhunter.com/sms</a>. Consent is not a condition of any purchase. Message &amp; data rates may apply. Message frequency varies. Reply STOP to opt out at any time. Reply HELP for assistance or call +1 (760) 702-9106. Carriers are not liable for delayed or undelivered messages. View our <a href="/sms" style="color:rgba(201,169,97,0.5);">SMS Program Terms</a>, <a href="/privacy" style="color:rgba(201,169,97,0.5);">Privacy Policy</a> and <a href="/terms" style="color:rgba(201,169,97,0.5);">Terms of Service</a>.
       </div>
       <div>© 2026 Bryson Hunter Enterprises</div>
       <div class="legal">
         <a href="/privacy">Privacy</a>
+        <a href="/sms">SMS Terms</a>
         <a href="#disclosures">Disclosures</a>
         <a href="/terms">Terms</a>
       </div>
@@ -1781,6 +1786,11 @@
       </div>
 
 
+      <div class="field">
+        <label>Mobile Phone (optional)</label>
+        <input type="tel" name="phone" autocomplete="tel" placeholder="(555) 555-5555" />
+      </div>
+
       <div class="field" id="capitalField">
         <label>Capital Range / Deal Size</label>
         <select name="capital">
@@ -1794,6 +1804,10 @@
       <div class="field">
         <label id="messageLabel">Brief Overview</label>
         <textarea name="message" placeholder="Tell us about your interest, background, or deal." required></textarea>
+      </div>
+      <div class="field consent">
+        <input type="checkbox" id="smsConsent" name="sms_consent" value="Yes - opted in via brysonhunter.com inquiry form" />
+        <label for="smsConsent">Optional: Text me. By checking this box and providing my mobile number, I agree to receive text messages from Bryson Hunter Enterprises about my inquiry, sent by an automated system. Consent is not a condition of any purchase or investment. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. See the <a href="/sms" target="_blank" rel="noopener">SMS Program Terms</a>, <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>. No mobile information is shared with third parties for marketing.</label>
       </div>
       <button type="submit" class="btn-primary">Submit Inquiry</button>
     </form>
