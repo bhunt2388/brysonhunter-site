@@ -44,12 +44,16 @@ body { background: var(--offwhite); color: var(--text); font-family: 'Montserrat
 .eyebrow { font-size: 10.6px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); font-weight: 700; font-family: 'Montserrat', sans-serif; }
 .cover h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(42.5px, 4.5vw, 70.8px); font-weight: 600; line-height: 1.08; color: var(--black); letter-spacing: -0.01em; }
 .cover h1 em { font-style: italic; color: var(--gold); }
-.cover h1 .amp { color: var(--green); font-style: italic; }
+.cover h1 .amp { color: var(--gold); font-style: italic; }
+.cover h1 { text-wrap: balance; }
 .cover-sub { font-size: 17.7px; color: var(--muted); max-width: 580px; line-height: 1.75; font-weight: 400; }
 .bar { width: 56px; height: 1px; background: linear-gradient(90deg, var(--black), var(--gold)); }
 
 /* HERO NUMBERS */
-.hero-nums { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; }
+.hero-nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; max-width: 980px; margin: 0 auto; width: 100%; }
+.hero-num { text-align: center; padding: 6px 18px; }
+.hero-num + .hero-num { border-left: 1px solid rgba(172,139,83,.35); }
+.cover .meta-row { margin-top: 28px; padding-bottom: 8px; }
 .hero-num .v { font-family: 'Cormorant Garamond', serif; font-size: 44.8px; font-weight: 700; color: var(--black); display: block; line-height: 1; }
 .hero-num .l { font-size: 10.6px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-top: 8px; display: block; font-weight: 600; }
 
@@ -210,7 +214,8 @@ body { background: var(--offwhite); color: var(--text); font-family: 'Montserrat
   .cover-sub { font-size: 15.3px; max-width: 100%; padding: 0 6px; }
   .s-title { font-size: clamp(26.0px, 6vw, 35.4px); margin-bottom: 22px; }
 
-  .hero-nums { gap: 22px; }
+  .hero-nums { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 0; }
+  .hero-num:nth-child(3) { border-left: none; }
   .hero-num .v { font-size: 30.7px; }
   .hero-num .l { font-size: 9.4px; margin-top: 5px; }
 
@@ -323,7 +328,7 @@ img { max-width: 100%; height: auto; }
     <span class="eyebrow" style="color:var(--gold);">Private Investment Opportunity · Las Vegas, Nevada</span>
     <span class="meta-line" style="color:rgba(255,255,255,0.8);">Developer &amp; Owner: Same Entity</span>
   </div>
-  <h1 style="color:#fff;">The English <em>Hotel</em> <span class="amp">&amp;</span><br>Residences</h1>
+  <h1 style="color:#fff;">The English <em>Hotel</em> <span class="amp">&amp;</span> Residences</h1>
   <div class="brand-line" style="max-width:400px;"></div>
   <p class="cover-sub" style="font-size: 15.3px;letter-spacing:1px;text-transform:uppercase;color:rgba(211,204,197,0.8);font-weight:600;">A Tribute Portfolio Hotel — Midtown Las Vegas Arts District</p>
   <p class="cover-sub" style="color:rgba(255,255,255,0.75);">A contractually protected position in 17 Marriott-eligible luxury condominiums. The developer who is <strong style="color:#fff;">selling you this option is also the owner and operator of The English Hotel &amp; Residences</strong> — the Marriott Tribute Portfolio brand anchoring this entire building's value.</p>
