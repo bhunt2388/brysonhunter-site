@@ -897,7 +897,7 @@ async function handleSubmit(e){
   var form=e.target,btn=form.querySelector('[type="submit"]'),orig=btn.innerHTML;
   btn.textContent='Sending\u2026';btn.disabled=true;
   try{
-    var r=await fetch('https://formspree.io/f/xdarooko',{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    var r=await fetch('/api/lead',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(form))),headers:{'Content-Type':'application/json'}});
     if(r.ok){form.innerHTML='<div class="mdone"><h3 style="font-family:var(--serif);font-size:44px;font-weight:500;margin-bottom:12px">Received.</h3><p style="color:var(--mute)">Bryson will be in contact within 72 hours.</p></div>'}
     else{btn.innerHTML=orig;btn.disabled=false;alert('Error. Email bryson@brysonhunter.com directly.')}
   }catch(err){btn.innerHTML=orig;btn.disabled=false;alert('Network error. Email bryson@brysonhunter.com directly.')}
