@@ -142,6 +142,15 @@
   .contact-note-preview{color:var(--muted); font-size:12px; font-style:italic; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border);}
 
   footer{margin-top:30px; color:var(--muted); font-size:12px; text-align:center;}
+
+  /* REDESIGN PASS: plain text tags instead of chips */
+  .history-row .h-tag{background:none !important;padding:0;border-radius:0;font-size:10px;font-weight:700;letter-spacing:.12em;margin-right:8px;}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>

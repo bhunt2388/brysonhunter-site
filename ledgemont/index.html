@@ -116,6 +116,29 @@
     .term-grid{grid-template-columns:1fr;}
     .arv-callout{flex-direction:column;align-items:flex-start;}
   }
+
+  /* REDESIGN PASS */
+  body{counter-reset:sec;}
+  .hero-eyebrow,.eyebrow{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;letter-spacing:.01em;text-transform:none;display:flex;align-items:baseline;gap:14px;}
+  .eyebrow{counter-increment:sec;}
+  .eyebrow::before{content:counter(sec,decimal-leading-zero);font-family:'JetBrains Mono',monospace;font-style:normal;font-size:11px;letter-spacing:.2em;opacity:.7;}
+  .eyebrow::after{content:"";width:56px;height:1px;background:currentColor;opacity:.35;align-self:center;}
+  .hero-eyebrow::after{content:"";width:56px;height:1px;background:currentColor;opacity:.5;align-self:center;}
+  .ba-tag{left:0;right:0;top:auto;bottom:0;border-radius:0;padding:28px 16px 12px;font-size:11px;letter-spacing:.12em;background:linear-gradient(to top,rgba(5,15,28,.82),rgba(5,15,28,0)) !important;color:#fff !important;}
+  .ba-tag.after{color:var(--gold) !important;}
+  .ba-card,.arv-callout,.use-of-funds{transition:box-shadow .3s ease,transform .3s ease,border-color .3s ease;}
+  .ba-card:hover,.arv-callout:hover{box-shadow:0 14px 36px rgba(10,37,64,.14);transform:translateY(-2px);}
+  .btn-primary,.nav a.cta{transition:transform .25s ease,filter .25s ease;}
+  .btn-primary:hover,.nav a.cta:hover{filter:brightness(1.08);transform:translateY(-2px);}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:3px;}
+
+  @media (max-width:640px){.nav{padding:14px 20px;}.hero-eyebrow,.eyebrow{font-size:17px;}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}
 </style>
 </head>
 <body>
@@ -195,7 +218,7 @@
     <p class="lead">
       Luxury-tier renovated homes in the 84124 zip have sold and listed between $561 and $665 per square foot over the past 90 days. At a $2.2M target — roughly $423 per square foot on 5,200 square feet — this project is priced meaningfully below the top of that range, giving room for upside beyond the underwritten number.
     </p>
-    <table class="comps">
+    <div class="table-scroll"><table class="comps">
       <thead>
         <tr><th>Address</th><th class="r">Beds/Ba</th><th class="r">Sqft</th><th class="r">Price</th><th class="r">$/sf</th><th>Status</th></tr>
       </thead>
@@ -210,7 +233,7 @@
           <td>3604 E Apple Mill Cv</td><td class="r">4/5</td><td class="r">5,172</td><td class="r">$1,600,000</td><td class="r">$309</td><td>Sold May 2026 · standard-tier reno</td>
         </tr>
       </tbody>
-    </table>
+    </table></div>
     <div class="arv-callout">
       <div>
         <div class="l">Projected After-Repair Value — Luxury Build</div>

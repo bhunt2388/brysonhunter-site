@@ -248,6 +248,17 @@
     .link-row{ padding:16px 18px; }
     .link-title{ font-size:17px; }
   }
+
+  /* REDESIGN PASS: plain status text instead of pill badges */
+  .badge{border:none !important;background:none !important;border-radius:0 !important;padding:0 !important;margin-left:12px;font-size:10px;letter-spacing:.18em;font-weight:600;position:relative;}
+  .badge::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;opacity:.6;vertical-align:middle;margin-right:8px;}
+  .lock-btn{border-radius:2px !important;}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>

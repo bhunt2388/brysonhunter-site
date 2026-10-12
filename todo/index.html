@@ -84,6 +84,15 @@
 
   footer{text-align:center;padding:30px 20px;color:var(--ink-muted);font-size:11.5px;border-top:1px solid var(--line-soft);}
   footer a{color:var(--gold);text-decoration:none;}
+
+  /* REDESIGN PASS: decorative label styling only */
+  .row .badge{border:none;border-radius:0;padding:0;font-weight:600;letter-spacing:.14em;}
+  .filter-btn{border-radius:4px;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>

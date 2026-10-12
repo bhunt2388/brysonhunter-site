@@ -901,6 +901,48 @@
   .tax-row{font-size:13px;color:var(--ink-dim);padding:6px 0;border-bottom:1px solid var(--line-soft);display:flex;gap:8px;}
   .tax-row:last-child{border-bottom:none;} .tcx{color:rgba(220,80,80,.7);flex-shrink:0;} .tck{color:var(--gold);flex-shrink:0;}
   @media(max-width:980px){.tax-grid{grid-template-columns:1fr;gap:48px;}.tax-cmp{grid-template-columns:1fr;}}
+
+  /* ===== REDESIGN PASS: editorial kickers (no pills/chips), rhythm, motion safety ===== */
+  main, body{counter-reset:sec;}
+  .section-eyebrow, .hero-eyebrow{
+    display:flex; align-items:baseline; gap:16px;
+    font-family:var(--serif); font-style:italic; font-size:clamp(17px,1.5vw,21px);
+    letter-spacing:.02em; text-transform:none; font-weight:400; color:var(--gold);
+  }
+  .section-eyebrow::before, .hero-eyebrow::before{display:none;}
+  .section-eyebrow:not(.sub){counter-increment:sec;}
+  .section-eyebrow:not(.sub)::before{
+    display:inline; content:counter(sec,decimal-leading-zero);
+    width:auto; height:auto; background:none; font-style:normal;
+    font-family:var(--sans); font-size:11px; letter-spacing:.3em; color:var(--ink-muted);
+  }
+  .section-eyebrow:not(.sub)::after{content:""; flex:0 0 72px; height:1px; background:var(--line); align-self:center; order:0;}
+  .hero-eyebrow::after{content:""; flex:0 0 72px; height:1px; background:var(--gold); align-self:center;}
+  .section-eyebrow.sub{font-size:16px; color:var(--ink-dim);}
+  .partner-card .card-eyebrow{font-family:var(--serif); font-style:italic; font-size:19px; letter-spacing:.01em; text-transform:none; color:var(--gold);}
+  .section-title{text-wrap:balance;}
+  .holding, .partner-card, .tax-card, .tax-col, .stat{transition:transform .12s ease-out, box-shadow .35s ease, border-color .35s ease, background .35s ease;}
+  .holding:hover, .partner-card:hover, .tax-card:hover{border-color:var(--gold);}
+  .btn-primary:active, .btn-ghost:active{transform:translateY(0);}
+  .btn-primary, .btn-ghost{min-height:48px; display:inline-flex; align-items:center; justify-content:center;}
+  .nav a:not(.brand){transition:color .25s ease;}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px;}
+
+  @media (max-width:560px){
+    section{padding:80px 20px;}
+    .hero{padding:120px 20px 64px;}
+    .section-eyebrow:not(.sub)::after,.hero-eyebrow::after{flex-basis:40px;}
+    .hero-eyebrow{margin-bottom:32px;}
+    .btn-primary,.btn-ghost{padding:16px 24px; width:100%;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important; transition-duration:.001ms !important; scroll-behavior:auto !important;}
+    .reveal{opacity:1 !important; transform:none !important;}
+    .holding,.pillar,.partner-card{transform:none !important;}
+    em.shimmer,.section-title em,.hero h1 em,.about-copy h3 em,.partner-card h3 em,.modal h3 em{background-position:0 center;}
+    .hero *, .scroll-hint{opacity:1 !important; transform:none !important;}
+  }
+
 </style>
 </head>
 <body>
@@ -1230,7 +1272,7 @@
         </div>
       </div>
       <div>
-        <div class="section-eyebrow" style="margin-bottom:20px;">How it compares</div>
+        <div class="section-eyebrow sub" style="margin-bottom:20px;">How it compares</div>
         <div class="tax-cmp">
           <div class="tax-col bad">
             <div class="tax-col-h red">&times; Conservation Easements</div>
@@ -1248,7 +1290,7 @@
           </div>
         </div>
         <div style="margin-top:28px;background:var(--bg-2);border:1px solid var(--line-soft);border-left:3px solid var(--gold);padding:24px 28px;">
-          <div class="section-eyebrow" style="margin-bottom:10px;">Who it&rsquo;s for</div>
+          <div class="section-eyebrow sub" style="margin-bottom:10px;">Who it&rsquo;s for</div>
           <p style="font-size:14px;color:var(--ink-dim);line-height:1.75;">Clients with <strong style="color:var(--ink);">$500K+</strong> in annual ordinary income. $50K minimum for the leveraged donation. $3M+ federal tax liability for &sect;45Q credits.</p>
         </div>
       </div>

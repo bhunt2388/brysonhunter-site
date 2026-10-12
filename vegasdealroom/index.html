@@ -78,6 +78,21 @@
     .internal-banner{position:static;}
     .slide{min-height:auto;page-break-after:always;padding:40px 50px;}
   }
+
+/* REDESIGN PASS */
+body{counter-reset:sec;}
+.section-label{counter-increment:sec;display:flex;align-items:baseline;gap:14px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;letter-spacing:.01em;text-transform:none;font-weight:600;}
+.section-label::before{content:counter(sec,decimal-leading-zero);font-family:'Inter',sans-serif;font-style:normal;font-size:11px;letter-spacing:.25em;opacity:.7;}
+.section-label::after{content:"";width:56px;height:1px;background:currentColor;opacity:.4;align-self:center;}
+.lock-badge{display:block;border-radius:0;border:none;border-left:3px solid #FF4D4D;background:rgba(255,77,77,0.08);padding:14px 20px;font-size:13px;font-weight:600;letter-spacing:.2px;line-height:1.6;text-align:left;max-width:640px;}
+.card,.lever-card,.callout{transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;}
+.card:hover,.lever-card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.28);}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #FF8080;outline-offset:3px;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>

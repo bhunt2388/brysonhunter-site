@@ -44,6 +44,15 @@ body{background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:
 .spec-label{font-family:var(--mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--wood-d); margin-bottom:8px;}
 .spec-val{font-size:15px; font-weight:600;}
 @media(max-width:800px){.spec-grid{grid-template-columns:1fr 1fr;}}
+
+/* REDESIGN PASS: plain ruled section labels (no chips), no brand gold */
+.sec-label{display:block;font-size:12px;letter-spacing:3px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.doc-eyebrow::before{width:40px;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>

@@ -308,6 +308,18 @@
     h1.title{ font-size:32px; }
     .metrics{ flex-direction:column; }
   }
+
+  /* REDESIGN PASS */
+  .card,.metric{transition:box-shadow .3s ease,transform .3s ease;}
+  .card:hover,.metric:hover{box-shadow:0 12px 30px rgba(0,0,0,.18);transform:translateY(-2px);}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid currentColor;outline-offset:3px;}
+
+  @media (max-width:640px){.header{flex-direction:column;align-items:flex-start;gap:12px;}.doc-meta{text-align:left;}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
 </style>
 </head>
 <body>
@@ -332,7 +344,7 @@
 
   <div class="header">
     <div class="brand">Bryson Hunter Real Estate</div>
-    <div class="tag">Confidential Investment Summary<br>Prepared August 2026</div>
+    <div class="doc-meta">Confidential Investment Summary<br>Prepared August 2026</div>
   </div>
 
   <div class="confidential">Confidential — For Discussion Purposes Only</div>
