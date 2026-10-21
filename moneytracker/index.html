@@ -141,6 +141,16 @@
   .contact-line a:hover{color:var(--accent);}
   .contact-note-preview{color:var(--muted); font-size:12px; font-style:italic; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border);}
 
+  .h-edit{background:none; border:none; color:var(--muted); cursor:pointer; font-size:12px; padding:0 4px; text-decoration:underline;}
+  .h-edit:hover{color:var(--accent);}
+  .h-tag.inv{background:rgba(250,204,21,.12); color:var(--gold);}
+  .h-tag.st-delivered{background:rgba(74,222,128,.12); color:var(--accent);}
+  .h-tag.st-failed,.h-tag.st-undelivered{background:rgba(248,113,113,.12); color:var(--danger);}
+  .h-tag.st-other{background:rgba(138,146,160,.14); color:var(--muted);}
+  .card-actions{flex-wrap:wrap;}
+  .card-actions button.edit-btn{border-color:#3b4252;}
+  .card-actions button.sub-btn:hover{border-color:var(--danger);}
+  .modal .hint{color:var(--muted); font-size:12px; margin:-6px 0 14px; line-height:1.4;}
   footer{margin-top:30px; color:var(--muted); font-size:12px; text-align:center;}
 
   /* REDESIGN PASS: plain text tags instead of chips */
@@ -270,6 +280,62 @@
   </div>
 </div>
 
+<!-- Edit Debtor Modal -->
+<div id="editDebtorModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3>Edit Debtor</h3>
+    <label>Name
+      <input type="text" id="editDebtorName" />
+    </label>
+    <label>Original Amount Owed
+      <input type="number" id="editDebtorAmount" step="0.01" min="0" />
+    </label>
+    <div class="hint">Changes the base amount. Payments and extra borrowing stay as logged.</div>
+    <div class="modal-actions">
+      <button onclick="closeModal('editDebtorModal')">Cancel</button>
+      <button class="primary" onclick="submitEditDebtor()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Edit Entry (payment / borrow) Modal -->
+<div id="editEntryModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3>Edit <span id="editEntryKind"></span></h3>
+    <label>Amount
+      <input type="number" id="editEntryAmount" step="0.01" />
+    </label>
+    <label>Date
+      <input type="date" id="editEntryDate" />
+    </label>
+    <label>Note
+      <input type="text" id="editEntryNote" />
+    </label>
+    <div class="modal-actions">
+      <button onclick="closeModal('editEntryModal')">Cancel</button>
+      <button class="primary" onclick="submitEditEntry()">Save</button>
+    </div>
+  </div>
+</div>
+<!-- Subtract Paid Modal -->
+<div id="subtractModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3>Subtract From Paid: <span id="subtractName"></span></h3>
+    <div class="hint" id="subtractHint"></div>
+    <label>Amount to subtract
+      <input type="number" id="subtractAmount" step="0.01" min="0" placeholder="0.00" />
+    </label>
+    <label>Date
+      <input type="date" id="subtractDate" />
+    </label>
+    <label>Reason (optional)
+      <input type="text" id="subtractNote" placeholder="e.g. payment bounced, logged twice" />
+    </label>
+    <div class="modal-actions">
+      <button onclick="closeModal('subtractModal')">Cancel</button>
+      <button class="primary" onclick="submitSubtract()">Subtract</button>
+    </div>
+  </div>
+</div>
 <script>
   // ---- passcode gate (client-side hash check, deters casual access) ----
   async function sha256(str){
@@ -319,7 +385,8 @@
 
   let expandedIds = new Set();
   let modalDebtId = null;
-  let state = { debtors: [], payments: [], borrows: [], contacts: {}, notes: '' };
+  let state = { debtors: [], payments: [], borrows: [], invoices: [], contacts: {}, notes: '' };
+  let editEntry = { kind:null, id:null };
   let loadError = null;
 
   function todayStr(){ return new Date().toISOString().slice(0,10); }
@@ -327,12 +394,13 @@
   // Loads the full shared state fresh from Supabase. Called on init and after every mutation
   // so both Bryson and Nancy always see the latest data, regardless of which device wrote it.
   async function loadState(){
-    const [debtorRows, paymentRows, borrowRows, contactRows, notesRows] = await Promise.all([
+    const [debtorRows, paymentRows, borrowRows, contactRows, notesRows, invoiceRows] = await Promise.all([
       sb('mt_debtors?select=id,name,original_amount,is_custom&order=created_at.asc'),
       sb('mt_payments?select=id,debt_id,amount,date,note'),
       sb('mt_borrows?select=id,debt_id,amount,date,note'),
       sb('mt_contacts?select=debt_id,phone,email,notes'),
       sb('mt_notes?select=content&id=eq.1'),
+      sb('mt_invoices?select=id,debt_id,channel,amount,status,invoice_no,sent_at,to_phone,to_email,error&order=sent_at.desc'),
     ]);
     const contacts = {};
     contactRows.forEach(c=>{ contacts[c.debt_id] = { phone: c.phone||'', email: c.email||'', notes: c.notes||'' }; });
@@ -340,6 +408,7 @@
       debtors: debtorRows.map(d=>({ id:d.id, name:d.name, originalAmount: Number(d.original_amount) })),
       payments: paymentRows.map(p=>({ id:p.id, debtId:p.debt_id, amount:Number(p.amount), date:p.date, note:p.note||'' })),
       borrows: borrowRows.map(b=>({ id:b.id, debtId:b.debt_id, amount:Number(b.amount), date:b.date, note:b.note||'' })),
+      invoices: invoiceRows.map(i=>({ id:i.id, debtId:i.debt_id, channel:i.channel||'email', amount:Number(i.amount), status:i.status||'sent', invoiceNo:i.invoice_no||'', date:(i.sent_at||'').slice(0,10), to:i.to_phone||i.to_email||'', error:i.error||'' })),
       contacts,
       notes: (notesRows[0] && notesRows[0].content) || '',
     };
@@ -358,7 +427,7 @@
   }
 
   function fmt(n){
-    return '$' + Math.round(n).toLocaleString('en-US');
+    return (n<0?'-':'') + '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
   function genId(prefix){ return prefix + '-' + Date.now() + '-' + Math.random().toString(36).slice(2,7); }
@@ -475,6 +544,83 @@
     } catch(e){ alert('Failed to delete borrow: ' + e.message); }
   }
 
+  async function logActivity(debtId, action, detail){
+    try{ await sb('mt_activity', { method:'POST', prefer:'return=minimal', body: JSON.stringify({ debt_id: debtId, action, detail }) }); }
+    catch(e){ console.error('activity log failed', e); }
+  }
+  function openEditDebtor(debtId){
+    const d = state.debtors.find(x=>x.id===debtId); if(!d) return;
+    modalDebtId = debtId;
+    document.getElementById('editDebtorName').value = d.name;
+    document.getElementById('editDebtorAmount').value = d.originalAmount;
+    document.getElementById('editDebtorModal').style.display = 'flex';
+  }
+  async function submitEditDebtor(){
+    const d = state.debtors.find(x=>x.id===modalDebtId); if(!d) return;
+    const name = document.getElementById('editDebtorName').value.trim();
+    const amount = parseFloat(document.getElementById('editDebtorAmount').value);
+    if(!name){ alert('Enter a name.'); return; }
+    if(isNaN(amount) || amount < 0){ alert('Enter a valid amount.'); return; }
+    try{
+      await sb(`mt_debtors?id=eq.${encodeURIComponent(modalDebtId)}`, { method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ name, original_amount: amount }) });
+      await logActivity(modalDebtId, 'edit_debtor', { from:{ name:d.name, original_amount:d.originalAmount }, to:{ name, original_amount:amount } });
+      closeModal('editDebtorModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save: ' + e.message); }
+  }
+  function openEditEntry(kind, id){
+    const list = kind === 'borrow' ? state.borrows : state.payments;
+    const e = list.find(x=>x.id===id); if(!e) return;
+    editEntry = { kind, id };
+    document.getElementById('editEntryKind').textContent = kind === 'borrow' ? 'Borrowed Amount' : 'Payment';
+    document.getElementById('editEntryAmount').value = e.amount;
+    document.getElementById('editEntryDate').value = e.date;
+    document.getElementById('editEntryNote').value = e.note || '';
+    document.getElementById('editEntryModal').style.display = 'flex';
+  }
+  async function submitEditEntry(){
+    const { kind, id } = editEntry;
+    const list = kind === 'borrow' ? state.borrows : state.payments;
+    const old = list.find(x=>x.id===id); if(!old) return;
+    const amount = parseFloat(document.getElementById('editEntryAmount').value);
+    const date = document.getElementById('editEntryDate').value || todayStr();
+    const note = document.getElementById('editEntryNote').value.trim();
+    if(isNaN(amount) || amount === 0){ alert('Enter a valid amount.'); return; }
+    if(kind === 'borrow' && amount < 0){ alert('Borrowed amount must be positive.'); return; }
+    const table = kind === 'borrow' ? 'mt_borrows' : 'mt_payments';
+    try{
+      await sb(`${table}?id=eq.${encodeURIComponent(id)}`, { method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ amount, date, note }) });
+      await logActivity(old.debtId, kind === 'borrow' ? 'edit_borrow' : 'edit_payment', { id, from:{ amount:old.amount, date:old.date, note:old.note }, to:{ amount, date, note } });
+      closeModal('editEntryModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save: ' + e.message); }
+  }
+  function openSubtractModal(debtId, name){
+    modalDebtId = debtId;
+    const paid = paidFor(state, debtId);
+    document.getElementById('subtractName').textContent = name;
+    document.getElementById('subtractHint').textContent = `Currently counted as paid: ${fmt(paid)}. This adds a correction entry that lowers the paid total (the original payments stay in history).`;
+    document.getElementById('subtractAmount').value = '';
+    document.getElementById('subtractDate').value = todayStr();
+    document.getElementById('subtractNote').value = '';
+    document.getElementById('subtractModal').style.display = 'flex';
+  }
+  async function submitSubtract(){
+    const amount = parseFloat(document.getElementById('subtractAmount').value);
+    const date = document.getElementById('subtractDate').value || todayStr();
+    const reason = document.getElementById('subtractNote').value.trim();
+    const paid = paidFor(state, modalDebtId);
+    if(!amount || amount <= 0){ alert('Enter a valid amount.'); return; }
+    if(amount > paid + 0.005){ alert(`That is more than the ${fmt(paid)} counted as paid.`); return; }
+    const note = 'Correction' + (reason ? ': ' + reason : '');
+    try{
+      const id = genId('p');
+      await sb('mt_payments', { method:'POST', prefer:'return=minimal', body: JSON.stringify({ id, debt_id: modalDebtId, amount: -amount, date, note }) });
+      await logActivity(modalDebtId, 'subtract_paid', { id, amount, date, reason });
+      closeModal('subtractModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to save: ' + e.message); }
+  }
   function toggleHistory(debtId){
     if(expandedIds.has(debtId)) expandedIds.delete(debtId);
     else expandedIds.add(debtId);
@@ -483,14 +629,14 @@
 
   async function sendInvoice(debtId, name, remaining, email, btnEl){
     if(!email){
-      alert(`No email on file for ${name}. Add one via "📇 Edit Contact" first.`);
+      alert(`No email on file for ${name}. Add one via "Contact" first.`);
       return;
     }
     if(!remaining || remaining <= 0){
       alert(`${name} has no outstanding balance to invoice.`);
       return;
     }
-    if(!confirm(`Send an invoice for ${fmt(remaining)} to ${name} (${email})?`)) return;
+    if(!confirm(`Email an invoice for ${fmt(remaining)} to ${name} (${email})?`)) return;
 
     const originalText = btnEl.textContent;
     btnEl.disabled = true;
@@ -499,14 +645,14 @@
       const res = await fetch('/api/send-invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ debtId, debtorName: name, amount: remaining, toEmail: email })
+        body: JSON.stringify({ debtId, toEmail: email })
       });
       const json = await res.json().catch(()=> ({}));
       if(!res.ok){
         throw new Error(json.error ? (typeof json.error === 'string' ? json.error : JSON.stringify(json.error)) : `HTTP ${res.status}`);
       }
-      btnEl.textContent = '✓ Sent';
-      setTimeout(()=>{ btnEl.textContent = originalText; btnEl.disabled = false; }, 2000);
+      btnEl.textContent = 'Sent ' + (json.invoiceNo || '');
+      await refreshAndRender();
     } catch(e){
       alert('Failed to send invoice: ' + e.message);
       btnEl.textContent = originalText;
@@ -514,6 +660,37 @@
     }
   }
 
+  async function sendInvoiceSms(debtId, name, remaining, phone, btnEl){
+    if(!phone){
+      alert(`No phone on file for ${name}. Add one via "Contact" first.`);
+      return;
+    }
+    if(!remaining || remaining <= 0){
+      alert(`${name} has no outstanding balance to invoice.`);
+      return;
+    }
+    if(!confirm(`Text a branded invoice (MMS) for ${fmt(remaining)} to ${name} at ${phone}?\n\nIt sends from the Command app number.`)) return;
+    const originalText = btnEl.textContent;
+    btnEl.disabled = true;
+    btnEl.textContent = 'Sending...';
+    try{
+      const res = await fetch('/api/send-invoice-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ debtId, toPhone: phone })
+      });
+      const json = await res.json().catch(()=> ({}));
+      if(!res.ok){
+        throw new Error(json.error ? (typeof json.error === 'string' ? json.error : JSON.stringify(json.error)) : `HTTP ${res.status}`);
+      }
+      btnEl.textContent = 'Queued ' + (json.invoiceNo || '');
+      await refreshAndRender();
+    } catch(e){
+      alert('Failed to text invoice: ' + e.message);
+      btnEl.textContent = originalText;
+      btnEl.disabled = false;
+    }
+  }
   // ---- chart ----
   function computeTimeline(s){
     const debts = allDebts(s);
@@ -656,6 +833,7 @@
       const history = []
         .concat(s.payments.filter(p=>p.debtId===d.id).map(p=>({...p, kind:'pay'})))
         .concat(s.borrows.filter(b=>b.debtId===d.id).map(b=>({...b, kind:'borrow'})))
+        .concat(s.invoices.filter(i=>i.debtId===d.id).map(i=>({...i, kind:'inv'})))
         .sort((a,b)=> new Date(b.date)-new Date(a.date));
 
       const contact = s.contacts[d.id] || {};
@@ -680,7 +858,12 @@
           <button data-toggle2="${d.id}">${isExpanded ? 'Hide History' : 'History (' + history.length + ')'}</button>
         </div>
         <div class="card-actions" style="margin-top:8px;">
-          <button class="invoice-btn" data-invoice="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-email="${(contact.email||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>🧾 Send Invoice</button>
+          <button class="edit-btn" data-editdebtor="${d.id}">Edit Amount</button>
+          <button class="sub-btn" data-subtract="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" ${paidRaw > 0 ? '' : 'disabled'}>Subtract Paid</button>
+        </div>
+        <div class="card-actions" style="margin-top:8px;">
+          <button class="invoice-btn" data-invoice="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-email="${(contact.email||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Email Invoice</button>
+          <button class="invoice-btn" data-invoicesms="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-phone="${(contact.phone||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Text Invoice (MMS)</button>
         </div>
         ${contact.notes ? `<div class="contact-note-preview">📝 ${contact.notes.replace(/</g,'&lt;')}</div>` : ''}
         ${isExpanded ? `
@@ -689,11 +872,16 @@
               history.map(h=>`
                 <div class="history-row">
                   <div class="h-info">
-                    <div class="h-date"><span class="h-tag ${h.kind}">${h.kind === 'pay' ? 'Payment' : 'Borrowed'}</span>${h.date}${h.note ? ' — <span class="h-note">'+h.note.replace(/</g,'&lt;')+'</span>' : ''}</div>
+                    <div class="h-date">${h.kind === 'inv'
+                      ? `<span class="h-tag inv">${h.channel === 'email' ? 'Email invoice' : 'Text invoice'}</span><span class="h-tag st-${['delivered'].includes(h.status) ? 'delivered' : (['failed','undelivered'].includes(h.status) ? 'failed' : 'other')}">${h.status}</span>${h.date} ${h.invoiceNo ? h.invoiceNo + ' ' : ''}<span class="h-note">${(h.to||'').replace(/</g,'&lt;')}${h.error ? ' / ' + h.error.replace(/</g,'&lt;') : ''}</span>`
+                      : `<span class="h-tag ${h.kind}">${h.kind === 'pay' ? (h.amount < 0 ? 'Correction' : 'Payment') : 'Borrowed'}</span>${h.date}${h.note ? ' / <span class="h-note">'+h.note.replace(/</g,'&lt;')+'</span>' : ''}`}</div>
                   </div>
                   <div style="display:flex;align-items:center;gap:8px;">
-                    <span class="h-amt ${h.kind === 'borrow' ? 'borrow' : ''}">${h.kind === 'borrow' ? '+' : '-'}${fmt(h.amount)}</span>
-                    <button class="h-del" data-del="${h.id}" data-delkind="${h.kind}" title="Remove">✕</button>
+                    ${h.kind === 'inv'
+                      ? `<span class="h-amt" style="color:var(--gold);">${fmt(h.amount)}</span>`
+                      : `<span class="h-amt ${h.kind === 'borrow' ? 'borrow' : ''}">${h.kind === 'borrow' ? '+' : (h.amount < 0 ? '+' : '-')}${fmt(Math.abs(h.amount))}</span>
+                    <button class="h-edit" data-edit="${h.id}" data-editkind="${h.kind}">edit</button>
+                    <button class="h-del" data-del="${h.id}" data-delkind="${h.kind}" title="Remove">x</button>`}
                   </div>
                 </div>
               `).join('')
@@ -736,6 +924,21 @@
         e.stopPropagation();
         sendInvoice(btn.dataset.invoice, btn.dataset.name, parseFloat(btn.dataset.remaining), btn.dataset.email, btn);
       });
+    });
+    list.querySelectorAll('[data-invoicesms]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        sendInvoiceSms(btn.dataset.invoicesms, btn.dataset.name, parseFloat(btn.dataset.remaining), btn.dataset.phone, btn);
+      });
+    });
+    list.querySelectorAll('[data-editdebtor]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); openEditDebtor(btn.dataset.editdebtor); });
+    });
+    list.querySelectorAll('[data-subtract]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); openSubtractModal(btn.dataset.subtract, btn.dataset.name); });
+    });
+    list.querySelectorAll('[data-edit]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); openEditEntry(btn.dataset.editkind, btn.dataset.edit); });
     });
     list.querySelectorAll('[data-toggle], [data-toggle2]').forEach(el=>{
       el.addEventListener('click', e=>{
