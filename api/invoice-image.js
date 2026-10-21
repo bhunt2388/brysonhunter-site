@@ -99,7 +99,7 @@ export default async function handler(req) {
       pay('PayPal: paypal.me/BrysonHunter801', '#0070BA', '#ffffff'),
       pay('Zelle: Brysonhunter', '#6D1ED4', '#ffffff'),
       pay('Apple Cash: 801-400-2916', '#000000', '#ffffff'),
-      txt({ color: T.dim, fontSize: 22, marginTop: 'auto', justifyContent: 'center' }, `Please reference ${inv.invoice_no || 'this invoice'} with your payment.`),
+      txt({ color: T.dim, fontSize: 22, marginTop: 'auto', justifyContent: 'center' }, `Payment reference: ${inv.invoice_no || 'this invoice'}. Please include it with your payment.`),
     ]),
   ]);
 

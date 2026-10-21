@@ -505,7 +505,7 @@
       sb('mt_borrows?select=id,debt_id,amount,date,note'),
       sb('mt_contacts?select=debt_id,phone,email,notes'),
       sb('mt_notes?select=content&id=eq.1'),
-      sb('mt_invoices?select=id,debt_id,channel,amount,status,invoice_no,sent_at,to_phone,to_email,error&order=sent_at.desc'),
+      sb('mt_invoices?select=id,debt_id,channel,amount,status,invoice_no,sent_at,to_phone,to_email,error,direction&order=sent_at.desc'),
       sb('mt_items?select=id,debt_id,description,qty,unit_price&order=created_at.asc'),
     ]);
     const contacts = {};
@@ -514,7 +514,7 @@
       debtors: debtorRows.map(d=>({ id:d.id, name:d.name, originalAmount: Number(d.original_amount), brand: d.brand==='axis' ? 'axis' : 'bryson' })),
       payments: paymentRows.map(p=>({ id:p.id, debtId:p.debt_id, amount:Number(p.amount), date:p.date, note:p.note||'' })),
       borrows: borrowRows.map(b=>({ id:b.id, debtId:b.debt_id, amount:Number(b.amount), date:b.date, note:b.note||'' })),
-      invoices: invoiceRows.map(i=>({ id:i.id, debtId:i.debt_id, channel:i.channel||'email', amount:Number(i.amount), status:i.status||'sent', invoiceNo:i.invoice_no||'', date:(i.sent_at||'').slice(0,10), to:i.to_phone||i.to_email||'', error:i.error||'' })),
+      invoices: invoiceRows.map(i=>({ id:i.id, debtId:i.debt_id, channel:i.channel||'email', amount:Number(i.amount), status:i.status||'sent', invoiceNo:i.invoice_no||'', date:(i.sent_at||'').slice(0,10), to:i.to_phone||i.to_email||'', error:i.error||'', direction:i.direction||'outbound' })),
       items: itemRows.map(i=>({ id:i.id, debtId:i.debt_id, description:i.description, qty:Number(i.qty), unit:Number(i.unit_price) })),
       contacts,
       notes: (notesRows[0] && notesRows[0].content) || '',
@@ -580,12 +580,39 @@
     const note = document.getElementById('payNote').value.trim();
     if(!amount || amount <= 0){ alert('Enter a valid amount.'); return; }
     try{
+      const payId = genId('p');
+      const debtForReceipt = modalDebtId;
       await sb('mt_payments', { method:'POST', body: JSON.stringify({
-        id: genId('p'), debt_id: modalDebtId, amount, date, note
+        id: payId, debt_id: debtForReceipt, amount, date, note
       })});
       closeModal('payModal');
       await refreshAndRender();
+      await offerReceipt(debtForReceipt, payId);
     } catch(e){ alert('Failed to save payment: ' + e.message); }
+  }
+
+  // Payment confirmation ("payment received") by text or email. Asks first, never sends on its own.
+  async function offerReceipt(debtId, paymentId){
+    const d = state.debtors.find(x=>x.id===debtId); if(!d) return;
+    const c = state.contacts[debtId] || {};
+    const p = state.payments.find(x=>x.id===paymentId);
+    const amt = p ? fmt(p.amount) : 'this payment';
+    const options = [];
+    if(c.phone) options.push({ channel:'sms', to:c.phone, label:`text (${c.phone})` });
+    if(c.email) options.push({ channel:'email', to:c.email, label:`email (${c.email})` });
+    if(!options.length){ alert(`Payment saved. Add a phone or email under "Contact" to send ${d.name} a confirmation.`); return; }
+    for(const o of options){
+      if(!confirm(`Send ${d.name} a payment received confirmation for ${amt} by ${o.label}?`)) continue;
+      try{
+        const res = await fetch('/api/send-receipt', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ debtId, paymentId, channel:o.channel, ...(o.channel==='sms' ? { toPhone:o.to } : { toEmail:o.to }) }) });
+        const json = await res.json().catch(()=>({}));
+        if(!res.ok) throw new Error(json.error ? (typeof json.error==='string' ? json.error : JSON.stringify(json.error)) : `HTTP ${res.status}`);
+        await refreshAndRender();
+        alert(`Confirmation sent by ${o.channel==='sms' ? 'text' : 'email'} (${json.status}).`);
+      } catch(e){ alert('Failed to send confirmation: ' + e.message); }
+      return;
+    }
   }
 
   async function submitBorrow(){
@@ -1184,13 +1211,14 @@
                 <div class="history-row">
                   <div class="h-info">
                     <div class="h-date">${h.kind === 'inv'
-                      ? `<span class="h-tag inv">${h.channel === 'email' ? 'Email invoice' : 'Text invoice'}</span><span class="h-tag st-${['delivered'].includes(h.status) ? 'delivered' : (['failed','undelivered'].includes(h.status) ? 'failed' : 'other')}">${h.status}</span>${h.date} ${h.invoiceNo ? h.invoiceNo + ' ' : ''}<span class="h-note">${(h.to||'').replace(/</g,'&lt;')}${h.error ? ' / ' + h.error.replace(/</g,'&lt;') : ''}</span>`
+                      ? `<span class="h-tag inv">${h.direction === 'receipt' ? (h.channel === 'email' ? 'Email receipt' : 'Text receipt') : (h.channel === 'email' ? 'Email invoice' : 'Text invoice')}</span><span class="h-tag st-${['delivered'].includes(h.status) ? 'delivered' : (['failed','undelivered'].includes(h.status) ? 'failed' : 'other')}">${h.status}</span>${h.date} ${h.invoiceNo ? h.invoiceNo + ' ' : ''}<span class="h-note">${(h.to||'').replace(/</g,'&lt;')}${h.error ? ' / ' + h.error.replace(/</g,'&lt;') : ''}</span>`
                       : `<span class="h-tag ${h.kind}">${h.kind === 'pay' ? (h.amount < 0 ? 'Correction' : 'Payment') : 'Borrowed'}</span>${h.date}${h.note ? ' / <span class="h-note">'+h.note.replace(/</g,'&lt;')+'</span>' : ''}`}</div>
                   </div>
                   <div style="display:flex;align-items:center;gap:8px;">
                     ${h.kind === 'inv'
                       ? `<span class="h-amt" style="color:var(--gold);">${fmt(h.amount)}</span>`
                       : `<span class="h-amt ${h.kind === 'borrow' ? 'borrow' : ''}">${h.kind === 'borrow' ? '+' : (h.amount < 0 ? '+' : '-')}${fmt(Math.abs(h.amount))}</span>
+                    ${h.kind === 'pay' && h.amount > 0 ? `<button class="h-edit" data-receipt="${h.id}" data-debt="${d.id}">receipt</button>` : ''}
                     <button class="h-edit" data-edit="${h.id}" data-editkind="${h.kind}">edit</button>
                     <button class="h-del" data-del="${h.id}" data-delkind="${h.kind}" title="Remove">x</button>`}
                   </div>
@@ -1259,6 +1287,9 @@
     });
     list.querySelectorAll('[data-subtract]').forEach(btn=>{
       btn.addEventListener('click', e=>{ e.stopPropagation(); openSubtractModal(btn.dataset.subtract, btn.dataset.name); });
+    });
+    list.querySelectorAll('[data-receipt]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); offerReceipt(btn.dataset.debt, btn.dataset.receipt); });
     });
     list.querySelectorAll('[data-edit]').forEach(btn=>{
       btn.addEventListener('click', e=>{ e.stopPropagation(); openEditEntry(btn.dataset.editkind, btn.dataset.edit); });

@@ -33,6 +33,7 @@ export default async function handler(req, res) {
   const mediaUrl = `${API_BASE}/api/invoice-image?id=${id}`;
   const text = [
     `Hi ${first}, this is ${BRAND_NAMES[snap.brand]}. Invoice ${invoiceNo}: ${fmt(snap.balance)} due.${dueNote ? ' ' + dueNote : ''}`,
+    `Payment reference: ${invoiceNo}`,
     `Venmo: ${PAY_LINKS.venmoShort}`,
     `Cash App: ${PAY_LINKS.cashappShort}`,
     `PayPal: ${PAY_LINKS.paypalShort}`,

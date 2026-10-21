@@ -89,14 +89,16 @@ export function invoiceLines(snap) {
   return lines;
 }
 
+// Invoice numbers: the first is AXS78953, every one after is AXS plus a random 5-digit number. Never repeats.
 export async function nextInvoiceNo() {
-  const res = await fetch(`${SB_URL}/rest/v1/mt_invoices?select=id`, {
-    method: 'HEAD',
-    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, Prefer: 'count=exact' },
-  });
-  const range = res.headers.get('content-range') || '*/0';
-  const count = parseInt(range.split('/')[1], 10) || 0;
-  return 'INV-' + String(1001 + count);
+  const rows = await sb('mt_invoices?select=invoice_no&invoice_no=like.AXS*&limit=5000', { prefer: 'return=representation' });
+  const used = new Set((rows || []).map((r) => r.invoice_no));
+  if (!used.has('AXS78953')) return 'AXS78953';
+  for (let i = 0; i < 200; i++) {
+    const n = 'AXS' + String(10000 + Math.floor(Math.random() * 90000));
+    if (!used.has(n)) return n;
+  }
+  throw new Error('Could not generate a unique invoice number');
 }
 
 export function newInvoiceId() {
@@ -113,4 +115,43 @@ export function toE164(raw) {
   if (digits.length === 11 && digits[0] === '1') return '+' + digits;
   if (String(raw).trim().startsWith('+') && digits.length >= 11) return '+' + digits;
   return null;
+}
+
+// Sends a text through GoHighLevel (the account's own number). Reuses the contact with that phone, or creates one.
+export async function ghlSendText({ to, name, message, attachments }) {
+  const ghlToken = process.env.GHL_TOKEN, ghlLoc = process.env.GHL_LOCATION_ID;
+  if (!ghlToken || !ghlLoc) throw new Error('GHL_TOKEN and GHL_LOCATION_ID are not configured.');
+  const H = { Authorization: `Bearer ${ghlToken}`, 'Content-Type': 'application/json', Version: '2021-07-28', Accept: 'application/json' };
+  let contactId = null;
+  const q = await fetch(`https://services.leadconnectorhq.com/contacts/?locationId=${ghlLoc}&query=${encodeURIComponent(to)}&limit=5`, { headers: H });
+  if (q.ok) {
+    const qj = await q.json().catch(() => ({}));
+    const hit = (qj.contacts || []).find((c) => String(c.phone || '').replace(/\D/g, '').endsWith(to.slice(-10)));
+    if (hit) contactId = hit.id;
+  }
+  if (!contactId) {
+    const [firstName, ...rest] = String(name).trim().split(/\s+/);
+    const up = await fetch('https://services.leadconnectorhq.com/contacts/upsert', {
+      method: 'POST', headers: H,
+      body: JSON.stringify({ locationId: ghlLoc, firstName, lastName: rest.join(' ') || '-', phone: to, tags: ['Money Tracker'], source: 'brysonhunter.com/moneytracker' }),
+    });
+    const uj = await up.json().catch(() => ({}));
+    if (!up.ok) throw new Error(`GHL contact error: ${uj.message || up.status}`);
+    contactId = (uj.contact && uj.contact.id) || uj.id;
+  }
+  if (!contactId) throw new Error('GHL did not return a contact id');
+  const body = { type: 'SMS', contactId, message };
+  if (attachments && attachments.length) body.attachments = attachments;
+  const m = await fetch('https://services.leadconnectorhq.com/conversations/messages', { method: 'POST', headers: H, body: JSON.stringify(body) });
+  const mj = await m.json().catch(() => ({}));
+  if (!m.ok) throw new Error(`GHL rejected the message: ${mj.message || m.status}`);
+  const messageId = mj.messageId || mj.id || (mj.message && mj.message.id) || null;
+  let status = 'queued';
+  if (messageId) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const g = await fetch(`https://services.leadconnectorhq.com/conversations/messages/${messageId}`, { headers: H });
+    const gj = g.ok ? await g.json().catch(() => ({})) : {};
+    status = (gj.message && gj.message.status) || gj.status || status;
+  }
+  return { messageId, status };
 }

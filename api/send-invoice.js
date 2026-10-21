@@ -52,6 +52,7 @@ export function buildInvoiceHtml({ invoiceNo, issued, snap, dueNote }) {
           <td style="color:${T.muted}; font-size:13px; text-transform:uppercase; letter-spacing:1px;">Amount due</td>
           <td style="text-align:right; color:${T.accent}; font-family:${T.display}; font-size:36px; font-weight:700;">${fmt(snap.balance)}</td>
         </tr></table>
+        <div style="color:${T.text}; font-size:13px; margin:2px 0 8px;">Payment reference: <b>${invoiceNo}</b></div>
         ${safeDueNote ? `<div style="color:${T.dim}; font-size:13px; font-style:italic; margin-bottom:8px;">${safeDueNote}</div>` : ''}
         <div style="color:${T.dim}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin:26px 0 14px;">Pay with</div>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
@@ -61,7 +62,7 @@ export function buildInvoiceHtml({ invoiceNo, issued, snap, dueNote }) {
           <tr><td style="padding-bottom:10px;"><div style="background:#6D1ED4; color:#ffffff; text-align:center; font-weight:700; font-size:15px; padding:14px; border-radius:10px;">Zelle: search <span style="text-decoration:underline;">${PAY_LINKS.zelleTag}</span> in your bank app</div></td></tr>
           <tr><td><div style="background:#000000; color:#ffffff; text-align:center; font-weight:700; font-size:15px; padding:14px; border-radius:10px; border:1px solid #333;">Apple Cash: send to ${PAY_LINKS.applecashNumber}</div></td></tr>
         </table>
-        <div style="color:${T.dim}; font-size:11.5px; margin-top:14px; line-height:1.5;">Zelle and Apple Cash do not support clickable links in email. Open your banking app or Messages and use the info above. Please reference ${invoiceNo} with your payment.</div>
+        <div style="color:${T.dim}; font-size:11.5px; margin-top:14px; line-height:1.5;">Zelle and Apple Cash do not support clickable links in email. Open your banking app or Messages and use the info above. Payment reference: <b>${invoiceNo}</b>. Please include it with your payment.</div>
       </td></tr>
       <tr><td style="padding:22px 32px; background:${T.foot}; text-align:center; border-top:1px solid ${T.line};">
         <div style="color:${T.muted}; font-size:12px; font-weight:600; margin-bottom:2px;">${T.name}</div>
