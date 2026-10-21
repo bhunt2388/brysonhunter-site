@@ -16,6 +16,8 @@ export const PAY_LINKS = {
   applecashNumber: '8014002916',
 };
 
+export const BRAND_NAMES = { bryson: 'Bryson Hunter', axis: 'Axis Chems' };
+
 export function fmt(n) {
   return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -48,7 +50,7 @@ export async function sb(path, opts = {}) {
 export async function getSnapshot(debtId) {
   const id = encodeURIComponent(debtId);
   const [debtors, pays, borrows] = await Promise.all([
-    sb(`mt_debtors?select=id,name,original_amount&id=eq.${id}`),
+    sb(`mt_debtors?select=id,name,original_amount,brand&id=eq.${id}`),
     sb(`mt_payments?select=amount&debt_id=eq.${id}`),
     sb(`mt_borrows?select=amount&debt_id=eq.${id}`),
   ]);
@@ -58,7 +60,7 @@ export async function getSnapshot(debtId) {
   const borrowed = borrows.reduce((s, b) => s + Number(b.amount), 0);
   const paid = pays.reduce((s, p) => s + Number(p.amount), 0);
   const balance = Math.max(original + borrowed - paid, 0);
-  return { debtId: d.id, name: d.name, original, borrowed, paid, balance };
+  return { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson' };
 }
 
 export async function nextInvoiceNo() {

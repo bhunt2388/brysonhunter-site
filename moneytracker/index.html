@@ -80,6 +80,11 @@
   .card-actions button.invoice-btn{border-color:var(--gold); color:var(--gold); font-weight:600;}
   .card-actions button.invoice-btn:hover{background:rgba(250,204,21,.1);}
   .card-actions button.invoice-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .brand-tabs{display:flex; align-items:center; gap:6px; margin-top:10px;}
+  .brand-label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-right:4px;}
+  .brand-tab{background:transparent; border:1px solid var(--border); color:var(--muted); padding:5px 12px; border-radius:8px; font-size:12px; cursor:pointer;}
+  .brand-tab.on{border-color:var(--gold); color:var(--gold); font-weight:600;}
+  .brand-tab.on.axis{border-color:#4FB3FF; color:#4FB3FF;}
   .history{margin-top:12px; border-top:1px solid var(--border); padding-top:10px;}
   .history-row{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; padding:6px 0;}
   .history-row .h-info{color:var(--text);}
@@ -253,6 +258,9 @@
     <label>Amount Owed
       <input type="number" id="debtorAmount" step="0.01" min="0" placeholder="0.00" />
     </label>
+    <label>Invoice Brand
+      <select id="debtorBrand"><option value="bryson">Bryson Hunter</option><option value="axis">AXIS Chems</option></select>
+    </label>
     <div class="modal-actions">
       <button onclick="closeModal('debtorModal')">Cancel</button>
       <button class="primary" onclick="submitDebtor()">Add Debtor</button>
@@ -396,7 +404,7 @@
   // so both Bryson and Nancy always see the latest data, regardless of which device wrote it.
   async function loadState(){
     const [debtorRows, paymentRows, borrowRows, contactRows, notesRows, invoiceRows] = await Promise.all([
-      sb('mt_debtors?select=id,name,original_amount,is_custom&order=created_at.asc'),
+      sb('mt_debtors?select=id,name,original_amount,is_custom,brand&order=created_at.asc'),
       sb('mt_payments?select=id,debt_id,amount,date,note'),
       sb('mt_borrows?select=id,debt_id,amount,date,note'),
       sb('mt_contacts?select=debt_id,phone,email,notes'),
@@ -406,7 +414,7 @@
     const contacts = {};
     contactRows.forEach(c=>{ contacts[c.debt_id] = { phone: c.phone||'', email: c.email||'', notes: c.notes||'' }; });
     state = {
-      debtors: debtorRows.map(d=>({ id:d.id, name:d.name, originalAmount: Number(d.original_amount) })),
+      debtors: debtorRows.map(d=>({ id:d.id, name:d.name, originalAmount: Number(d.original_amount), brand: d.brand==='axis' ? 'axis' : 'bryson' })),
       payments: paymentRows.map(p=>({ id:p.id, debtId:p.debt_id, amount:Number(p.amount), date:p.date, note:p.note||'' })),
       borrows: borrowRows.map(b=>({ id:b.id, debtId:b.debt_id, amount:Number(b.amount), date:b.date, note:b.note||'' })),
       invoices: invoiceRows.map(i=>({ id:i.id, debtId:i.debt_id, channel:i.channel||'email', amount:Number(i.amount), status:i.status||'sent', invoiceNo:i.invoice_no||'', date:(i.sent_at||'').slice(0,10), to:i.to_phone||i.to_email||'', error:i.error||'' })),
@@ -453,6 +461,7 @@
   function openDebtorModal(){
     document.getElementById('debtorName').value = '';
     document.getElementById('debtorAmount').value = '';
+    document.getElementById('debtorBrand').value = 'bryson';
     document.getElementById('debtorModal').style.display = 'flex';
   }
   function openContactModal(debtId, name){
@@ -503,7 +512,7 @@
     const id = 'custom-' + slug + '-' + Date.now();
     try{
       await sb('mt_debtors', { method:'POST', body: JSON.stringify({
-        id, name, original_amount: amount, is_custom: true
+        id, name, original_amount: amount, is_custom: true, brand: document.getElementById('debtorBrand').value
       })});
       closeModal('debtorModal');
       await refreshAndRender();
@@ -548,6 +557,16 @@
   async function logActivity(debtId, action, detail){
     try{ await sb('mt_activity', { method:'POST', prefer:'return=minimal', body: JSON.stringify({ debt_id: debtId, action, detail }) }); }
     catch(e){ console.error('activity log failed', e); }
+  }
+  function brandName(debtId){ const d = state.debtors.find(x=>x.id===debtId); return d && d.brand==='axis' ? 'AXIS Chems' : 'Bryson Hunter'; }
+  async function setBrand(debtId, brand){
+    const d = state.debtors.find(x=>x.id===debtId);
+    if(!d || d.brand === brand) return;
+    try{
+      await sb(`mt_debtors?id=eq.${encodeURIComponent(debtId)}`, { method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ brand }) });
+      await logActivity(debtId, 'set_brand', { from: d.brand, to: brand });
+      await refreshAndRender();
+    } catch(e){ alert('Failed to change brand: ' + e.message); }
   }
   function openEditDebtor(debtId){
     const d = state.debtors.find(x=>x.id===debtId); if(!d) return;
@@ -637,7 +656,7 @@
       alert(`${name} has no outstanding balance to invoice.`);
       return;
     }
-    if(!confirm(`Email an invoice for ${fmt(remaining)} to ${name} (${email})?`)) return;
+    if(!confirm(`Email a ${brandName(debtId)} invoice for ${fmt(remaining)} to ${name} (${email})?`)) return;
 
     const originalText = btnEl.textContent;
     btnEl.disabled = true;
@@ -670,7 +689,7 @@
       alert(`${name} has no outstanding balance to invoice.`);
       return;
     }
-    if(!confirm(`Text a branded invoice (MMS) for ${fmt(remaining)} to ${name} at ${phone}?\n\nIt sends from the Command app number.`)) return;
+    if(!confirm(`Text a ${brandName(debtId)} invoice (MMS) for ${fmt(remaining)} to ${name} at ${phone}?\n\nIt sends from the Command app number.`)) return;
     const originalText = btnEl.textContent;
     btnEl.disabled = true;
     btnEl.textContent = 'Sending...';
@@ -862,6 +881,10 @@
           <button class="edit-btn" data-editdebtor="${d.id}">Edit Amount</button>
           <button class="sub-btn" data-subtract="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" ${paidRaw > 0 ? '' : 'disabled'}>Subtract Paid</button>
         </div>
+        <div class="brand-tabs"><span class="brand-label">Invoice brand</span>
+          <button class="brand-tab ${d.brand==='bryson' ? 'on' : ''}" data-brand="${d.id}" data-brandval="bryson">Bryson Hunter</button>
+          <button class="brand-tab ${d.brand==='axis' ? 'on axis' : ''}" data-brand="${d.id}" data-brandval="axis">AXIS Chems</button>
+        </div>
         <div class="card-actions" style="margin-top:8px;">
           <button class="invoice-btn" data-invoice="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-email="${(contact.email||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Email Invoice</button>
           <button class="invoice-btn" data-invoicesms="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-phone="${(contact.phone||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Text Invoice (MMS)</button>
@@ -902,6 +925,9 @@
     drawChart(points, totalOriginal);
 
     // wire up events (list is rebuilt each render, so rebind each time)
+    list.querySelectorAll('[data-brand]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); setBrand(btn.dataset.brand, btn.dataset.brandval); });
+    });
     list.querySelectorAll('[data-pay]').forEach(btn=>{
       btn.addEventListener('click', e=>{
         e.stopPropagation();

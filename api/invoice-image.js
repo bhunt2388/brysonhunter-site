@@ -2,12 +2,18 @@
 // GET /api/invoice-image?id=inv-...
 import { ImageResponse } from '@vercel/og';
 import { LOGO_DATA_URI } from './_lib/logo.js';
+import { AXIS_LOGO_DATA_URI } from './_lib/axis-logo.js';
 
 export const config = { runtime: 'edge' };
 
 const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
 const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
 const money = (n) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const THEMES = {
+  bryson: { bg: '#131110', card: '#1c1815', line: '#2f2a22', accent: '#C9A961', rule: '#8B6F35', text: '#f2ede2', muted: '#b4ab97', dim: '#756d5b', green: '#7fd39a', logo: LOGO_DATA_URI, logoW: 120, logoH: 120, logoRadius: 14, lines: ['Bryson Hunter', 'Enterprises'], site: 'brysonhunter.com', serif: 'serif' },
+  axis: { bg: '#EEF3FA', card: '#ffffff', line: '#DCE5F2', accent: '#0B4CB8', rule: '#0B4CB8', text: '#0E1B33', muted: '#4A5B78', dim: '#7A889F', green: '#1a8f4c', logo: AXIS_LOGO_DATA_URI, logoW: 420, logoH: 100, logoRadius: 0, lines: null, site: '', serif: 'sans-serif' },
+};
 
 const h = (type, style, children) => ({ type, props: { style: { display: 'flex', ...style }, children } });
 const txt = (style, children) => h('div', style, children);
@@ -22,55 +28,56 @@ export default async function handler(req) {
   const inv = rows[0];
   if (!inv) return new Response('Not found', { status: 404 });
 
+  const T = THEMES[inv.brand] || THEMES.bryson;
   const issued = new Date(inv.sent_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Boise' });
   const original = Number(inv.original_amount ?? inv.amount);
   const borrowed = Number(inv.borrowed_amount || 0);
   const paid = Number(inv.paid_amount || 0);
 
-  const line = (label, value, color) => h('div', { justifyContent: 'space-between', padding: '16px 0', borderBottom: '1px solid #2f2a22', fontSize: 30 }, [
-    txt({ color: '#b4ab97' }, label), txt({ color: color || '#f2ede2', fontWeight: 700 }, value),
+  const line = (label, value, color) => h('div', { justifyContent: 'space-between', padding: '16px 0', borderBottom: `1px solid ${T.line}`, fontSize: 30 }, [
+    txt({ color: T.muted }, label), txt({ color: color || T.text, fontWeight: 700 }, value),
   ]);
   const lines = [line('Original balance', money(original))];
   if (borrowed > 0) lines.push(line('Additional borrowed', '+ ' + money(borrowed)));
-  if (paid > 0) lines.push(line('Payments received', '- ' + money(paid), '#7fd39a'));
+  if (paid > 0) lines.push(line('Payments received', '- ' + money(paid), T.green));
 
   const pay = (label, bg, fg) => h('div', { justifyContent: 'center', alignItems: 'center', background: bg, color: fg, fontSize: 28, fontWeight: 700, padding: '20px 0', borderRadius: 16, marginTop: 14 }, label);
 
   const tree = h('div', {
-    flexDirection: 'column', width: 1000, height: 1500, background: '#131110', padding: 56, fontFamily: 'sans-serif',
+    flexDirection: 'column', width: 1000, height: 1500, background: T.bg, padding: 56, fontFamily: 'sans-serif',
   }, [
-    h('div', { flexDirection: 'column', background: '#1c1815', border: '2px solid #2f2a22', borderRadius: 28, padding: '48px 56px', flexGrow: 1 }, [
-      h('div', { alignItems: 'center', justifyContent: 'space-between', borderBottom: '3px solid #8B6F35', paddingBottom: 30 }, [
+    h('div', { flexDirection: 'column', background: T.card, border: `2px solid ${T.line}`, borderRadius: 28, padding: '48px 56px', flexGrow: 1 }, [
+      h('div', { alignItems: 'center', justifyContent: 'space-between', borderBottom: `3px solid ${T.rule}`, paddingBottom: 30 }, [
         h('div', { alignItems: 'center' }, [
-          { type: 'img', props: { src: LOGO_DATA_URI, width: 120, height: 120, style: { borderRadius: 14 } } },
-          h('div', { flexDirection: 'column', marginLeft: 26 }, [
-            txt({ color: '#C9A961', fontSize: 30, letterSpacing: 5, textTransform: 'uppercase' }, 'Bryson Hunter'),
-            txt({ color: '#C9A961', fontSize: 30, letterSpacing: 5, textTransform: 'uppercase' }, 'Enterprises'),
-            txt({ color: '#756d5b', fontSize: 22, marginTop: 6 }, 'brysonhunter.com'),
-          ]),
+          { type: 'img', props: { src: T.logo, width: T.logoW, height: T.logoH, style: { borderRadius: T.logoRadius } } },
+          ...(T.lines ? [h('div', { flexDirection: 'column', marginLeft: 26 }, [
+            txt({ color: T.accent, fontSize: 30, letterSpacing: 5, textTransform: 'uppercase' }, T.lines[0]),
+            txt({ color: T.accent, fontSize: 30, letterSpacing: 5, textTransform: 'uppercase' }, T.lines[1]),
+            txt({ color: T.dim, fontSize: 22, marginTop: 6 }, T.site),
+          ])] : []),
         ]),
       ]),
       h('div', { justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 40 }, [
-        txt({ color: '#C9A961', fontSize: 64, fontFamily: 'serif' }, 'INVOICE'),
+        txt({ color: T.accent, fontSize: 64, fontFamily: T.serif }, 'INVOICE'),
         h('div', { flexDirection: 'column', alignItems: 'flex-end' }, [
-          txt({ color: '#f2ede2', fontSize: 30, fontWeight: 700 }, inv.invoice_no || ''),
-          txt({ color: '#756d5b', fontSize: 24 }, issued),
+          txt({ color: T.text, fontSize: 30, fontWeight: 700 }, inv.invoice_no || ''),
+          txt({ color: T.dim, fontSize: 24 }, issued),
         ]),
       ]),
-      txt({ color: '#756d5b', fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', marginTop: 40 }, 'Billed to'),
-      txt({ color: '#f2ede2', fontSize: 44, fontWeight: 700, marginTop: 6, marginBottom: 24 }, inv.debtor_name || ''),
+      txt({ color: T.dim, fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', marginTop: 40 }, 'Billed to'),
+      txt({ color: T.text, fontSize: 44, fontWeight: 700, marginTop: 6, marginBottom: 24 }, inv.debtor_name || ''),
       h('div', { flexDirection: 'column' }, lines),
       h('div', { justifyContent: 'space-between', alignItems: 'center', marginTop: 28 }, [
-        txt({ color: '#b4ab97', fontSize: 26, letterSpacing: 3, textTransform: 'uppercase' }, 'Amount due'),
-        txt({ color: '#C9A961', fontSize: 84, fontWeight: 800 }, money(inv.amount)),
+        txt({ color: T.muted, fontSize: 26, letterSpacing: 3, textTransform: 'uppercase' }, 'Amount due'),
+        txt({ color: T.accent, fontSize: 84, fontWeight: 800 }, money(inv.amount)),
       ]),
-      txt({ color: '#756d5b', fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', marginTop: 36 }, 'Pay with'),
+      txt({ color: T.dim, fontSize: 22, letterSpacing: 3, textTransform: 'uppercase', marginTop: 36 }, 'Pay with'),
       pay('Venmo: venmo.com/u/bhunt2388', '#3D95CE', '#ffffff'),
       pay('Cash App: $bhunt23', '#00D632', '#04310f'),
       pay('PayPal: paypal.me/BrysonHunter801', '#0070BA', '#ffffff'),
       pay('Zelle: Brysonhunter', '#6D1ED4', '#ffffff'),
       pay('Apple Cash: 801-400-2916', '#000000', '#ffffff'),
-      txt({ color: '#756d5b', fontSize: 22, marginTop: 'auto', justifyContent: 'center' }, `Please reference ${inv.invoice_no || 'this invoice'} with your payment.`),
+      txt({ color: T.dim, fontSize: 22, marginTop: 'auto', justifyContent: 'center' }, `Please reference ${inv.invoice_no || 'this invoice'} with your payment.`),
     ]),
   ]);
 

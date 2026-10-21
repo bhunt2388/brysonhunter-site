@@ -4,7 +4,7 @@
 //
 // Env vars: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM (E.164, the Command app number)
 
-import { API_BASE, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164 } from './_lib/mt.js';
+import { API_BASE, BRAND_NAMES, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164 } from './_lib/mt.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   const first = snap.name.split(' ')[0];
   const mediaUrl = `${API_BASE}/api/invoice-image?id=${id}`;
   const text = [
-    `Hi ${first}, this is Bryson Hunter. Invoice ${invoiceNo}: ${fmt(snap.balance)} due.${dueNote ? ' ' + dueNote : ''}`,
+    `Hi ${first}, this is ${BRAND_NAMES[snap.brand]}. Invoice ${invoiceNo}: ${fmt(snap.balance)} due.${dueNote ? ' ' + dueNote : ''}`,
     `Venmo: ${PAY_LINKS.venmoShort}`,
     `Cash App: ${PAY_LINKS.cashappShort}`,
     `PayPal: ${PAY_LINKS.paypalShort}`,
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
   const row = {
     id, debt_id: debtId, amount: snap.balance, to_email: null, to_phone: to, status: 'queued', channel: 'mms',
-    direction: 'outbound', source_account: 'twilio', invoice_no: invoiceNo, debtor_name: snap.name,
+    direction: 'outbound', source_account: 'twilio', brand: snap.brand, invoice_no: invoiceNo, debtor_name: snap.name,
     original_amount: snap.original, borrowed_amount: snap.borrowed, paid_amount: snap.paid, body: text, media_url: mediaUrl,
   };
   // Log first so the image URL resolves when Twilio fetches it.
