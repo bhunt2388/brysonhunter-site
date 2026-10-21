@@ -2,6 +2,8 @@
 export const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
 export const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
 export const SITE_URL = 'https://brysonhunter.com';
+// Apex redirects (307) to www, and Twilio needs a direct URL for media and status callbacks.
+export const API_BASE = 'https://www.brysonhunter.com';
 
 export const PAY_LINKS = {
   venmo: 'https://www.venmo.com/u/bhunt2388',

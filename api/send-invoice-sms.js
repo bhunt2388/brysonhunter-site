@@ -4,7 +4,7 @@
 //
 // Env vars: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM (E.164, the Command app number)
 
-import { SITE_URL, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164 } from './_lib/mt.js';
+import { API_BASE, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164 } from './_lib/mt.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   } catch (e) { res.status(500).json({ error: String(e.message || e) }); return; }
 
   const first = snap.name.split(' ')[0];
-  const mediaUrl = `${SITE_URL}/api/invoice-image?id=${id}`;
+  const mediaUrl = `${API_BASE}/api/invoice-image?id=${id}`;
   const text = [
     `Hi ${first}, this is Bryson Hunter. Invoice ${invoiceNo}: ${fmt(snap.balance)} due.${dueNote ? ' ' + dueNote : ''}`,
     `Venmo: ${PAY_LINKS.venmoShort}`,
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
 
   try {
     const params = new URLSearchParams({
-      To: to, From: from, Body: text, MediaUrl: mediaUrl, StatusCallback: `${SITE_URL}/api/twilio-status`,
+      To: to, From: from, Body: text, MediaUrl: mediaUrl, StatusCallback: `${API_BASE}/api/twilio-status`,
     });
     const tw = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
       method: 'POST',
