@@ -450,30 +450,34 @@
   const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
   const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
   async function sb(path, opts={}){
-    // Reads give up on a stalled connection after 4s and retry (the database answers in ~100ms; the stalls are in the connect step).
     const isGet = !opts.method || opts.method === 'GET';
-    let res;
-    for(let attempt = 0; ; attempt++){
-      const ctl = isGet ? new AbortController() : null;
-      const timer = ctl ? setTimeout(()=>ctl.abort(), 4000) : null;
-      try{
-        res = await fetch(`${SB_URL}/rest/v1/${path}`, {
-          ...opts,
-          ...(ctl ? { signal: ctl.signal } : {}),
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': opts.prefer || 'return=representation',
-            ...(opts.headers || {})
-          }
-        });
-        if(timer) clearTimeout(timer);
-        break;
-      }catch(e){
-        if(timer) clearTimeout(timer);
-        if(!isGet || attempt >= 2) throw e;
+    const go = () => fetch(`${SB_URL}/rest/v1/${path}`, {
+      ...opts,
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': opts.prefer || 'return=representation',
+        ...(opts.headers || {})
       }
+    });
+    let res;
+    if(!isGet){ res = await go(); }
+    else {
+      // Reads are hedged: if the first try has not answered in 3s, start a second (and a third at 6s) WITHOUT cancelling the first.
+      // Whichever answers first wins, so a stalled connection never freezes the page and a slow one is never aborted.
+      res = await new Promise((resolve, reject) => {
+        let done = false, failed = 0, started = 0;
+        const timers = [];
+        const launch = () => {
+          if(done || started >= 3) return;
+          started++;
+          go().then(r => { if(!done){ done = true; timers.forEach(clearTimeout); resolve(r); } })
+              .catch(e => { failed++; if(!done && failed >= started && started >= 3){ done = true; reject(e); } else if(!done && failed >= started){ launch(); } });
+        };
+        launch();
+        timers.push(setTimeout(launch, 3000), setTimeout(launch, 6000));
+      });
     }
     if(!res.ok){
       const text = await res.text().catch(()=> '');
