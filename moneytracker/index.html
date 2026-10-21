@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://udirnxilxlvhkzbgpjke.supabase.co" crossorigin />
 <title>Money Tracker</title>
 <style>
   :root{
@@ -449,16 +450,31 @@
   const SB_URL = 'https://udirnxilxlvhkzbgpjke.supabase.co';
   const SB_KEY = 'sb_publishable_7SGeCmx1XATdHTawyT6hHw_iWV9-1Vz';
   async function sb(path, opts={}){
-    const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
-      ...opts,
-      headers: {
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': opts.prefer || 'return=representation',
-        ...(opts.headers || {})
+    // Reads give up on a stalled connection after 4s and retry (the database answers in ~100ms; the stalls are in the connect step).
+    const isGet = !opts.method || opts.method === 'GET';
+    let res;
+    for(let attempt = 0; ; attempt++){
+      const ctl = isGet ? new AbortController() : null;
+      const timer = ctl ? setTimeout(()=>ctl.abort(), 4000) : null;
+      try{
+        res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+          ...opts,
+          ...(ctl ? { signal: ctl.signal } : {}),
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': opts.prefer || 'return=representation',
+            ...(opts.headers || {})
+          }
+        });
+        if(timer) clearTimeout(timer);
+        break;
+      }catch(e){
+        if(timer) clearTimeout(timer);
+        if(!isGet || attempt >= 2) throw e;
       }
-    });
+    }
     if(!res.ok){
       const text = await res.text().catch(()=> '');
       throw new Error(`Supabase ${opts.method||'GET'} ${path} failed: ${res.status} ${text}`);
@@ -499,6 +515,7 @@
       contacts,
       notes: (notesRows[0] && notesRows[0].content) || '',
     };
+    try{ localStorage.setItem('mt_state_cache', JSON.stringify(state)); }catch(_){}
     return state;
   }
 
@@ -1273,11 +1290,18 @@
 
   async function init(){
     const list = document.getElementById('list');
-    list.innerHTML = '<div class="empty-hist">Loading shared data…</div>';
+    if(!localStorage.getItem('mt_state_cache')) list.innerHTML = '<div class="empty-hist">Loading shared data…</div>';
+    // Show the last saved copy instantly, then refresh from the database.
+    let shownCache = false;
+    try{
+      const c = JSON.parse(localStorage.getItem('mt_state_cache') || 'null');
+      if(c && Array.isArray(c.debtors) && c.debtors.length){ state = c; render(); shownCache = true; }
+    }catch(_){}
     try{
       await loadState();
       render();
     } catch(e){
+      if(shownCache) return;
       list.innerHTML = `<div class="empty-hist" style="color:var(--danger);">Failed to load data: ${e.message.replace(/</g,'&lt;')}. Check your connection and reload.</div>`;
     }
   }
