@@ -43,7 +43,9 @@ export async function sb(path, opts = {}) {
     throw new Error(`Supabase ${opts.method || 'GET'} ${path} failed: ${res.status} ${text}`);
   }
   if (res.status === 204) return null;
-  return res.json();
+  // POST/PATCH with Prefer: return=minimal answers 201/200 with an empty body.
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 // Authoritative numbers come from the database, never from the browser.
