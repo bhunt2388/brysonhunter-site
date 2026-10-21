@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   const row = {
     id, debt_id: debtId, amount: snap.balance, to_email: null, to_phone: to, status: 'queued', channel: 'mms',
     direction: 'outbound', source_account: 'twilio', brand: snap.brand, invoice_no: invoiceNo, debtor_name: snap.name,
-    original_amount: snap.original, borrowed_amount: snap.borrowed, paid_amount: snap.paid, body: text, media_url: mediaUrl,
+    original_amount: snap.original, borrowed_amount: snap.borrowed, paid_amount: snap.paid, items: snap.lines, body: text, media_url: mediaUrl,
   };
   // Log first so the image URL resolves when Twilio fetches it.
   try { await sb('mt_invoices', { method: 'POST', prefer: 'return=minimal', body: JSON.stringify(row) }); }

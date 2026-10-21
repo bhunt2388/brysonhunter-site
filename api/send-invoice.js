@@ -12,7 +12,7 @@ export const THEMES = {
   bryson: { bg: '#131110', card: '#1c1815', line: '#2f2a22', accent: '#C9A961', rule: '#8B6F35', text: '#f2ede2', muted: '#b4ab97', dim: '#756d5b', foot: '#161410', green: '#7fd39a',
     display: "Georgia,'Times New Roman',serif", name: 'Bryson Hunter Enterprises', site: 'brysonhunter.com', siteUrl: SITE_URL, logoSrc: LOGO_DATA_URI, logoStyle: 'width:92px;border-radius:8px;', upper: true },
   axis: { bg: '#EEF3FA', card: '#ffffff', line: '#DCE5F2', accent: '#0B4CB8', rule: '#0B4CB8', text: '#0E1B33', muted: '#4A5B78', dim: '#7A889F', foot: '#F6F9FD', green: '#1a8f4c',
-    display: "'Manrope','Helvetica Neue',Helvetica,sans-serif", name: 'Axis Chems', site: '', siteUrl: '', logoSrc: AXIS_LOGO_DATA_URI, logoStyle: 'width:220px;', upper: false },
+    display: "'Manrope','Helvetica Neue',Helvetica,sans-serif", name: 'Axis Chems', site: 'axischems.com', siteUrl: 'https://axischems.com', logoSrc: AXIS_LOGO_DATA_URI, logoStyle: 'width:220px;', upper: false },
 };
 
 function row(T, label, value, color) {
@@ -26,9 +26,7 @@ export function buildInvoiceHtml({ invoiceNo, issued, snap, dueNote }) {
   const T = THEMES[snap.brand] || THEMES.bryson;
   const safeName = escapeHtml(snap.name);
   const safeDueNote = dueNote ? escapeHtml(dueNote) : '';
-  const lines = [row(T, 'Original balance', fmt(snap.original))];
-  if (snap.borrowed > 0) lines.push(row(T, 'Additional borrowed', '+ ' + fmt(snap.borrowed)));
-  if (snap.paid > 0) lines.push(row(T, 'Payments received', '- ' + fmt(snap.paid), T.green));
+  const lines = (snap.lines || []).map((l) => row(T, escapeHtml(l.label), l.value, l.kind === 'credit' ? T.green : undefined));
 
   const btn = (href, bg, fg, label) => `<tr><td style="padding-bottom:10px;"><a href="${href}" style="display:block; text-align:center; background:${bg}; color:${fg}; text-decoration:none; font-weight:700; font-size:15px; padding:14px; border-radius:10px;">${label}</a></td></tr>`;
 
@@ -107,7 +105,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           id: newInvoiceId(), debt_id: debtId, amount: snap.balance, to_email: toEmail, status: 'sent',
           resend_id: sendJson.id || null, channel: 'email', direction: 'outbound', source_account: 'resend',
-          invoice_no: invoiceNo, brand: snap.brand, debtor_name: snap.name, original_amount: snap.original,
+          invoice_no: invoiceNo, brand: snap.brand, items: snap.lines, debtor_name: snap.name, original_amount: snap.original,
           borrowed_amount: snap.borrowed, paid_amount: snap.paid,
         }),
       });

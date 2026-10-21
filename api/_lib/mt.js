@@ -49,10 +49,11 @@ export async function sb(path, opts = {}) {
 // Authoritative numbers come from the database, never from the browser.
 export async function getSnapshot(debtId) {
   const id = encodeURIComponent(debtId);
-  const [debtors, pays, borrows] = await Promise.all([
+  const [debtors, pays, borrows, itemRows] = await Promise.all([
     sb(`mt_debtors?select=id,name,original_amount,brand&id=eq.${id}`),
     sb(`mt_payments?select=amount&debt_id=eq.${id}`),
     sb(`mt_borrows?select=amount&debt_id=eq.${id}`),
+    sb(`mt_items?select=description,qty,unit_price&debt_id=eq.${id}&order=created_at.asc`),
   ]);
   const d = debtors[0];
   if (!d) throw new Error('Debtor not found');
@@ -60,7 +61,30 @@ export async function getSnapshot(debtId) {
   const borrowed = borrows.reduce((s, b) => s + Number(b.amount), 0);
   const paid = pays.reduce((s, p) => s + Number(p.amount), 0);
   const balance = Math.max(original + borrowed - paid, 0);
-  return { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson' };
+  const items = itemRows.map((i) => ({ description: i.description, qty: Number(i.qty), unit: Number(i.unit_price) }));
+  const snap = { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson', items };
+  snap.lines = invoiceLines(snap);
+  return snap;
+}
+
+// Display lines for an invoice. Line items are already counted inside the debtor's original amount,
+// so any remainder (older balance with no itemization) shows as its own line.
+// kind: 'credit' renders green (payments, discounts).
+export function invoiceLines(snap) {
+  const lines = [];
+  let itemsTotal = 0;
+  for (const it of snap.items || []) {
+    const total = Math.round(it.qty * it.unit * 100) / 100;
+    itemsTotal += total;
+    const label = it.qty !== 1 ? `${it.description} (${it.qty} x ${fmt(it.unit)})` : it.description;
+    lines.push(total < 0 ? { label, value: '- ' + fmt(Math.abs(total)), kind: 'credit' } : { label, value: fmt(total), kind: 'neutral' });
+  }
+  const rest = Math.round((snap.original - itemsTotal) * 100) / 100;
+  if (!lines.length) lines.push({ label: 'Original balance', value: fmt(snap.original), kind: 'neutral' });
+  else if (rest > 0.004) lines.unshift({ label: 'Previous balance', value: fmt(rest), kind: 'neutral' });
+  if (snap.borrowed > 0) lines.push({ label: 'Additional borrowed', value: '+ ' + fmt(snap.borrowed), kind: 'neutral' });
+  if (snap.paid > 0) lines.push({ label: 'Payments received', value: '- ' + fmt(snap.paid), kind: 'credit' });
+  return lines;
 }
 
 export async function nextInvoiceNo() {

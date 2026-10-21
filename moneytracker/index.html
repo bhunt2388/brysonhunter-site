@@ -155,6 +155,24 @@
   .card-actions{flex-wrap:wrap;}
   .card-actions button.edit-btn{border-color:#3b4252;}
   .card-actions button.sub-btn:hover{border-color:var(--danger);}
+  .modal select{display:block; width:100%; margin-top:6px; padding:10px 12px; border-radius:8px; border:1px solid var(--border); background:#0f1115; color:var(--text); font-size:14px;}
+  .modal.wide{max-width:640px; max-height:92vh; overflow:auto;}
+  .items-list{margin-top:10px; border-top:1px dashed var(--border); padding-top:6px;}
+  .item-row{display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--muted); padding:3px 0;}
+  .item-row .i-amt{color:var(--text); white-space:nowrap;}
+  .item-row .i-del{background:none; border:none; color:var(--muted); cursor:pointer; padding:0 4px; font-size:12px;}
+  .item-row .i-del:hover{color:var(--danger);}
+  .calc-row{display:grid; grid-template-columns:1fr 64px 84px 80px 24px; gap:6px; align-items:center; margin-bottom:8px;}
+  .calc-row input,.calc-row select{margin-top:0 !important; padding:8px !important; font-size:13px !important;}
+  .calc-row .c-total{text-align:right; font-size:13px; font-weight:600;}
+  .calc-row .c-del{background:none; border:none; color:var(--muted); cursor:pointer;}
+  .calc-row .nomatch{grid-column:1 / -1; color:var(--danger); font-size:11px; margin-top:-4px;}
+  .calc-head{display:grid; grid-template-columns:1fr 64px 84px 80px 24px; gap:6px; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;}
+  .calc-sum{border-top:1px solid var(--border); margin-top:10px; padding-top:10px; font-size:13px;}
+  .calc-sum div{display:flex; justify-content:space-between; padding:2px 0;}
+  .calc-sum .grand{font-size:18px; font-weight:700; color:var(--gold); padding-top:6px;}
+  .calc-small{background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:8px; font-size:12px; cursor:pointer;}
+  .calc-btn{background:transparent; border:1px solid var(--gold); color:var(--gold); padding:10px 16px; border-radius:10px; font-size:14px; cursor:pointer; width:100%; margin-bottom:10px;}
   .modal .hint{color:var(--muted); font-size:12px; margin:-6px 0 14px; line-height:1.4;}
   footer{margin-top:30px; color:var(--muted); font-size:12px; text-align:center;}
 
@@ -197,6 +215,7 @@
   <div class="section-title">Debtors</div>
   <div class="hint-line">Use "+ Contact" on a debtor's card below to add their phone, email, and notes about them specifically.</div>
   <ul id="list"></ul>
+  <button class="calc-btn" onclick="openCalc()">Order Calculator (distributor pricing)</button>
   <button class="add-debtor-btn" onclick="openDebtorModal()">+ Add New Debtor</button>
 
   <div class="section-title">General Notes</div>
@@ -344,6 +363,63 @@
     </div>
   </div>
 </div>
+
+<!-- Line Item Modal -->
+<div id="itemModal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <h3>Add Line Item — <span id="itemModalName"></span></h3>
+    <div class="hint">Adds to what they owe and shows as its own line on the invoice. Use a negative price for a discount.</div>
+    <label>Description
+      <input type="text" id="itemDesc" placeholder="e.g. BPC-157 10mg" />
+    </label>
+    <label>Quantity
+      <input type="number" id="itemQty" step="1" value="1" />
+    </label>
+    <label>Price each
+      <input type="number" id="itemPrice" step="0.01" placeholder="0.00" />
+    </label>
+    <div class="modal-actions">
+      <button onclick="closeModal('itemModal')">Cancel</button>
+      <button class="primary" onclick="submitItem()">Add Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Calculator Modal -->
+<div id="calcModal" class="modal-overlay" style="display:none;">
+  <div class="modal wide">
+    <h3>Order Calculator</h3>
+    <div class="hint">Paste an order, one per line, as name, mg, x, quantity. Example: Bpc 10 x 10. Prices come from the distributor list and every price stays editable.</div>
+    <textarea id="calcPaste" placeholder="Bpc 10 x 10&#10;Kpv 5 x 2&#10;NAD 1000 x 4"></textarea>
+    <div style="display:flex; gap:8px; margin:8px 0 14px;">
+      <button class="calc-small" onclick="calcParse(false)">Fill from text</button>
+      <button class="calc-small" onclick="calcParse(true)">Add to current rows</button>
+      <button class="calc-small" onclick="calcAddRow()">+ Row</button>
+      <button class="calc-small" onclick="calcClear()">Clear</button>
+    </div>
+    <div class="calc-head"><span>Product</span><span>Qty</span><span>Each</span><span style="text-align:right">Total</span><span></span></div>
+    <div id="calcRows"></div>
+    <label style="display:flex; gap:8px; align-items:center; margin:10px 0 0; color:var(--text);">
+      <input type="checkbox" id="calcTier" style="width:auto; margin:0;" onchange="calcRender()" /> <span id="calcTierLabel">Apply volume tier discount</span>
+    </label>
+    <div class="calc-sum" id="calcSum"></div>
+    <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:14px;">
+      <label>Put this order on
+        <select id="calcDest" onchange="calcDestChange()"></select>
+      </label>
+      <div id="calcNew" style="display:none;">
+        <label>New debtor name <input type="text" id="calcNewName" placeholder="Full name" /></label>
+        <label>Invoice brand
+          <select id="calcNewBrand"><option value="bryson">Bryson Hunter</option><option value="axis">AXIS Chems</option></select>
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal('calcModal')">Close</button>
+      <button class="primary" onclick="calcCommit()">Add to tracker</button>
+    </div>
+  </div>
+</div>
 <script>
   // ---- passcode gate (client-side hash check, deters casual access) ----
   async function sha256(str){
@@ -394,7 +470,7 @@
 
   let expandedIds = new Set();
   let modalDebtId = null;
-  let state = { debtors: [], payments: [], borrows: [], invoices: [], contacts: {}, notes: '' };
+  let state = { debtors: [], payments: [], borrows: [], invoices: [], items: [], contacts: {}, notes: '' };
   let editEntry = { kind:null, id:null };
   let loadError = null;
 
@@ -403,13 +479,14 @@
   // Loads the full shared state fresh from Supabase. Called on init and after every mutation
   // so both Bryson and Nancy always see the latest data, regardless of which device wrote it.
   async function loadState(){
-    const [debtorRows, paymentRows, borrowRows, contactRows, notesRows, invoiceRows] = await Promise.all([
+    const [debtorRows, paymentRows, borrowRows, contactRows, notesRows, invoiceRows, itemRows] = await Promise.all([
       sb('mt_debtors?select=id,name,original_amount,is_custom,brand&order=created_at.asc'),
       sb('mt_payments?select=id,debt_id,amount,date,note'),
       sb('mt_borrows?select=id,debt_id,amount,date,note'),
       sb('mt_contacts?select=debt_id,phone,email,notes'),
       sb('mt_notes?select=content&id=eq.1'),
       sb('mt_invoices?select=id,debt_id,channel,amount,status,invoice_no,sent_at,to_phone,to_email,error&order=sent_at.desc'),
+      sb('mt_items?select=id,debt_id,description,qty,unit_price&order=created_at.asc'),
     ]);
     const contacts = {};
     contactRows.forEach(c=>{ contacts[c.debt_id] = { phone: c.phone||'', email: c.email||'', notes: c.notes||'' }; });
@@ -418,6 +495,7 @@
       payments: paymentRows.map(p=>({ id:p.id, debtId:p.debt_id, amount:Number(p.amount), date:p.date, note:p.note||'' })),
       borrows: borrowRows.map(b=>({ id:b.id, debtId:b.debt_id, amount:Number(b.amount), date:b.date, note:b.note||'' })),
       invoices: invoiceRows.map(i=>({ id:i.id, debtId:i.debt_id, channel:i.channel||'email', amount:Number(i.amount), status:i.status||'sent', invoiceNo:i.invoice_no||'', date:(i.sent_at||'').slice(0,10), to:i.to_phone||i.to_email||'', error:i.error||'' })),
+      items: itemRows.map(i=>({ id:i.id, debtId:i.debt_id, description:i.description, qty:Number(i.qty), unit:Number(i.unit_price) })),
       contacts,
       notes: (notesRows[0] && notesRows[0].content) || '',
     };
@@ -559,6 +637,191 @@
     catch(e){ console.error('activity log failed', e); }
   }
   function brandName(debtId){ const d = state.debtors.find(x=>x.id===debtId); return d && d.brand==='axis' ? 'AXIS Chems' : 'Bryson Hunter'; }
+
+  // ---- line items ----
+  function openItemModal(debtId, name){
+    modalDebtId = debtId;
+    document.getElementById('itemModalName').textContent = name;
+    document.getElementById('itemDesc').value = '';
+    document.getElementById('itemQty').value = '1';
+    document.getElementById('itemPrice').value = '';
+    document.getElementById('itemModal').style.display = 'flex';
+  }
+  async function addItems(debtId, items, activityAction){
+    // Items count toward the debtor's original amount, so every balance and invoice number stays consistent.
+    const d = state.debtors.find(x=>x.id===debtId); if(!d) throw new Error('Debtor not found');
+    const rows = items.map(it=>({ id: genId('it'), debt_id: debtId, description: it.description, qty: it.qty, unit_price: it.unit }));
+    await sb('mt_items', { method:'POST', prefer:'return=minimal', body: JSON.stringify(rows) });
+    const add = items.reduce((sum,it)=>sum + it.qty*it.unit, 0);
+    const next = Math.round((d.originalAmount + add)*100)/100;
+    await sb(`mt_debtors?id=eq.${encodeURIComponent(debtId)}`, { method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ original_amount: next }) });
+    await logActivity(debtId, activityAction || 'add_items', { items: items.map(it=>({ description: it.description, qty: it.qty, unit: it.unit })), added: add, from: d.originalAmount, to: next });
+  }
+  async function submitItem(){
+    const description = document.getElementById('itemDesc').value.trim();
+    const qty = parseFloat(document.getElementById('itemQty').value);
+    const unit = parseFloat(document.getElementById('itemPrice').value);
+    if(!description){ alert('Enter a description.'); return; }
+    if(!qty || qty <= 0){ alert('Enter a quantity.'); return; }
+    if(isNaN(unit) || unit === 0){ alert('Enter a price (negative for a discount).'); return; }
+    try{
+      await addItems(modalDebtId, [{ description, qty, unit }]);
+      closeModal('itemModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to add item: ' + e.message); }
+  }
+  async function deleteItem(itemId){
+    const it = state.items.find(x=>x.id===itemId); if(!it) return;
+    const d = state.debtors.find(x=>x.id===it.debtId); if(!d) return;
+    if(!confirm(`Remove "${it.description}" (${fmt(it.qty*it.unit)}) from ${d.name}? Their amount owed goes down by that much.`)) return;
+    try{
+      const next = Math.round((d.originalAmount - it.qty*it.unit)*100)/100;
+      await sb(`mt_items?id=eq.${encodeURIComponent(itemId)}`, { method:'DELETE', prefer:'return=minimal' });
+      await sb(`mt_debtors?id=eq.${encodeURIComponent(d.id)}`, { method:'PATCH', prefer:'return=minimal', body: JSON.stringify({ original_amount: next }) });
+      await logActivity(d.id, 'remove_item', { description: it.description, qty: it.qty, unit: it.unit, from: d.originalAmount, to: next });
+      await refreshAndRender();
+    } catch(e){ alert('Failed to remove item: ' + e.message); }
+  }
+
+  // ---- order calculator ----
+  let catalog = [];          // [{product, cost}] distributor list from mt_catalog
+  let calcRows = [];         // [{sel: product name | '', desc, qty, unit, miss}]
+  const TIERS = [ {min:300, pct:20, name:'Tier 4'}, {min:150, pct:15, name:'Tier 3'}, {min:75, pct:10, name:'Tier 2'}, {min:25, pct:5, name:'Tier 1'} ];
+  const ALIASES = {
+    bpc:'BPC-157', bpc157:'BPC-157', kpv:'KPV', nad:'NAD+', nadplus:'NAD+', ghk:'GHK-Cu', ghkcu:'GHK-Cu',
+    rt:'Retatrutide', reta:'Retatrutide', retatrutide:'Retatrutide', glp3:'Retatrutide',
+    tb:'TB500', tb500:'TB500', tirz:'Tirzepatide', tirzepatide:'Tirzepatide', glp2:'Tirzepatide',
+    sema:'Semaglutide', semaglutide:'Semaglutide', glp1:'Semaglutide',
+    epi:'Epithalon', epithalon:'Epithalon', aod:'AOD9604', aod9604:'AOD9604',
+    '5amino':'5-Amino-1MQ', '5amino1mq':'5-Amino-1MQ', mots:'MOTS-C', motsc:'MOTS-C', ss31:'SS-31',
+    ipa:'Ipamorelin', ipamorelin:'Ipamorelin', selank:'Selank', semax:'Semax', dsip:'DSIP', ll37:'LL-37',
+    glutathione:'Glutathione', gluta:'Glutathione', kisspeptin:'Kisspeptin', kiss:'Kisspeptin', pt141:'PT-141',
+    bacwater:'BAC Water', bac:'BAC Water', foxo4:'FOXO4', igf:'IGF1-LR3', igf1lr3:'IGF1-LR3', cagri:'Cagrilintide', cagrilintide:'Cagrilintide'
+  };
+  const norm = str => String(str).toLowerCase().replace(/[^a-z0-9]/g,'');
+  const mgOf = name => { const m = /(\d+(?:\.\d+)?)\s*(mg|ml)\b/i.exec(name); return m ? parseFloat(m[1]) : null; };
+
+  async function openCalc(){
+    document.getElementById('calcModal').style.display = 'flex';
+    if(!catalog.length){
+      try{
+        const rows = await sb('mt_catalog?select=product,dist_cost&order=product.asc');
+        catalog = rows.map(r=>({ product:r.product, cost:Number(r.dist_cost) }));
+      } catch(e){ alert('Could not load the distributor price list: ' + e.message); }
+    }
+    const dest = document.getElementById('calcDest');
+    dest.innerHTML = '<option value="__new">+ New debtor</option>' + state.debtors.map(d=>`<option value="${d.id}">${d.name.replace(/</g,'&lt;')}</option>`).join('');
+    calcDestChange();
+    if(!calcRows.length) calcRows = [];
+    calcRender();
+  }
+  function calcDestChange(){ document.getElementById('calcNew').style.display = document.getElementById('calcDest').value === '__new' ? 'block' : 'none'; }
+  function calcClear(){ calcRows = []; document.getElementById('calcPaste').value = ''; calcRender(); }
+  function calcAddRow(){ calcRows.push({ sel:'', desc:'', qty:1, unit:0, miss:'' }); calcRender(); }
+  function findProduct(name, mg){
+    const key = norm(name);
+    const base = ALIASES[key];
+    let hits = [];
+    if(base){
+      hits = catalog.filter(c=> norm(c.product).startsWith(norm(base)) && (mg===null || mgOf(c.product)===mg));
+    } else if(key.length >= 2){
+      hits = catalog.filter(c=> norm(c.product).startsWith(key) && (mg===null || mgOf(c.product)===mg));
+    }
+    return hits.length === 1 ? hits[0] : null;
+  }
+  function calcParse(append){
+    const text = document.getElementById('calcPaste').value;
+    const out = append ? calcRows.slice() : [];
+    text.split(/\r?\n|;/).forEach(line=>{
+      line = line.trim(); if(!line) return;
+      // name, mg, x, qty. Accepts "Bpc 10 x 10", "RT15 x 10", "TB10 X10", "NAD 1000mg x 4"
+      const m = /^(.*?[a-z\)\+])\s*(\d+(?:\.\d+)?)?\s*(?:mg)?\s*[x×*]\s*(\d+)\s*$/i.exec(line);
+      if(!m){ out.push({ sel:'', desc:line, qty:1, unit:0, miss:`Could not read "${line}". Use name, mg, x, quantity.` }); return; }
+      const name = m[1].trim(), mg = m[2] ? parseFloat(m[2]) : null, qty = parseInt(m[3],10);
+      const hit = findProduct(name, mg);
+      if(hit) out.push({ sel:hit.product, desc:hit.product, qty, unit:hit.cost, miss:'' });
+      else out.push({ sel:'', desc:line, qty, unit:0, miss:`No single match for "${name}${mg!==null ? ' ' + mg + 'mg' : ''}". Pick the product.` });
+    });
+    calcRows = out; calcRender();
+  }
+  function calcTotals(){
+    const vials = calcRows.reduce((n,r)=> n + (r.sel||r.desc ? (Number(r.qty)||0) : 0), 0);
+    const sub = Math.round(calcRows.reduce((t,r)=> t + (Number(r.qty)||0)*(Number(r.unit)||0), 0)*100)/100;
+    const tier = TIERS.find(t=> vials >= t.min) || null;
+    const discount = tier ? Math.round(sub*tier.pct)/100 : 0;
+    const apply = document.getElementById('calcTier').checked && tier;
+    return { vials, sub, tier, discount, apply, net: Math.round((sub - (apply ? discount : 0))*100)/100 };
+  }
+  function calcRender(){
+    const box = document.getElementById('calcRows');
+    const opts = '<option value="">Custom / pick product</option>' + catalog.map(c=>`<option value="${c.product.replace(/"/g,'&quot;')}">${c.product.replace(/</g,'&lt;')}</option>`).join('');
+    box.innerHTML = calcRows.map((r,i)=>`
+      <div class="calc-row">
+        <div>
+          <select data-ci="${i}" data-cf="sel">${opts}</select>
+          ${r.sel ? '' : `<input type="text" data-ci="${i}" data-cf="desc" placeholder="Item name" value="${(r.desc||'').replace(/"/g,'&quot;')}" style="margin-top:4px !important;" />`}
+        </div>
+        <input type="number" min="0" step="1" data-ci="${i}" data-cf="qty" value="${r.qty}" />
+        <input type="number" step="0.01" data-ci="${i}" data-cf="unit" value="${r.unit}" />
+        <div class="c-total">${fmt((Number(r.qty)||0)*(Number(r.unit)||0))}</div>
+        <button class="c-del" data-ci="${i}" data-cdel="1" title="Remove">x</button>
+        ${r.miss ? `<div class="nomatch">${r.miss.replace(/</g,'&lt;')}</div>` : ''}
+      </div>`).join('') || '<div class="hint" style="margin:0 0 6px;">No rows yet. Paste an order above or add a row.</div>';
+    box.querySelectorAll('select[data-cf="sel"]').forEach((el,idx)=>{ el.value = calcRows[parseInt(el.dataset.ci,10)].sel; });
+    box.querySelectorAll('[data-cf]').forEach(el=>{
+      el.addEventListener(el.tagName==='SELECT' ? 'change' : 'input', ()=>{
+        const r = calcRows[parseInt(el.dataset.ci,10)], f = el.dataset.cf;
+        if(f==='sel'){
+          r.sel = el.value; r.miss = '';
+          if(el.value){ const c = catalog.find(x=>x.product===el.value); r.desc = c.product; r.unit = c.cost; }
+          calcRender();
+        } else {
+          r[f] = (f==='desc') ? el.value : el.value;
+          // update totals without rebuilding inputs (keeps focus)
+          const row = el.closest('.calc-row');
+          row.querySelector('.c-total').textContent = fmt((Number(r.qty)||0)*(Number(r.unit)||0));
+          calcSummary();
+        }
+      });
+    });
+    box.querySelectorAll('[data-cdel]').forEach(el=> el.addEventListener('click', ()=>{ calcRows.splice(parseInt(el.dataset.ci,10),1); calcRender(); }));
+    calcSummary();
+  }
+  function calcSummary(){
+    const t = calcTotals();
+    document.getElementById('calcTierLabel').textContent = t.tier ? `Apply ${t.tier.name} volume discount (${t.tier.pct}% off, ${t.vials} vials)` : `Volume tier discount (needs 25+ vials, you have ${t.vials})`;
+    document.getElementById('calcSum').innerHTML = `
+      <div><span>${t.vials} vials</span><span>${fmt(t.sub)}</span></div>
+      ${t.tier ? `<div style="color:var(--muted)"><span>${t.tier.name} would take off ${t.tier.pct}%</span><span>${t.apply ? '- ' : '('}${fmt(t.discount)}${t.apply ? '' : ')'}</span></div>` : ''}
+      <div class="grand"><span>Total</span><span>${fmt(t.net)}</span></div>`;
+  }
+  async function calcCommit(){
+    const t = calcTotals();
+    const items = calcRows.filter(r=> (r.sel||r.desc.trim()) && Number(r.qty)>0).map(r=>({ description: (r.sel||r.desc).trim(), qty: Number(r.qty), unit: Number(r.unit)||0 }));
+    if(!items.length){ alert('Add at least one row.'); return; }
+    if(items.some(it=>!it.unit)){ if(!confirm('Some rows have a $0 price. Add them anyway?')) return; }
+    if(calcRows.some(r=>r.miss && !r.sel)){ alert('Fix the red rows first (pick the product or remove the row).'); return; }
+    if(t.apply) items.push({ description: `Volume discount (${t.tier.name}, ${t.tier.pct}%)`, qty: 1, unit: -t.discount });
+    const destVal = document.getElementById('calcDest').value;
+    const dLabel = destVal === '__new' ? (document.getElementById('calcNewName').value.trim() || 'new debtor') : ((state.debtors.find(x=>x.id===destVal)||{}).name || '');
+    if(!confirm(`Add ${items.length} line${items.length>1?'s':''} (${fmt(t.net)}) to ${dLabel}?`)) return;
+    try{
+      let debtId = destVal;
+      if(destVal === '__new'){
+        const name = document.getElementById('calcNewName').value.trim();
+        if(!name){ alert('Enter the new debtor name.'); return; }
+        const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'debtor';
+        debtId = 'custom-' + slug + '-' + Date.now();
+        await sb('mt_debtors', { method:'POST', prefer:'return=minimal', body: JSON.stringify({ id: debtId, name, original_amount: 0, is_custom: true, brand: document.getElementById('calcNewBrand').value }) });
+        await loadState();
+      }
+      await addItems(debtId, items, 'calculator_order');
+      calcRows = []; document.getElementById('calcPaste').value = '';
+      closeModal('calcModal');
+      await refreshAndRender();
+    } catch(e){ alert('Failed to add order: ' + e.message); }
+  }
+
   async function setBrand(debtId, brand){
     const d = state.debtors.find(x=>x.id===debtId);
     if(!d || d.brand === brand) return;
@@ -871,6 +1134,7 @@
         </div>
         ${contactLineParts.length ? `<div class="contact-line">${contactLineParts.join('')}</div>` : ''}
         <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+        ${(s.items||[]).filter(i=>i.debtId===d.id).length ? `<div class="items-list">${(s.items||[]).filter(i=>i.debtId===d.id).map(i=>`<div class="item-row"><span>${i.description.replace(/</g,'&lt;')}${i.qty!==1 ? ' x ' + i.qty + ' @ ' + fmt(i.unit) : ''}</span><span><span class="i-amt">${fmt(i.qty*i.unit)}</span><button class="i-del" data-delitem="${i.id}" title="Remove item">x</button></span></div>`).join('')}</div>` : ''}
         <div class="card-actions">
           <button data-pay="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Payment</button>
           <button class="borrow-btn" data-borrow="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Borrowed More</button>
@@ -879,6 +1143,7 @@
         </div>
         <div class="card-actions" style="margin-top:8px;">
           <button class="edit-btn" data-editdebtor="${d.id}">Edit Amount</button>
+          <button class="edit-btn" data-additem="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}">+ Line Item</button>
           <button class="sub-btn" data-subtract="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" ${paidRaw > 0 ? '' : 'disabled'}>Subtract Paid</button>
         </div>
         <div class="brand-tabs"><span class="brand-label">Invoice brand</span>
@@ -886,6 +1151,7 @@
           <button class="brand-tab ${d.brand==='axis' ? 'on axis' : ''}" data-brand="${d.id}" data-brandval="axis">AXIS Chems</button>
         </div>
         <div class="card-actions" style="margin-top:8px;">
+          <button class="invoice-btn" data-preview="${d.id}">Preview Invoice</button>
           <button class="invoice-btn" data-invoice="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-email="${(contact.email||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Email Invoice</button>
           <button class="invoice-btn" data-invoicesms="${d.id}" data-name="${d.name.replace(/"/g,'&quot;')}" data-remaining="${remaining}" data-phone="${(contact.phone||'').replace(/"/g,'&quot;')}" ${isSettled ? 'disabled title="Already settled"' : ''}>Text Invoice (MMS)</button>
         </div>
@@ -925,6 +1191,15 @@
     drawChart(points, totalOriginal);
 
     // wire up events (list is rebuilt each render, so rebind each time)
+    list.querySelectorAll('[data-additem]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); openItemModal(btn.dataset.additem, btn.dataset.name); });
+    });
+    list.querySelectorAll('[data-delitem]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); deleteItem(btn.dataset.delitem); });
+    });
+    list.querySelectorAll('[data-preview]').forEach(btn=>{
+      btn.addEventListener('click', e=>{ e.stopPropagation(); window.open('/api/preview-invoice?debtId=' + encodeURIComponent(btn.dataset.preview), '_blank'); });
+    });
     list.querySelectorAll('[data-brand]').forEach(btn=>{
       btn.addEventListener('click', e=>{ e.stopPropagation(); setBrand(btn.dataset.brand, btn.dataset.brandval); });
     });
