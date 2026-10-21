@@ -380,7 +380,8 @@
       throw new Error(`Supabase ${opts.method||'GET'} ${path} failed: ${res.status} ${text}`);
     }
     if(res.status === 204) return null;
-    return res.json();
+    const raw = await res.text();
+    return raw ? JSON.parse(raw) : null;
   }
 
   let expandedIds = new Set();
