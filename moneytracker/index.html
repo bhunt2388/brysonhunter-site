@@ -1321,6 +1321,23 @@
   async function refreshAndRender(){
     await loadState();
     render();
+    statusPolls = 0;
+    refreshTextStatuses();
+  }
+
+  // Text delivery status is only known a few seconds after sending, so ask the server to re-read it
+  // from GoHighLevel for anything still queued/pending, then redraw if something changed.
+  let statusPolls = 0;
+  async function refreshTextStatuses(){
+    try{
+      const open = (state.invoices||[]).some(i=>i.channel!=='email' && !['delivered','failed','undelivered'].includes(i.status));
+      if(!open || statusPolls >= 6) return;
+      statusPolls++;
+      const r = await fetch('/api/refresh-invoice-status');
+      const j = await r.json().catch(()=>({}));
+      if(j.updated){ await loadState(); render(); }
+      if((state.invoices||[]).some(i=>i.channel!=='email' && !['delivered','failed','undelivered'].includes(i.status))) setTimeout(refreshTextStatuses, 15000);
+    }catch(_){}
   }
 
   async function init(){
@@ -1335,6 +1352,7 @@
     try{
       await loadState();
       render();
+      refreshTextStatuses();
     } catch(e){
       if(shownCache) return;
       list.innerHTML = `<div class="empty-hist" style="color:var(--danger);">Failed to load data: ${e.message.replace(/</g,'&lt;')}. Check your connection and reload.</div>`;
