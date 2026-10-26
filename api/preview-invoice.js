@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (!debtId) { res.status(400).send('Missing debtId'); return; }
   try {
     const snap = await getSnapshot(debtId);
-    const emailHtml = buildInvoiceHtml({ invoiceNo: 'PREVIEW', issued: todayLong(), snap, dueNote: '' });
+    const emailHtml = buildInvoiceHtml({ invoiceNo: snap.invoiceNo || 'PREVIEW', issued: todayLong(), snap, dueNote: '' });
     const brandName = snap.brand === 'axis' ? 'AXIS Chems' : 'Bryson Hunter';
     const page = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Invoice preview: ${escapeHtml(snap.name)}</title>

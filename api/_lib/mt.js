@@ -52,7 +52,7 @@ export async function sb(path, opts = {}) {
 export async function getSnapshot(debtId) {
   const id = encodeURIComponent(debtId);
   const [debtors, pays, borrows, itemRows] = await Promise.all([
-    sb(`mt_debtors?select=id,name,original_amount,brand&id=eq.${id}`),
+    sb(`mt_debtors?select=id,name,original_amount,brand,invoice_no&id=eq.${id}`),
     sb(`mt_payments?select=amount&debt_id=eq.${id}`),
     sb(`mt_borrows?select=amount&debt_id=eq.${id}`),
     sb(`mt_items?select=description,qty,unit_price&debt_id=eq.${id}&order=created_at.asc`),
@@ -64,7 +64,7 @@ export async function getSnapshot(debtId) {
   const paid = pays.reduce((s, p) => s + Number(p.amount), 0);
   const balance = Math.max(original + borrowed - paid, 0);
   const items = itemRows.map((i) => ({ description: i.description, qty: Number(i.qty), unit: Number(i.unit_price) }));
-  const snap = { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson', items };
+  const snap = { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson', invoiceNo: d.invoice_no || null, items };
   snap.lines = invoiceLines(snap);
   return snap;
 }
@@ -92,13 +92,34 @@ export function invoiceLines(snap) {
 // Invoice numbers: the first is AXS78953, every one after is AXS plus a random 5-digit number. Never repeats.
 export async function nextInvoiceNo() {
   const rows = await sb('mt_invoices?select=invoice_no&invoice_no=like.AXS*&limit=5000', { prefer: 'return=representation' });
-  const used = new Set((rows || []).map((r) => r.invoice_no));
+  const drows = await sb('mt_debtors?select=invoice_no&invoice_no=like.AXS*&limit=5000', { prefer: 'return=representation' });
+  const used = new Set([...(rows || []), ...(drows || [])].map((r) => r.invoice_no));
   if (!used.has('AXS78953')) return 'AXS78953';
   for (let i = 0; i < 200; i++) {
     const n = 'AXS' + String(10000 + Math.floor(Math.random() * 90000));
     if (!used.has(n)) return n;
   }
   throw new Error('Could not generate a unique invoice number');
+}
+
+// One permanent invoice number per client. Assigned the first time an invoice goes out and reused for every
+// later invoice, reminder and receipt, so partial payments all land on the same invoice.
+export async function getInvoiceNo(debtId, snap) {
+  if (snap && snap.invoiceNo) return snap.invoiceNo;
+  const id = encodeURIComponent(debtId);
+  const cur = await sb(`mt_debtors?select=invoice_no&id=eq.${id}`);
+  if (cur && cur[0] && cur[0].invoice_no) return cur[0].invoice_no;
+  for (let i = 0; i < 5; i++) {
+    const n = await nextInvoiceNo();
+    try {
+      // Only claims the number if nobody else did in the meantime.
+      const r = await sb(`mt_debtors?id=eq.${id}&invoice_no=is.null`, { method: 'PATCH', prefer: 'return=representation', body: JSON.stringify({ invoice_no: n }) });
+      if (r && r[0]) return n;
+    } catch (e) { /* number collided with another client's, try another */ }
+    const again = await sb(`mt_debtors?select=invoice_no&id=eq.${id}`);
+    if (again && again[0] && again[0].invoice_no) return again[0].invoice_no;
+  }
+  throw new Error('Could not assign an invoice number');
 }
 
 export function newInvoiceId() {

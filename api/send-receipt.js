@@ -47,9 +47,8 @@ export default async function handler(req, res) {
     const pay = pays && pays[0];
     if (!pay || Number(pay.amount) <= 0) { res.status(400).json({ error: 'Payment not found, or it is not a payment (corrections cannot be confirmed).' }); return; }
     pay.amount = Number(pay.amount);
-    // The reference is the newest invoice number already sent to this person.
-    const last = await sb(`mt_invoices?select=invoice_no&debt_id=eq.${encodeURIComponent(debtId)}&direction=eq.outbound&invoice_no=not.is.null&order=sent_at.desc&limit=1`);
-    const reference = (last && last[0] && last[0].invoice_no) || '';
+    // The reference is the client's permanent invoice number (same one on every invoice and receipt).
+    const reference = snap.invoiceNo || '';
     const remaining = snap.balance;
     const brandName = BRAND_NAMES[snap.brand];
     const id = newInvoiceId();

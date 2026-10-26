@@ -4,7 +4,7 @@
 //
 // Env vars: GHL_TOKEN, GHL_LOCATION_ID (preferred). Legacy: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
 
-import { API_BASE, BRAND_NAMES, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164, logToCommand } from './_lib/mt.js';
+import { API_BASE, BRAND_NAMES, PAY_LINKS, fmt, sb, getSnapshot, getInvoiceNo, newInvoiceId, toE164, logToCommand } from './_lib/mt.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   try {
     snap = await getSnapshot(debtId);
     if (snap.balance <= 0) { res.status(400).json({ error: `${snap.name} has no outstanding balance.` }); return; }
-    invoiceNo = await nextInvoiceNo();
+    invoiceNo = await getInvoiceNo(debtId, snap);
     id = newInvoiceId();
   } catch (e) { res.status(500).json({ error: String(e.message || e) }); return; }
 

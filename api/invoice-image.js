@@ -29,7 +29,7 @@ export default async function handler(req) {
     // Live preview of what would be sent now, built from the current numbers (nothing is logged).
     try {
       const snap = await getSnapshot(previewId);
-      inv = { brand: snap.brand, invoice_no: 'PREVIEW', amount: snap.balance, debtor_name: snap.name };
+      inv = { brand: snap.brand, invoice_no: snap.invoiceNo || 'PREVIEW', amount: snap.balance, debtor_name: snap.name };
       lines0 = snap.lines;
       issued = todayLong();
     } catch (e) { return new Response('Not found', { status: 404 }); }

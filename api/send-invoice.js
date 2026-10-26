@@ -6,7 +6,7 @@
 
 import { LOGO_DATA_URI } from './_lib/logo.js';
 import { AXIS_LOGO_DATA_URI } from './_lib/axis-logo.js';
-import { SITE_URL, BRAND_NAMES, PAY_LINKS, fmt, escapeHtml, sb, getSnapshot, nextInvoiceNo, newInvoiceId, todayLong } from './_lib/mt.js';
+import { SITE_URL, BRAND_NAMES, PAY_LINKS, fmt, escapeHtml, sb, getSnapshot, getInvoiceNo, newInvoiceId, todayLong } from './_lib/mt.js';
 
 export const THEMES = {
   bryson: { bg: '#131110', card: '#1c1815', line: '#2f2a22', accent: '#C9A961', rule: '#8B6F35', text: '#f2ede2', muted: '#b4ab97', dim: '#756d5b', foot: '#161410', green: '#7fd39a',
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
     const snap = await getSnapshot(debtId);
     const from = snap.brand === 'axis' ? fromEnv.replace(/^[^<]*</, 'Axis Chems <') : fromEnv;
     if (snap.balance <= 0) { res.status(400).json({ error: `${snap.name} has no outstanding balance.` }); return; }
-    const invoiceNo = await nextInvoiceNo();
+    const invoiceNo = await getInvoiceNo(debtId, snap);
     const html = buildInvoiceHtml({ invoiceNo, issued: todayLong(), snap, dueNote });
 
     const sendResp = await fetch('https://api.resend.com/emails', {
