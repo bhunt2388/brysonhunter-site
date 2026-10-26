@@ -4,7 +4,7 @@
 //
 // Env vars: GHL_TOKEN, GHL_LOCATION_ID (preferred). Legacy: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM
 
-import { API_BASE, BRAND_NAMES, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164 } from './_lib/mt.js';
+import { API_BASE, BRAND_NAMES, PAY_LINKS, fmt, sb, getSnapshot, nextInvoiceNo, newInvoiceId, toE164, logToCommand } from './_lib/mt.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
@@ -92,6 +92,7 @@ export default async function handler(req, res) {
         status = (gj.message && gj.message.status) || gj.status || status;
       }
       await sb(`mt_invoices?id=eq.${id}`, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify({ twilio_sid: messageId, status, status_updated_at: new Date().toISOString() }) }).catch((e) => console.error('[sms] log patch failed', e));
+      await logToCommand({ name: snap.name, phone: to, ghlContactId: contactId, logId: id, messageId, text, kind: 'Invoice', invoiceNo, status });
       res.status(200).json({ status, invoiceNo, messageId });
     } catch (err) {
       console.error('[send-invoice-sms] ghl error:', err);

@@ -1,6 +1,6 @@
 // Sends a "payment received" confirmation (email via Resend, or text via GoHighLevel) and logs it to mt_invoices
 // with direction 'receipt'. Numbers come from the database. Body: { debtId, paymentId, channel: 'email'|'sms', toEmail | toPhone }
-import { BRAND_NAMES, PAY_LINKS, fmt, escapeHtml, sb, getSnapshot, newInvoiceId, todayLong, toE164, ghlSendText } from './_lib/mt.js';
+import { BRAND_NAMES, PAY_LINKS, fmt, escapeHtml, sb, getSnapshot, newInvoiceId, todayLong, toE164, ghlSendText, logToCommand } from './_lib/mt.js';
 import { THEMES } from './send-invoice.js';
 
 function receiptHtml({ snap, pay, reference, remaining }) {
@@ -85,6 +85,7 @@ export default async function handler(req, res) {
     try {
       const out = await ghlSendText({ to, name: snap.name, message: text });
       await sb(`mt_invoices?id=eq.${id}`, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify({ twilio_sid: out.messageId, status: out.status, status_updated_at: new Date().toISOString() }) }).catch(() => {});
+      await logToCommand({ name: snap.name, phone: to, ghlContactId: out.contactId, logId: id, messageId: out.messageId, text, kind: 'Receipt', invoiceNo: reference, status: out.status });
       res.status(200).json({ status: out.status, channel: 'sms' });
     } catch (e) {
       await sb(`mt_invoices?id=eq.${id}`, { method: 'PATCH', prefer: 'return=minimal', body: JSON.stringify({ status: 'failed', error: String(e.message).slice(0, 300), status_updated_at: new Date().toISOString() }) }).catch(() => {});

@@ -153,5 +153,32 @@ export async function ghlSendText({ to, name, message, attachments }) {
     const gj = g.ok ? await g.json().catch(() => ({})) : {};
     status = (gj.message && gj.message.status) || gj.status || status;
   }
-  return { messageId, status };
+  return { messageId, status, contactId };
+}
+
+// Mirrors a Money Tracker text into MHG Command (Axis Chems workspace) so it shows in Command's Messages and the
+// contact's communication log. Best-effort: never throws, never blocks the send. Needs MHG_SERVICE_KEY.
+const CMD_URL = 'https://rafgdywjvijiqnampsha.supabase.co/rest/v1/';
+const AXIS_ENTITY = '351b7c4a-bbcf-4d45-b5c2-3227606541e3';
+export async function logToCommand({ name, phone, ghlContactId, logId, messageId, text, kind, invoiceNo, status }) {
+  try {
+    const key = process.env.MHG_SERVICE_KEY;
+    if (!key || !ghlContactId) return;
+    const H = { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
+    const get = async (q) => { const r = await fetch(CMD_URL + q, { headers: H }); return r.ok ? r.json() : []; };
+    let hit = await get(`contacts?select=id,entity_id&ghl_contact_id=eq.${encodeURIComponent(ghlContactId)}&limit=1`);
+    let contactId = hit[0] && hit[0].id;
+    if (hit[0] && hit[0].entity_id !== AXIS_ENTITY) return; // already a contact in another company: do not mix
+    if (!contactId) {
+      const r = await fetch(CMD_URL + 'contacts', { method: 'POST', headers: { ...H, Prefer: 'return=representation' },
+        body: JSON.stringify({ name, phone, entity_id: AXIS_ENTITY, network_role: 'customer', stage: 'active', ghl_contact_id: ghlContactId, source: 'Money Tracker' }) });
+      const j = await r.json().catch(() => []);
+      contactId = j[0] && j[0].id;
+    }
+    if (!contactId) return;
+    await fetch(CMD_URL + 'communications?on_conflict=dedupe_key', { method: 'POST', headers: { ...H, Prefer: 'resolution=ignore-duplicates,return=minimal' },
+      body: JSON.stringify({ entity_id: AXIS_ENTITY, contact_id: contactId, channel: 'sms', direction: 'outbound',
+        summary: `${kind} text ${invoiceNo || ''} (Money Tracker, ${status || 'sent'})`, full_text: text, occurred_at: new Date().toISOString(),
+        source_account: 'ghl', logged_by: 'auto', importance: 'low', dedupe_key: 'mt:' + logId, external_id: messageId }) });
+  } catch (e) { console.error('[logToCommand]', e); }
 }
