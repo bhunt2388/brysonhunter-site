@@ -5,6 +5,18 @@
 const SITE = "bhe";
 const FALLBACK = "https://formspree.io/f/xdarooko";
 
+
+async function turnstileOk(req) {
+  const secret = process.env.TURNSTILE_SECRET;
+  if (!secret) return true; // not configured yet
+  const token = req.headers["x-turnstile"];
+  if (!token) return false;
+  try {
+    const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ secret, response: token }) });
+    return !!(await r.json()).success;
+  } catch (e) { return false; }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -13,6 +25,7 @@ export default async function handler(req, res) {
   let body = req.body || {};
   if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
   if (body.website) return res.status(200).json({ ok: true }); // honeypot
+  if (!(await turnstileOk(req))) return res.status(403).json({ ok: false, error: "Verification failed" });
   delete body.testMode;
   const payload = { ...body, site: SITE };
   if (!(payload.name || payload.first_name) || !payload.email) {

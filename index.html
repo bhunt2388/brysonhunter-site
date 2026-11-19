@@ -905,5 +905,5 @@ async function handleSubmit(e){
 }
 </script>
 <script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6a439a1276eb9ed4ac528699" data-source="WEB_USER"></script>
-</body>
+<script data-ts-guard>(function(){var K="0x4AAAAAAGIeWFJMj9RIBWE1",f=window.fetch,p=null;function tok(){return new Promise(function(ok){function go(){var d=document.createElement("div");d.style.cssText="position:fixed;bottom:8px;right:8px;z-index:99999";document.body.appendChild(d);window.turnstile.render(d,{sitekey:K,size:"flexible",callback:function(t){ok(t);setTimeout(function(){d.remove()},500)},"error-callback":function(){ok("")}})}if(window.turnstile)return go();var s=document.createElement("script");s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";s.onload=go;s.onerror=function(){ok("")};document.head.appendChild(s)})}window.fetch=function(u,o){if(typeof u==="string"&&u.indexOf("/api/lead")===0){return tok().then(function(t){o=o||{};o.headers=Object.assign({},o.headers,{"x-turnstile":t});return f(u,o)})}return f.apply(this,arguments)}})()</script></body>
 </html>
