@@ -97,7 +97,7 @@ export default async function handler(req) {
       pay('Venmo: venmo.com/u/bhunt2388', '#3D95CE', '#ffffff'),
       pay('Cash App: $bhunt23', '#00D632', '#04310f'),
       pay('PayPal: paypal.me/BrysonHunter801', '#0070BA', '#ffffff'),
-      pay('Zelle: Brysonhunter', '#6D1ED4', '#ffffff'),
+      pay('Zelle: 8014002916', '#6D1ED4', '#ffffff'),
       pay('Apple Cash: 801-400-2916', '#000000', '#ffffff'),
       txt({ color: T.dim, fontSize: 22, marginTop: 'auto', justifyContent: 'center' }, `Payment reference: ${inv.invoice_no || 'this invoice'}. Please include it with your payment.`),
     ]),

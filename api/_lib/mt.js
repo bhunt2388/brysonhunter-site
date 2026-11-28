@@ -12,7 +12,7 @@ export const PAY_LINKS = {
   cashappShort: 'cash.app/$bhunt23',
   paypal: 'https://paypal.me/BrysonHunter801',
   paypalShort: 'paypal.me/BrysonHunter801',
-  zelleTag: 'Brysonhunter',
+  zelleTag: '8014002916',
   applecashNumber: '8014002916',
 };
 

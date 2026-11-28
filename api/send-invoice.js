@@ -60,7 +60,7 @@ export function buildInvoiceHtml({ invoiceNo, issued, snap, dueNote }) {
           ${btn(PAY_LINKS.venmo, '#3D95CE', '#ffffff', 'Pay with Venmo')}
           ${btn(PAY_LINKS.cashapp, '#00D632', '#04310f', 'Pay with Cash App')}
           ${btn(PAY_LINKS.paypal, '#0070BA', '#ffffff', 'Pay with PayPal')}
-          <tr><td style="padding-bottom:10px;"><div style="background:#6D1ED4; color:#ffffff; text-align:center; font-weight:700; font-size:15px; padding:14px; border-radius:10px;">Zelle: search <span style="text-decoration:underline;">${PAY_LINKS.zelleTag}</span> in your bank app</div></td></tr>
+          <tr><td style="padding-bottom:10px;"><div style="background:#6D1ED4; color:#ffffff; text-align:center; font-weight:700; font-size:15px; padding:14px; border-radius:10px;">Zelle: send to <span style="text-decoration:underline;">${PAY_LINKS.zelleTag}</span></div></td></tr>
           <tr><td><div style="background:#000000; color:#ffffff; text-align:center; font-weight:700; font-size:15px; padding:14px; border-radius:10px; border:1px solid #333;">Apple Cash: send to ${PAY_LINKS.applecashNumber}</div></td></tr>
         </table>
         <div style="color:${T.dim}; font-size:11.5px; margin-top:14px; line-height:1.5;">Zelle and Apple Cash do not support clickable links in email. Open your banking app or Messages and use the info above. Payment reference: <b>${invoiceNo}</b>. Please include it with your payment.</div>
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
     const sendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, to: [toEmail], subject: `${invoiceNo}: ${fmt(snap.balance)} due`, html }),
+      body: JSON.stringify({ from, to: [toEmail], bcc: [process.env.INVOICE_BCC || 'brysonhunter801@gmail.com'], subject: `${invoiceNo}: ${fmt(snap.balance)} due`, html }),
     });
     const sendJson = await sendResp.json().catch(() => ({}));
     if (!sendResp.ok) { res.status(502).json({ error: 'Resend send failed', detail: sendJson }); return; }
