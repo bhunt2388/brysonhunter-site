@@ -56,6 +56,7 @@ export function buildInvoiceHtml({ invoiceNo, issued, snap, dueNote }) {
         ${safeDueNote ? `<div style="color:${T.dim}; font-size:13px; font-style:italic; margin-bottom:8px;">${safeDueNote}</div>` : ''}
         <div style="color:${T.dim}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin:26px 0 14px;">Pay with</div>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          ${snap.payUrl ? btn(snap.payUrl, '#0B4CB8', '#ffffff', 'Pay by card or Apple Pay') : ''}
           ${btn(PAY_LINKS.venmo, '#3D95CE', '#ffffff', 'Pay with Venmo')}
           ${btn(PAY_LINKS.cashapp, '#00D632', '#04310f', 'Pay with Cash App')}
           ${btn(PAY_LINKS.paypal, '#0070BA', '#ffffff', 'Pay with PayPal')}

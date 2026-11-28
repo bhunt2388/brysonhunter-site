@@ -52,7 +52,7 @@ export async function sb(path, opts = {}) {
 export async function getSnapshot(debtId) {
   const id = encodeURIComponent(debtId);
   const [debtors, pays, borrows, itemRows] = await Promise.all([
-    sb(`mt_debtors?select=id,name,original_amount,brand,invoice_no&id=eq.${id}`),
+    sb(`mt_debtors?select=id,name,original_amount,brand,invoice_no,pay_card&id=eq.${id}`),
     sb(`mt_payments?select=amount&debt_id=eq.${id}`),
     sb(`mt_borrows?select=amount&debt_id=eq.${id}`),
     sb(`mt_items?select=description,qty,unit_price&debt_id=eq.${id}&order=created_at.asc`),
@@ -64,7 +64,7 @@ export async function getSnapshot(debtId) {
   const paid = pays.reduce((s, p) => s + Number(p.amount), 0);
   const balance = Math.max(original + borrowed - paid, 0);
   const items = itemRows.map((i) => ({ description: i.description, qty: Number(i.qty), unit: Number(i.unit_price) }));
-  const snap = { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson', invoiceNo: d.invoice_no || null, items };
+  const snap = { debtId: d.id, name: d.name, original, borrowed, paid, balance, brand: d.brand === 'axis' ? 'axis' : 'bryson', invoiceNo: d.invoice_no || null, items, payCard: !!d.pay_card, payUrl: d.pay_card ? `${API_BASE}/pay/?d=${id}` : null };
   snap.lines = invoiceLines(snap);
   return snap;
 }
