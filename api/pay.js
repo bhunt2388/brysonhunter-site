@@ -1,7 +1,7 @@
 // Public card payment for a Money Tracker debtor, charged through Luqra (NMI gateway).
 // GET ?d=<debtId>  -> invoice summary. POST {d, payment_token, first_name, last_name, address1, city, state, zip, email} -> charge.
 // The amount is always the debtor's live balance from Supabase. Only debtors with pay_card = true can be charged.
-import { sb, getSnapshot, fmt } from './_lib/mt.js';
+import { sb, getSnapshot, fmt, PAY_LINKS } from './_lib/mt.js';
 
 const GATEWAY = 'https://luqra.transactiongateway.com/api/transact.php';
 
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const snap = await getSnapshot(String(req.query.d || ''));
       if (!snap.payCard) { res.status(404).json({ error: 'Not available' }); return; }
-      res.status(200).json({ name: snap.name, brand: snap.brand, balance: snap.balance, lines: snap.lines, original: snap.original, paid: snap.paid });
+      res.status(200).json({ name: snap.name, brand: snap.brand, balance: snap.balance, lines: snap.lines, original: snap.original, paid: snap.paid, invoiceNo: snap.invoiceNo, links: PAY_LINKS });
       return;
     }
     if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
@@ -21,14 +21,15 @@ export default async function handler(req, res) {
     const snap = await getSnapshot(String(b.d || ''));
     if (!snap.payCard) { res.status(404).json({ error: 'Not available' }); return; }
     if (snap.balance <= 0) { res.status(400).json({ error: 'Nothing is due on this invoice.' }); return; }
-    for (const f of ['payment_token', 'first_name', 'last_name', 'address1', 'city', 'zip']) {
+    const need = b.wallet ? ['payment_token'] : ['payment_token', 'first_name', 'last_name', 'address1', 'city', 'zip'];
+    for (const f of need) {
       if (!b[f]) { res.status(400).json({ error: 'Missing ' + f }); return; }
     }
     const amount = snap.balance.toFixed(2);
     const p = new URLSearchParams({
       security_key: key, type: 'sale', payment_token: b.payment_token, amount,
       orderid: 'MT-' + snap.debtId.slice(-24), order_description: 'Axis Chems invoice ' + snap.name,
-      first_name: b.first_name, last_name: b.last_name, address1: b.address1, city: b.city, state: b.state || '', zip: b.zip,
+      first_name: b.first_name || '', last_name: b.last_name || '', address1: b.address1 || '', city: b.city || '', state: b.state || '', zip: b.zip || '',
       email: b.email || '',
     });
     const r = await fetch(GATEWAY, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: p });

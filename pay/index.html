@@ -1,41 +1,65 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pay invoice</title><meta name="robots" content="noindex">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Pay invoice</title><meta name="robots" content="noindex">
 <style>
-body{margin:0;background:#eef2f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#0f1b2d}
-.card{max-width:480px;margin:24px auto;background:#fff;border-radius:14px;box-shadow:0 4px 24px rgba(11,76,184,.12);overflow:hidden}
-.hd{background:#0B4CB8;color:#fff;padding:20px 24px}.hd h1{margin:0;font-size:18px;letter-spacing:.5px}.hd p{margin:4px 0 0;opacity:.85;font-size:13px}
-.bd{padding:20px 24px}.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e6ebf3;font-size:14px}.row.cr span:last-child{color:#0a8a4a}
-.due{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#5b6b85}.due b{font-size:32px;color:#0B4CB8;letter-spacing:0}
-label{display:block;font-size:12px;color:#5b6b85;margin:12px 0 4px}input,.f{width:100%;box-sizing:border-box;border:1px solid #c9d3e3;border-radius:8px;padding:11px;font-size:16px;height:44px;background:#fff}
-.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}button{width:100%;margin-top:18px;background:#0B4CB8;color:#fff;border:0;border-radius:10px;font-size:16px;font-weight:700;padding:14px;cursor:pointer}button:disabled{opacity:.5}
-.msg{margin-top:12px;font-size:14px}.err{color:#b3261e}.ok{color:#0a8a4a;font-weight:600}.sm{font-size:11px;color:#7b8aa3;margin-top:14px;text-align:center}
-</style></head><body><div class="card"><div class="hd"><h1 id="t">Invoice</h1><p>Secure card payment</p></div><div class="bd" id="bd">Loading...</div></div>
+*{box-sizing:border-box}body{margin:0;background:#eef2f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#0f1b2d;-webkit-font-smoothing:antialiased}
+.card{max-width:480px;margin:20px auto;background:#fff;border-radius:16px;box-shadow:0 6px 28px rgba(11,76,184,.14);overflow:hidden}
+.hd{background:#0B4CB8;color:#fff;padding:20px 24px}.hd h1{margin:0;font-size:18px}.hd p{margin:4px 0 0;opacity:.85;font-size:13px}
+.bd{padding:20px 24px 26px}
+.sum{border:1px solid #e6ebf3;border-radius:12px;padding:4px 14px;margin-bottom:14px}.sum summary{cursor:pointer;padding:10px 0;font-size:13px;color:#5b6b85}
+.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid #eef1f7;font-size:13.5px}.row.cr span:last-child{color:#0a8a4a;font-weight:600}
+.due{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#5b6b85}.due b{font-size:34px;color:#0B4CB8;letter-spacing:0}
+.or{display:flex;align-items:center;gap:12px;margin:18px 0;color:#8a97ad;font-size:12px;text-transform:uppercase;letter-spacing:1.5px}.or:before,.or:after{content:"";flex:1;height:1px;background:#e1e7f0}
+#ap{min-height:52px}
+label{display:block;font-size:12px;color:#5b6b85;margin:12px 0 4px}
+input{width:100%;border:1px solid #c9d3e3;border-radius:10px;padding:0 12px;font-size:16px;height:48px;background:#fff;font-family:inherit}input:focus{outline:2px solid #0B4CB8;border-color:#0B4CB8}
+.f{width:100%;border:1px solid #c9d3e3;border-radius:10px;height:48px;background:#fff;overflow:hidden}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g3{display:grid;grid-template-columns:2fr 1fr 1.2fr;gap:10px}
+#pay{width:100%;margin-top:18px;background:#0B4CB8;color:#fff;border:0;border-radius:12px;font-size:17px;font-weight:700;padding:16px;cursor:pointer}#pay:disabled{opacity:.55}
+.msg{margin-top:12px;font-size:14px}.err{color:#b3261e}.ok{color:#0a8a4a;font-weight:600}
+.opt{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:15px;padding:14px;border-radius:12px;margin-bottom:10px;color:#fff}
+.sm{font-size:11.5px;color:#7b8aa3;margin-top:12px;text-align:center;line-height:1.5}
+</style></head><body><div class="card"><div class="hd"><h1 id="t">Invoice</h1><p>Secure payment</p></div><div class="bd" id="bd">Loading...</div></div>
 <script src="https://luqra.transactiongateway.com/token/Collect.js" data-tokenization-key="sT9yE8-HZAU8t-Hm4v2B-j4822k"></script>
 <script>
-const d=new URLSearchParams(location.search).get('d');let inv=null,tok=null;
+const d=new URLSearchParams(location.search).get('d');
 const fm=n=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const q=id=>document.getElementById(id);
 fetch('/api/pay?d='+encodeURIComponent(d)).then(r=>r.json()).then(j=>{
- if(j.error){document.getElementById('bd').innerHTML='This invoice link is not available.';return}
- inv=j;document.getElementById('t').textContent='Axis Chems invoice for '+j.name;
+ if(j.error){q('bd').innerHTML='This invoice link is not available.';return}
+ q('t').textContent='Axis Chems invoice for '+j.name;
  const rows=j.lines.map(l=>'<div class="row '+(l.kind==='credit'?'cr':'')+'"><span>'+esc(l.label)+'</span><span>'+esc(l.value)+'</span></div>').join('');
- if(j.balance<=0){document.getElementById('bd').innerHTML=rows+'<p class="ok">Paid in full. Thank you.</p>';return}
- document.getElementById('bd').innerHTML=rows+'<div class="due"><span>Amount due</span><b>'+fm(j.balance)+'</b></div>'+
- '<div class="g"><div><label>First name</label><input id="fn"></div><div><label>Last name</label><input id="ln"></div></div>'+
- '<label>Email for receipt</label><input id="em" type="email"><label>Billing address</label><input id="a1">'+
- '<div class="g"><div><label>City</label><input id="ct"></div><div><label>State</label><input id="st" maxlength="2"></div></div><label>ZIP</label><input id="zp">'+
- '<label>Card number</label><div class="f" id="ccn"></div><div class="g"><div><label>Expiry</label><div class="f" id="cce"></div></div><div><label>CVV</label><div class="f" id="ccv"></div></div></div>'+
- '<button id="pay">Pay '+fm(j.balance)+'</button><div class="msg" id="m"></div><div class="sm">Card details go straight to the payment processor (Luqra). Research Use Only.</div>';
- CollectJS.configure({variant:'inline',styleSniffer:true,
-  fields:{ccnumber:{selector:'#ccn',placeholder:'Card number'},ccexp:{selector:'#cce',placeholder:'MM / YY'},cvv:{selector:'#ccv',placeholder:'CVV'}},
-  callback:async r=>{const m=document.getElementById('m'),b=document.getElementById('pay');
-   try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),45000);
-    const x=await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,body:JSON.stringify({d,payment_token:r.token,first_name:fn.value,last_name:ln.value,email:em.value,address1:a1.value,city:ct.value,state:st.value,zip:zp.value})});
-    const o=await x.json();
-    if(o.ok){document.getElementById('bd').innerHTML='<p class="ok">Payment received. '+esc(o.amount)+'. Confirmation '+esc(o.transactionid)+'. Thank you.</p>'}
-    else{m.className='msg err';m.textContent=o.message||o.error||'Payment failed.';b.disabled=false}
-   }catch(e){m.className='msg err';m.textContent='No response. Do not pay again. Contact us to confirm before retrying.';}}});
- document.getElementById('pay').onclick=()=>{const b=document.getElementById('pay');b.disabled=true;document.getElementById('m').textContent='';
-  if(!fn.value||!ln.value||!a1.value||!ct.value||!zp.value){const m=document.getElementById('m');m.className='msg err';m.textContent='Fill in name and billing address.';b.disabled=false;return}
-  CollectJS.startPaymentRequest()};
+ const sum='<details class="sum"><summary>View invoice items</summary>'+rows+'</details>';
+ if(j.balance<=0){q('bd').innerHTML=sum+'<p class="ok">Paid in full. Thank you.</p>';return}
+ const L=j.links,ref=j.invoiceNo?' Include reference '+esc(j.invoiceNo)+'.':'';
+ q('bd').innerHTML=sum+'<div class="due"><span>Amount due</span><b>'+fm(j.balance)+'</b></div>'+
+ '<div id="ap"></div><div class="or" id="orw">or pay by card</div>'+
+ '<div class="g"><div><label>First name</label><input id="fn" autocomplete="given-name"></div><div><label>Last name</label><input id="ln" autocomplete="family-name"></div></div>'+
+ '<label>Card number</label><div class="f" id="ccn"></div>'+
+ '<div class="g"><div><label>Expiry</label><div class="f" id="cce"></div></div><div><label>CVV</label><div class="f" id="ccv"></div></div></div>'+
+ '<label>Billing address</label><input id="a1" autocomplete="address-line1"><div class="g3" style="margin-top:10px"><input id="ct" placeholder="City" autocomplete="address-level2"><input id="st" placeholder="State" maxlength="2" autocomplete="address-level1"><input id="zp" placeholder="ZIP" autocomplete="postal-code"></div>'+
+ '<label>Email for receipt</label><input id="em" type="email" autocomplete="email">'+
+ '<button id="pay">Pay '+fm(j.balance)+'</button><div class="msg" id="m"></div>'+
+ '<div class="or">or</div>'+
+ '<a class="opt" style="background:#3D95CE" href="'+L.venmo+'">Pay with Venmo</a><a class="opt" style="background:#00D632;color:#04310f" href="'+L.cashapp+'">Pay with Cash App</a><a class="opt" style="background:#0070BA" href="'+L.paypal+'">Pay with PayPal</a>'+
+ '<div class="opt" style="background:#6D1ED4">Zelle: send to '+esc(L.zelleTag)+'</div><div class="opt" style="background:#000">Apple Cash: send to '+esc(L.applecashNumber)+'</div>'+
+ '<div class="sm">For Venmo, Cash App, PayPal, Zelle and Apple Cash, note your name.'+ref+' Card and Apple Pay payments are processed securely by Luqra and credit automatically. Research Use Only.</div>';
+ let busy=false;
+ async function send(r){const m=q('m'),b=q('pay');
+  const wallet=r.tokenType&&r.tokenType!=='inline';
+  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),45000);
+   const x=await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,body:JSON.stringify({d,wallet,payment_token:r.token,first_name:fn.value,last_name:ln.value,email:em.value,address1:a1.value,city:ct.value,state:st.value,zip:zp.value})});
+   const o=await x.json();
+   if(o.ok){q('bd').innerHTML=sum+'<p class="ok">Payment received: '+esc(o.amount)+'. Confirmation '+esc(o.transactionid)+'. Thank you.</p>'}
+   else{m.className='msg err';m.textContent=o.message||o.error||'Payment failed.';b.disabled=false;busy=false}
+  }catch(e){m.className='msg err';m.textContent='No response. Do not pay again. Contact us to confirm before retrying.'}}
+ CollectJS.configure({variant:'inline',price:j.balance.toFixed(2),currency:'USD',country:'US',
+  fields:{ccnumber:{selector:'#ccn',placeholder:'1234 1234 1234 1234'},ccexp:{selector:'#cce',placeholder:'MM / YY'},cvv:{selector:'#ccv',placeholder:'CVV'},
+   applePay:{selector:'#ap',type:'buy',totalLabel:'Axis Chems',style:{'button-style':'black',height:'52px','border-radius':'12px'}}},
+  customCss:{'font-size':'16px',height:'46px',padding:'0 12px','box-sizing':'border-box',border:'0',color:'#0f1b2d'},
+  callback:send,timeoutCallback:()=>{q('m').className='msg err';q('m').textContent='Timed out. Try again.';q('pay').disabled=false;busy=false},
+  fieldsAvailableCallback:()=>{setTimeout(()=>{if(!document.querySelector('#ap *')){q('ap').style.display='none';q('orw').textContent='pay by card'}},600)}});
+ q('pay').onclick=()=>{if(busy)return;const m=q('m');m.textContent='';
+  if(!fn.value||!ln.value||!a1.value||!ct.value||!zp.value){m.className='msg err';m.textContent='Fill in your name and billing address.';return}
+  busy=true;q('pay').disabled=true;CollectJS.startPaymentRequest()};
 });
 </script></body></html>
